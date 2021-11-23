@@ -22,11 +22,12 @@ assignees: ''
 ### `0.5h`
 ### `1h`
 ### `1.5h`
+### `2h`
 ### `2.5h`
 ### `3h`
 
 ### Labels
-- Estimated time: `E: 3h`
-- Group : `client`
+- Estimated time: `3h`
+- Group : `client` `server` `sr`
 - Sprint : `Sprint__NUMBER__`
 - Urgency : `High`, `Middle`, `Low`
