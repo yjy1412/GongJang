@@ -1,14 +1,11 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const cookieParser = require('cookie-parser');
+const cookie = require('cookie-parser');
 const cors = require('cors');
 const app = express();
-
-
-
+const router = require('./routers')
 
 app.use(express.json())
-
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -16,16 +13,8 @@ app.use(
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
   })
 )
-
-app.get('/', (req, res) => {
-  res.send('hello world')
-})
-
-app.post('/', (req, res) =>{
-  res.send(req.body)
-})
-
-
+app.use(cookie());
+app.use('/', router);
 
 const port = 4000
 app.listen(port, () => {
