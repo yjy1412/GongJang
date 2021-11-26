@@ -39,7 +39,7 @@ const Item = () => {
       </div>
       <div className="item-info">
         <p>title</p>
-        <RiHeartFill/>
+        <RiHeartFill fill="red"/>
       </div>
     </ItemBlock>
   );
