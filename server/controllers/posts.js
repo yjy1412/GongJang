@@ -21,7 +21,7 @@ module.exports = {
     const postsId = req.params.posts_id;
 
     res.json({
-      method: 'DELETE /posts/:posts_id',
+      method: 'dELETE /posts/:posts_id',
       postsId
     });
   },
