@@ -8,10 +8,13 @@ import PostDetail from './pages/PostDetail';
 import UpdatePassword from './pages/UpdatePassword';
 import WishList from './pages/WishList';
 import Write from './pages/Write';
+import Header from './components/common/header/Header';
+import Footer from './components/common/Footer';
 
 function App() {
   return (
     <>
+      <Header/>
       <Switch>
         <Route component={Main} exact path="/"/>
         <Route component={Join} path="/join"/>
@@ -22,6 +25,7 @@ function App() {
         <Route component={WishList} path="/wishList"/>
         <Route component={Write} path="/write"/>
       </Switch>
+      <Footer/>
     </>
   );
 }

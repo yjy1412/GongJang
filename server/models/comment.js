@@ -14,12 +14,31 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Comment.init({
-    post_id: DataTypes.INTEGER,
-    user_id: DataTypes.INTEGER,
-    content: DataTypes.STRING
+    post_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    content: {
+      type: DataTypes.STRING,
+      allowNull: false
+    }
   }, {
     sequelize,
     modelName: 'Comment',
   });
+
+  Comment.associate= (models) => {
+    Comment.belongsTo(models.User, {
+      onDelete: "cascade"
+    }),
+    Comment.belongsTo(models.Post, {
+      onDelete: "cascade"
+    })
+  }
+
   return Comment;
 };

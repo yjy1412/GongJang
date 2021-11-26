@@ -14,14 +14,38 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   User.init({
-    email: DataTypes.STRING,
-    nickname: DataTypes.STRING,
-    password: DataTypes.STRING,
-    admin: DataTypes.STRING,
-    profile_image: DataTypes.STRING
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    nickname: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    admin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    profile_image: DataTypes.BLOB
   }, {
     sequelize,
     modelName: 'User',
   });
+
+  User.associate = (models) => {
+    User.hasMany(models.Post, {
+      foreignKey: "user_id"
+    }),
+    User.hasMany(models.Comment, {
+      foreignKey: "user_id"
+    }),
+    User.hasMany(models.Wish, {
+      foreignKey: "user_id"
+    })
+  }
   return User;
 };

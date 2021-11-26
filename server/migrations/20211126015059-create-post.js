@@ -9,36 +9,49 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       user_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: {
+            tableName: 'Users'
+          },
+          key: 'id'
+        },
+        onDelete: 'cascade'
       },
       title: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       content: {
         type: Sequelize.STRING
       },
       category: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       state: {
-        type: Sequelize.STRING
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       image1: {
-        type: Sequelize.STRING
+        type: Sequelize.BLOB
       },
       image2: {
-        type: Sequelize.STRING
+        type: Sequelize.BLOB
       },
       image3: {
-        type: Sequelize.STRING
+        type: Sequelize.BLOB
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: new Date()
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: new Date()
       }
     });
   },

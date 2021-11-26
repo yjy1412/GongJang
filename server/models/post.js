@@ -14,17 +14,41 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Post.init({
-    user_id: DataTypes.INTEGER,
-    title: DataTypes.STRING,
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     content: DataTypes.STRING,
-    category: DataTypes.STRING,
-    state: DataTypes.STRING,
-    image1: DataTypes.STRING,
-    image2: DataTypes.STRING,
-    image3: DataTypes.STRING
+    category: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    state: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    image1: DataTypes.BLOB,
+    image2: DataTypes.BLOB,
+    image3: DataTypes.BLOB
   }, {
     sequelize,
     modelName: 'Post',
   });
+
+  Post.associate= (models) => {
+    Post.belongsTo(models.User, {
+      onDelete: "cascade"
+    }),
+    Post.hasMany(models.Wish, {
+      foreignKey: "post_id"
+    }),
+    Post.hasMany(models.Comment, {
+      foreignKey: "post_id"
+    })
+  }
   return Post;
 };
