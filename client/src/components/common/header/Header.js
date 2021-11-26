@@ -76,10 +76,10 @@ const Header = () => {
                 <div className="logo">
                     <Link to="/" className="logo-text">
                         <div>
-                            <p><span>공</span>유하는</p>
+                            <p><span>공</span> 유하는</p>
                         </div>
                         <div>
-                            <p><span>장</span>난감</p>
+                            <p><span>장</span> 난감</p>
                          </div>
                     </Link> 
                 </div>
