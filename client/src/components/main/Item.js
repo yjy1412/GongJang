@@ -21,6 +21,12 @@ const ItemBlock = styled.li`
       }
     }
   }
+  .item-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+  }
 `;
 
 const Item = () => {
