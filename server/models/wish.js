@@ -14,11 +14,27 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   Wish.init({
-    post_id: DataTypes.INTEGER,
-    user_id: DataTypes.INTEGER
+    post_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   }, {
     sequelize,
     modelName: 'Wish',
   });
+
+  Wish.associate= (models) => {
+    Wish.belongsTo(models.User, {
+      onDelete: "cascade"
+    }),
+    Wish.belongsTo(models.Post, {
+      onDelete: "cascade"
+    })
+  }
+
   return Wish;
 };
