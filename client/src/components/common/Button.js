@@ -7,11 +7,13 @@ const ButtonStyle = styled.button`
     font-weight: bold;
     color: #fff;
     background: #575F95;
+    border: 1px solid #575F95;
     transition: .3s;
     cursor: pointer;
     &:hover {
-        background: #dadcec;
+        background: #fff;
         color: #575F95;
+        border: 1px solid #575F95
     }
 `;
 
