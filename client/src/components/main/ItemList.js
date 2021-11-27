@@ -7,7 +7,7 @@ const ItemListBlock = styled.ul`
   margin: 0 auto;
   display: flex;
   justify-content: center;
-  gap: 6rem;
+  gap: 2.9rem;
   flex-wrap: wrap;
   padding: 2rem 0 4rem;
 `;

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
 
 const ItemBlock = styled.li`
-  max-width: 200px;
+  max-width: 280px;
   width: 100%;
   box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.5),
     2px 2px 5px rgba(94, 104, 121, 0.3);
