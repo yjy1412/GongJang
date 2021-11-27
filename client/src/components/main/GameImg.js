@@ -3,11 +3,12 @@ import styled from 'styled-components';
 import gameImg from '../../style/images/game.jpg';
 
 const GameImgBlock = styled.div`
-  height: 40vh;
+  height: 450px;
   display: flex;
   justify-content: center;
   .img-box {
-    width: 70%;
+    min-width: 320px;
+    width: 100%;
   }
 `;
 
@@ -18,7 +19,7 @@ const GameImg = () => {
         className="img-box"
         style={{
           backgroundImage: `url(${gameImg})`,
-          backgroundPosition: 'center',
+          backgroundPosition: 'center center',
           backgroundSize: 'contain',
           backgroundRepeat: 'no-repeat'
         }}
