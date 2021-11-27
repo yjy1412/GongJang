@@ -8,6 +8,7 @@ const HeaderBlock = styled.header`
     position: relative;
     width: 100%;
     height: 80px;
+    margin: 1rem 0;
 `;
 
 const HeaderLayoutStyle = styled.div`
