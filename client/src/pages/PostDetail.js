@@ -4,11 +4,11 @@ import Comments from '../components/postDetail/Comments';
 import ItemImgSlide from '../components/postDetail/ItemImgSlide';
 
 const PostDetailBlock = styled.div`
-  width: 60%;
+  width: 1130px;
   margin: 0 auto;
   .title {
     position: relative;
-    border-bottom: 1px solid #575F95;
+    border-bottom: 2px solid #575F95;
     margin: 3rem 0 2rem;
     h3 {
       text-align: center;
@@ -28,7 +28,6 @@ const PostDetailBlock = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    border-bottom: 1px solid #575F95;
     .info {
       padding: 0.8rem;
       color: #fff;
@@ -48,8 +47,8 @@ const PostDetailBlock = styled.div`
     }
   }
   .desc {
-    height: 200px;
-    background: #ffdeb7;
+    height: 400px;
+    border: 2px solid #575F95;
     padding: 1rem 0;
     text-align: center;
     p {
@@ -59,6 +58,14 @@ const PostDetailBlock = styled.div`
 `;
 
 const PostDetail = () => {
+  /*
+  const { id } = useParams();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    특정 페이지 정보 요청
+  })
+  */
   return (
     <PostDetailBlock>
       <div className="title">

@@ -4,7 +4,7 @@ import ItemList from '../components/main/ItemList';
 import GameImg from '../components/main/GameImg';
 
 const MainBlock = styled.div`
-  width: 70%;
+  width: 1130px;
   margin: 0 auto;
   .share-text {
     position: relative;
