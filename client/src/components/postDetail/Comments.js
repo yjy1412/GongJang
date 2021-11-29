@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
 import { AiOutlineMore } from 'react-icons/ai';
+import { RiDeleteBinLine } from 'react-icons/ri';
+import { FiEdit } from 'react-icons/fi';
 import Button from '../common/Button';
 
 const CommentsBlock = styled.div`
@@ -25,7 +27,7 @@ const CommentsBlock = styled.div`
       font-size: 1.2rem;
       margin-right: 1rem;
       padding: 0.7rem 0.5rem;
-      background: #ffdeb7;
+      border: 2px solid #575F95;
       border-radius: 4px;
       &::placeholder {
         color: #bcbdc4;
@@ -33,17 +35,28 @@ const CommentsBlock = styled.div`
     }
   }
   .comment {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    div {
+    .text {
       width: 100%;
       font-size: 1.2rem;
       margin-top: 0.5rem;
-      border-bottom: 1px solid #575F95;
+      border-bottom: 2px solid #575F95;
     }
     .comment-edit {
       font-size: 1.5rem;
+      cursor: pointer;
+    }
+    .comment-edit-icons {
+      position: absolute;
+      right: -2rem;
+      display: none;
+      flex-direction: column;
+      gap: 0.5rem;
+      border: 1px solid #575F95;
+      padding: 0.5rem;
       cursor: pointer;
     }
   }
@@ -54,6 +67,7 @@ const CommentBtn = styled(Button)`
 `;
 
 const Comments = () => {
+
   return (
     <CommentsBlock>
       <div className="interest">
@@ -82,8 +96,14 @@ const Comments = () => {
               <span> 2021.11.24</span>
             </div>
             <div className="comment">
-              <div>comment</div>
+              <div className="text">
+                <p>comment</p>
+              </div>
               <AiOutlineMore className="comment-edit"/>
+              <div className="comment-edit-icons">
+                <FiEdit/>
+                <RiDeleteBinLine/>
+              </div>
             </div>
           </div>
         </li>
