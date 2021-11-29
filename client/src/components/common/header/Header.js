@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import MenuIcons from './MenuIcons';
@@ -54,6 +55,7 @@ const HeaderLayoutStyle = styled.div`
         background: #dadcec;
         transform: translateY(-120%);
         transition: transform .4s;
+        z-index: 10;
     }
 `;
 
@@ -80,6 +82,8 @@ const MenuBoxBlock = styled.div`
 const Header = () => {
     const [show, setShow] = useState(false);
 
+    const { isLogin } = useSelector((state) => state.user);
+    
     const onClick = () => {
         setShow(!show)
         const searchWrap = document.querySelector('#search-wrap');
@@ -108,7 +112,11 @@ const Header = () => {
                 <MenuBoxBlock className="menu-box">
                     <ul className="auth">
                         <li>
-                            <Link to="/login">LOGIN</Link>
+                            { isLogin ? (
+                                <Link to="/">LOGOUT</Link>
+                            ) : (
+                                <Link to="/login">LOGIN</Link>
+                            )}
                         </li>
                         <li>
                             <Link to="/join">JOIN</Link>

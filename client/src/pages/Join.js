@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Button from '../components/common/Button';
-import axios from 'axios';
+import { fetchSignUp } from '../feature/userSlice';
 
 
 const AuthBackground = styled.div`
@@ -98,9 +99,9 @@ const JoinButton = styled(Button)`
 `;
 
 const Join = () => {
-
-  // useHistory 사용 변수 
   const history = useHistory();
+  const dispatch = useDispatch();
+  const { isSignUp, userError } = useSelector((state) => state.user);
 
   // 이름, 이메일, 비밀번호, 비밀번호 확인 
   const [joinInfo, setJoinInfo] = useState({ 
@@ -160,23 +161,26 @@ const Join = () => {
   };
   
   const handleSubmit = (e) => {
-    const { nickname, email, password } = joinInfo;
+    e.preventDefault();
+
     if(nicknameMessage === "" && emailMessage === "" && passwordMessage === "" && confirmPasswordMessage === "") {
-      axios.post('http://localhost:4000/auth/sign-up', { nickname, email, password }, { headers: { 'Content-Type': 'application/json' } })
-        .then((data) => {
-            // 로그인 창으로 이동합니다.
-            console.log('서버응답')
-            // history.push("/login")
-        })
-        .catch((err) => {
-            // Todo: 서버로부터 받은 응답을 에러메시지에 삽입하여 나타냄
-            setServerErrorMessage('유효하지 않은 요청입니다')
-            setTimeout(() => setServerErrorMessage(''), 3000)
-        })
-    } else {
-      e.preventDefault();
+      dispatch(fetchSignUp(joinInfo));
     }
+    setJoinInfo({
+      nickname: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    })
   }
+
+  useEffect(() => {
+    if(isSignUp){
+      history.push('/login');
+    } else {
+      setServerErrorMessage(userError);
+    }
+  },[history, isSignUp, userError])
 
   return (
     <AuthBackground>

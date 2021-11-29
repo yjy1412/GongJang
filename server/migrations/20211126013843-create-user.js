@@ -15,6 +15,7 @@ module.exports = {
       },
       nickname: {
         type: Sequelize.STRING,
+        unique: true,
         allowNull: false
       },
       password: {
@@ -30,13 +31,11 @@ module.exports = {
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: new Date()
+        type: Sequelize.DATE
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: new Date()
+        type: Sequelize.DATE
       }
     });
   },
