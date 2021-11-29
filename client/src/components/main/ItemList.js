@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import Item from './Item';
 
 const ItemListBlock = styled.ul`
-  margin: 0 auto;
   display: flex;
   justify-content: flex-start;
   gap: 2.7rem;
