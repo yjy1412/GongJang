@@ -26,10 +26,10 @@ const MenuIconsBlock = styled.ul`
   }
 `;
 
-const MenuIcons = () => {
+const MenuIcons = ({ onClick }) => {
   return (
     <MenuIconsBlock >
-      <li className="search">
+      <li className="search" onClick={onClick}>
           <FiSearch/>
       </li>
       <li>

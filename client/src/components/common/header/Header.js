@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import MenuIcons from './MenuIcons';
 import Search from './Search';
 
 const HeaderBlock = styled.header`
-    position: relative;
     width: 100%;
     height: 80px;
+    margin: 1rem 0;
 `;
 
 const HeaderLayoutStyle = styled.div`
@@ -45,6 +45,16 @@ const HeaderLayoutStyle = styled.div`
         flex-direction: column;
         justify-content: space-between;
     }
+    #search-wrap {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        background: #dadcec;
+        transform: translateY(-120%);
+        transition: transform .4s;
+    }
 `;
 
 const MenuBoxBlock = styled.div`
@@ -68,7 +78,19 @@ const MenuBoxBlock = styled.div`
 `;
 
 const Header = () => {
-    //Search 컴포넌트는 우선 transform으로 안보이게 위로 올려 둠
+    const [show, setShow] = useState(false);
+
+    const onClick = () => {
+        setShow(!show)
+        const searchWrap = document.querySelector('#search-wrap');
+        if(!show){
+            searchWrap.style.transform = 'translateY(0%)';
+        } else {
+            searchWrap.style.transform = 'translateY(-120%)';
+            searchWrap.style.transition = 'transform .4s';
+        }
+    }
+  
     return (
         <HeaderBlock>
             <HeaderLayoutStyle>
@@ -76,10 +98,10 @@ const Header = () => {
                 <div className="logo">
                     <Link to="/" className="logo-text">
                         <div>
-                            <p><span>공</span>유하는</p>
+                            <p><span>공</span> 유하는</p>
                         </div>
                         <div>
-                            <p><span>장</span>난감</p>
+                            <p><span>장</span> 난감</p>
                          </div>
                     </Link> 
                 </div>
@@ -92,9 +114,15 @@ const Header = () => {
                             <Link to="/join">JOIN</Link>
                         </li>
                     </ul>
-                    <MenuIcons/>
+                    <MenuIcons
+                    onClick={onClick}
+                    />
                 </MenuBoxBlock>
-                <Search/>
+                <div id="search-wrap">
+                    <Search
+                    onClick={onClick}
+                    />
+                </div>
             </HeaderLayoutStyle>
         </HeaderBlock>
     );
