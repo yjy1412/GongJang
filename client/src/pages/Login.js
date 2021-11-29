@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Button from '../components/common/Button';
-import axios from 'axios';
+import { fetchLogin } from '../feature/userSlice';
+// import axios from 'axios';
 
 const AuthBackground = styled.div`
   margin-top: 200px;
@@ -107,6 +109,10 @@ const Login = () => {
   const [passwordMessage, setPasswordMessage] = useState('');
   const [serverErrorMessage, setServerErrorMessage] = useState('');
 
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const { user, userError } = useSelector((state) => state.user);
+
   const handleInputEmail = (e) => {
     setLoginInfo({ ...loginInfo, [e.target.name] : e.target.value});
     const { email } = loginInfo;
@@ -129,23 +135,26 @@ const Login = () => {
   }
 
   const handleSubmit = (e) => {
-    const { email, password } = loginInfo;
+    e.preventDefault();
+
     if(emailMessage === "" && passwordMessage === "") {
-      axios.post('http://localhost:4000/auth/log-in', { email, password }, { headers: { 'Content-Type': 'application/json' } })
-        .then((data) => {
-            // 로그인 창으로 이동합니다.
-            console.log('서버응답')
-            // history.push("/login")
-        })
-        .catch((err) => {
-            // Todo: 서버로부터 받은 응답을 에러메시지에 삽입하여 나타냄
-            setServerErrorMessage('유효하지 않은 요청입니다')
-            setTimeout(() => setServerErrorMessage(''), 3000)
-        })
-    } else {
-      e.preventDefault();
+      dispatch(fetchLogin(loginInfo));
     }
+    setLoginInfo({
+      email: '',
+      password: '',
+    })
   };
+
+  useEffect(() => {
+    if(user){
+      history.push('/');
+    }
+    if(userError){
+      setServerErrorMessage(userError);
+    }
+  },[history, user, userError])
+
 
   return (
     <AuthBackground>
