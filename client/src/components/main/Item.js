@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
 
 const ItemBlock = styled.li`
-  max-width: 280px;
+  max-width: 250px;
   width: 100%;
   box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.5),
     2px 2px 5px rgba(94, 104, 121, 0.3);
@@ -30,10 +30,16 @@ const ItemBlock = styled.li`
 `;
 
 const Item = () => {
+
   return (
     <ItemBlock>
       <div className="item-img">
-        <Link>
+        {/* 
+        <Link to="/postDetail/${id}">
+          <img src="" alt="" />
+        </Link>
+        */}
+        <Link to="/postDetail/1">
           <img src="" alt="" />
         </Link>
       </div>
