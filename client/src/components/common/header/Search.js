@@ -1,17 +1,19 @@
 import React from 'react';
 import styled from 'styled-components';
 import { FiSearch } from 'react-icons/fi';
+import { FaTimes } from 'react-icons/fa';
 
 const SearchBlock = styled.div`
-  position: absolute;
+  /* position: absolute;
   top: 0;
   left: 0;
   right: 0;
   width: 100%;
   background: #dadcec;
   transform: translateY(-120%);
-  transition: transform .3s;
+  transition: transform .3s; */
   .wrap {
+    position: relative;
     width:70%;
     margin: 0 auto;
     padding: 2rem 0;
@@ -57,11 +59,17 @@ const SearchBlock = styled.div`
         }
       }
     }
+    .close-icon {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 2rem;
+      font-size: 1.2rem;
+    }
   }
 `;
 
-const Search = () => {
-
+const Search = ({ onClick }) => {
   return (
     <SearchBlock>
       <div className="wrap">
@@ -85,6 +93,9 @@ const Search = () => {
               <li>레고</li>
             </ul>
           </div>
+        </div>
+        <div className="close-icon" onClick={onClick}>
+          <FaTimes/>
         </div>
       </div>
     </SearchBlock>
