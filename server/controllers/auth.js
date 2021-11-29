@@ -79,7 +79,7 @@ module.exports = {
               res.status(404).send("비밀번호가 일치하지 않습니다")
             } else {
               console.log("DATA : ", data);
-              const { email } = data.dataValues;
+              const { email, nickname, profile_image, admin } = data.dataValues;
               const accessToken = jwt.sign(
                 { email },
                 process.env.ACCESS_SECRET,
@@ -96,7 +96,11 @@ module.exports = {
 
               // response
               res.cookie("refreshToken", refreshToken, { httpOnly: true, expiresIn: "30d" })
-              res.json({ accessToken })
+              res.json({ 
+                accessToken: accessToken,
+                userInfo: { email, nickname, profile_image, admin },
+                message: "로그인에 성공했습니다"
+               })
             }
           }
         })
@@ -156,7 +160,7 @@ module.exports = {
             return res.status(404).send("요청하신 회원정보와 일치하는 회원정보가 존재하지 않습니다")
           }
           // 2-2. 정상적인 조회 요청이 이루어졌을 때
-          const { email, nickname, admin, profile_image, createdAt, updatedAt } = userInfo
+          const { email, nickname, admin, profile_image } = userInfo
           res.json({
             userInfo: { email, nickname, profile_image, admin },
             message: "회원정보 요청에 성공했습니다"
