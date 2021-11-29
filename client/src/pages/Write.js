@@ -12,7 +12,7 @@ const WriteBlock = styled.div`
     input {
       width: 100%;
       font-size: 1.2rem;
-      padding: 0.5rem;
+      padding: 1rem;
       border-bottom: 2px solid  #575f95;
       &::placeholder {
         color: #bcbdc4;
@@ -32,7 +32,7 @@ const WriteBlock = styled.div`
       display: block;
       width: 100%;
       height: 450px;
-      padding: 0.5rem;
+      padding: 1rem;
       border: 2px solid #575F95;
       &::placeholder {
         font-size: 1.2rem;
