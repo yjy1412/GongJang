@@ -116,7 +116,57 @@ module.exports = {
   },
   // GET auth/mypage
   getMypage: async (req, res) => {
-    res.send('Get auth/mypage');
+    // 1. 권한 인증
+    const authorization = req.headers.authorization;
+    console.log(authorization);
+
+    if (!authorization) {
+      res.status(401).send("권한인증에 실패했습니다(엑세스 토큰 부재)")
+    } else {
+      const accessToken = authorization.split(' ')[1];
+      console.log(accessToken);
+
+      let accessData;
+      try {
+        accessData = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+      } catch {
+        // 엑세스 토큰이 유효하지 않을 때
+        const refreshToken = req.cookies.refreshToken;
+        if (refreshToken) {
+          // 리프레쉬 토큰이 req.cookies에 담겨 있다면,
+          try {
+            // 리프레쉬 토큰을 통한 엑세스 데이터 임시추출
+            accessData = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+          } catch {
+            // 리프레쉬 토큰 마저 유효하지 않을 때(30일 경과 또는 토큰 훼손)
+            return res.status(401).send("권한인증에 실패했습니다(토큰 유효하지 않음)")
+          }
+        } else {
+          // 리프레쉬 토큰이 없다면 바로 에러메시지 전송
+          return res.status(401).send("권한인증에 실패했습니다(토큰 유효하지 않음)")
+        }
+      }
+      // 2. 회원정보 제공
+      const { email } = accessData
+      User.findOne({ where: { email } })
+        .then(userInfo => {
+          console.log(userInfo);
+          // 2-1. 토큰에 담긴 유저 데이터와 일치하는 데이터가 없을 때
+          if (!userInfo) {
+            return res.status(404).send("요청하신 회원정보와 일치하는 회원정보가 존재하지 않습니다")
+          }
+          // 2-2. 정상적인 조회 요청이 이루어졌을 때
+          const { email, nickname, admin, profile_image, createdAt, updatedAt } = userInfo
+          res.json({
+            userInfo: { email, nickname, profile_image, admin },
+            message: "회원정보 요청에 성공했습니다"
+          });
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(500).send("서버에 오류가 발생했습니다")
+        })
+    }
   },
   // GET auth/mypage/posts
   getMyposts: async (req, res) => {
@@ -194,7 +244,69 @@ module.exports = {
   },
   // PATCH auth/password
   patchPassword: async (req, res) => {
-    res.send('Patch auth/password');
-  }
+    // 1. 권한인증
+    const authorization = req.headers.authorization;
+    console.log(authorization);
 
+    if (!authorization) {
+      res.status(401).send("권한인증에 실패했습니다(엑세스 토큰 부재)")
+    } else {
+      const accessToken = authorization.split(' ')[1];
+      console.log(accessToken);
+
+      let accessData;
+      try {
+        accessData = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+      } catch {
+        // 엑세스 토큰이 유효하지 않을 때
+        const refreshToken = req.cookies.refreshToken;
+        if (refreshToken) {
+          // 리프레쉬 토큰이 req.cookies에 담겨 있다면,
+          try {
+            // 리프레쉬 토큰을 통한 엑세스 데이터 임시추출
+            accessData = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+          } catch {
+            // 리프레쉬 토큰 마저 유효하지 않을 때(30일 경과 또는 토큰 훼손)
+            return res.status(401).send("권한인증에 실패했습니다(토큰 유효하지 않음)")
+          }
+        } else {
+          // 리프레쉬 토큰이 없다면 바로 에러메시지 전송
+          return res.status(401).send("권한인증에 실패했습니다(토큰 유효하지 않음)")
+        }
+      }
+      // 2. 입력된 current 비밀번호 확인
+      const { email } = accessData;
+      User.findOne({ where: { email } })
+        .then(userInfo => {
+          // 2-1. 일치하는 유저정보가 존재하지 않을 때
+          if (!userInfo) {
+            return res.status(404).send("요청하신 회원정보와 일치하는 회원정보가 존재하지 않습니다")
+          }
+
+          const { password } = userInfo.dataValues;
+          const inputCurrentPassword = req.body.current;
+          const inputNewPassword = req.body.new;
+
+          // 2-2. 입력된 비밀번호가 이전 비밀번호와 다를 때
+          if (inputCurrentPassword !== password) {
+            return res.status(404).send("비밀번호가 틀렸습니다")
+          }
+          // 2-3 정상적인 요청 결과
+          User.update({ password: inputNewPassword }, {
+            where: { email }
+          })
+            .then(result => {
+              res.status(201).send("회원님의 비밀번호가 정상적으로 수정되었습니다")
+            })
+            .catch(err => {
+              console.log(err);
+              res.status(500).send("서버에 오류가 발생했습니다")
+            })
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(500).send("서버에 오류가 발생했습니다")
+        })
+    }
+  }
 }
