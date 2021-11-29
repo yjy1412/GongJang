@@ -108,13 +108,13 @@ module.exports = {
     } catch {
       return res.status(500).send('서버오류')
     }
-    
   }
   
   },
   // DELETE auth/sign-out
   signout : async (req, res) => {
-    res.send('auth/signout');
+    console.log(req.headers)
+    res.send('회원탈퇴 완료');
   },
   // GET auth/mypage
   getMypage : async (req, res) => {
