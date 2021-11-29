@@ -78,10 +78,10 @@ module.exports = {
             // token check
             console.log(accessToken);
             console.log(refreshToken);
-            
+            // console.log(req.headers)
             // response
             res.cookie("refreshToken", refreshToken, {httpOnly: true, expiresIn: "30d"})
-            res.json({ accessToken })
+            res.json({ accessToken, refreshToken })
           }
         }
       })
@@ -93,20 +93,24 @@ module.exports = {
   },
   // POST auth/log-out
   logout : async (req, res) => {
+    const authorization = req.headers.authorization;
+    // console.log(authorization);
+    const refreshToken = req.cookies.refreshToken
+    // console.log(req.headers)
 
-    console.log(req.body)
-    //{
-//   post_id: '1',
-//   title: 'silvernian toy3',
-//   content: 'free - direct',
-//   connect: 'success'
-// }
-//잘못된 요청
-if(!accessToken) {
-  res.status(400).send('잘못된 요청')
-} else {
-    res.status(200).send('로그아웃에 성공했습니다');
-}
+    //헤더에서 authorization이 안사라진다
+  //  res.send('로그아웃')
+  if(!authorization) {
+    res.status(400).send("권한 인증에 실패했습니다(토큰없음)")
+  } else {
+    try {
+      res.status(200).cookie("refreshToken", "").send('로그아웃 되었습니다')
+    } catch {
+      return res.status(500).send('서버오류')
+    }
+    
+  }
+  
   },
   // DELETE auth/sign-out
   signout : async (req, res) => {
