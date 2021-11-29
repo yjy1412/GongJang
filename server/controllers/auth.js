@@ -41,7 +41,7 @@ module.exports = {
   // POST auth/log-in
   login : async (req, res) => {
     // connecting test
-    console.log(req.body);
+    // console.log(req.body);
 
     // input data validation
     const inputEmail = req.body.email;
@@ -56,14 +56,14 @@ module.exports = {
         }
       })
       .then(data => {
-        console.log(data);
+        // console.log(data);
         if( !data ) {
           res.status(404).send("입력하신 이메일 정보와 일치하는 회원정보가 없습니다")
         } else {
           if( data.password !== inputPassword ) {
             res.status(404).send("비밀번호가 일치하지 않습니다")
           } else {
-            console.log("DATA : ", data);
+            // console.log("DATA : ", data);
             const { email } = data.dataValues;
             const accessToken = jwt.sign(
               { email },
@@ -93,7 +93,20 @@ module.exports = {
   },
   // POST auth/log-out
   logout : async (req, res) => {
-    res.send('auth/logout');
+
+    console.log(req.body)
+    //{
+//   post_id: '1',
+//   title: 'silvernian toy3',
+//   content: 'free - direct',
+//   connect: 'success'
+// }
+//잘못된 요청
+if(!accessToken) {
+  res.status(400).send('잘못된 요청')
+} else {
+    res.status(200).send('로그아웃에 성공했습니다');
+}
   },
   // DELETE auth/sign-out
   signout : async (req, res) => {
