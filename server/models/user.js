@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
     profile_image: DataTypes.BLOB
   }, {
     sequelize,
-    modelName: 'User',
+    modelName: 'User'
   });
 
   User.associate = (models) => {
