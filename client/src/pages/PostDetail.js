@@ -15,14 +15,6 @@ const PostDetailBlock = styled.div`
       width: 100%;
       font-size: 2rem;
     }
-    .writer {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      span {
-        margin-left: 0.5rem;
-      }
-    }
   }
   .wrap {
     display: flex;
@@ -55,6 +47,11 @@ const PostDetailBlock = styled.div`
       font-size: 1.4rem;
     }
   }
+  .writer {
+    margin-top: 0.5rem;
+    span {
+    }
+  }
 `;
 
 const PostDetail = () => {
@@ -69,11 +66,7 @@ const PostDetail = () => {
   return (
     <PostDetailBlock>
       <div className="title">
-        <h3>title</h3>
-        <div className="writer">
-          <span><b>nickname</b></span>
-          <span>2021.11.23</span>
-        </div>
+        <h3>Title</h3>
       </div>
       <ItemImgSlide/>
       <div className="wrap">
@@ -87,6 +80,10 @@ const PostDetail = () => {
       </div>
       <div className="desc">
         <p>Description</p>
+      </div>
+      <div className="writer">
+        <span><b>writer</b></span>
+        <span> 2021.11.23</span>
       </div>
       <Comments/>
     </PostDetailBlock>
