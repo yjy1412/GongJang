@@ -72,8 +72,8 @@ const ErrorMessage = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
-  font-size: 12px;
-  color: red;
+  font-size: 14px;
+  color:  #fa8072;
   margin-left: 2px;
 `;
 
