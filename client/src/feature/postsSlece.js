@@ -4,7 +4,7 @@ import axios from 'axios';
 export const fetchGetAllPosts = createAsyncThunk(
   'posts/fetchGetAllPosts',
   async () => {
-    const response = await axios.get('http://localhost:4000/posts');
+    const response = await axios.get('/posts');
     return response.data;
   }
 )

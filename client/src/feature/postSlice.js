@@ -4,7 +4,7 @@ import axios from 'axios';
 export const fetchGetPostDetail = createAsyncThunk(
   'post/fetchGetPost',
   async (id) => {
-    const response = await axios.get(`http://localhost:4000/posts/${id}`);
+    const response = await axios.get(`/posts/${id}`);
     return response.data;
   }
 )
@@ -12,7 +12,7 @@ export const fetchGetPostDetail = createAsyncThunk(
 export const fetchRemovePost = createAsyncThunk(
   'post/fetchRemovePost',
   async (id) => {
-    await axios.delete(`http://localhost:4000/posts/${id}`);
+    await axios.delete(`/posts/${id}`);
   }
 )
 
@@ -26,9 +26,8 @@ export const postSlice = createSlice({
   name: 'post',
   initialState,
   reducers: {
-    unloadPost: (state) => {
-      state.post = null;
-      state.postError = null;
+    unloadPost: () => {
+      return initialState;
     }
   },
   extraReducers: {
