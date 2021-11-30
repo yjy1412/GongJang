@@ -114,7 +114,7 @@ module.exports = {
 
     try{
       console.log(req.headers)
-      return res.status(200).clearCookie('refreshToken');
+      return res.status(200).clearCookie('refreshToken').send('로그아웃 성공');
    
     }catch(err) {
       console.log(err)
@@ -126,14 +126,18 @@ module.exports = {
   // DELETE auth/sign-out
   signout : async (req, res) => {
     // console.log(req.headers)
-  
-
+    console.log(req.body.email)
+    //쿠키째로 넘어옴, 
     try {
+     
+      await User.destroy( {
+       
+        where : { email : req.body.email}
 
-      await Users.destroy( {
-        where : { email : req.email}
       })
-      return res.status(200).send('회원탈퇴가 완료되었습니다.')
+      
+      return res.status(204).send('회원탈퇴가 완료되었습니다.')
+
     } catch(err) {
 
       return res.status(500).send('서버 오류')
