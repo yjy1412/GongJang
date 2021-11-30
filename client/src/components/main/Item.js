@@ -15,6 +15,7 @@ const ItemBlock = styled.li`
       display: block;
       width: 100%;
       height: 100%;
+      padding: 0.5rem;
       img {
         width: 100%;
         height: 100%;
@@ -45,7 +46,7 @@ const Item = () => {
       </div>
       <div className="item-info">
         <p>title</p>
-        <RiHeartFill fill="red"/>
+        <RiHeartLine fill="red"/>
       </div>
     </ItemBlock>
   );
