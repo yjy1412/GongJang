@@ -56,7 +56,7 @@ module.exports = {
   // POST auth/log-in
   login: async (req, res) => {
     // connecting test
-    console.log(req.body);
+    // console.log(req.body);
 
     // input data validation
     const inputEmail = req.body.email;
@@ -70,6 +70,7 @@ module.exports = {
           email: inputEmail
         }
       })
+
         .then(data => {
           console.log(data);
           if (!data) {
@@ -102,6 +103,7 @@ module.exports = {
                 message: "로그인에 성공했습니다"
                })
             }
+
           }
         })
         .catch(err => {
@@ -111,12 +113,41 @@ module.exports = {
     }
   },
   // POST auth/log-out
-  logout: async (req, res) => {
-    res.send('auth/logout');
+
+  logout : async (req, res) => {
+
+    try{
+      console.log(req.headers)
+      return res.status(200).clearCookie('refreshToken').send('로그아웃 성공');
+   
+    }catch(err) {
+      console.log(err)
+      return res.status(500).send('서버 오류')
+
+    }
+  
   },
   // DELETE auth/sign-out
-  signout: async (req, res) => {
-    res.send('auth/signout');
+  signout : async (req, res) => {
+    // console.log(req.headers)
+    console.log(req.body.email)
+    //쿠키째로 넘어옴, 
+    try {
+     
+      await User.destroy( {
+       
+        where : { email : req.body.email}
+
+      })
+      
+      return res.status(204).send('회원탈퇴가 완료되었습니다.')
+
+    } catch(err) {
+
+      return res.status(500).send('서버 오류')
+
+    }
+
   },
   // GET auth/mypage
   getMypage: async (req, res) => {
