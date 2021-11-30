@@ -1,7 +1,11 @@
 import React from 'react';
+// import { useHistory, useParams } from 'react-router-dom';
+// import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Comments from '../components/postDetail/Comments';
 import ItemImgSlide from '../components/postDetail/ItemImgSlide';
+// import { fetchGetPostDetail, unloadPost, fetchRemovePost } from '../feature/postsSlece';
+// import { setOriginalPost } from '../feature/writeSlice';
 
 const PostDetailBlock = styled.div`
   width: 1130px;
@@ -58,11 +62,39 @@ const PostDetail = () => {
   /*
   const { id } = useParams();
   const dispatch = useDispatch();
+  const history = useHistory();
+  const { post, error, loading, user } = useSelecter(({ post , user }) => ({
+    post: post.post,
+    error: post.error,
+    loading: post.loading,
+    user: user.user,
+  }));
 
   useEffect(() => {
-    특정 페이지 정보 요청
-  })
+    dispatch(fetchGetPostDetail(id));
+    return () => {
+      dispatch(unloadPost);
+    }
+  },[dispatch, id])
+
+  const onEdit = () => {
+    dispatch(setOriginalPost(post));
+    history.push('/write');
+  }
+
+  const ownPost = (user && user.userInfo.nickname) === (post && post.writer.writer_nickname);
   */
+
+  // if(error){
+  //   if(error.response && error.response.status === 404){
+  //     return <PostDetailBlock>나눔글이 존재하지 않습니다.</PostDetailBlock>;
+  //   }
+  //   return <PostDetailBlock>예상치 못한 오류가 발생했습니다.</PostDetailBlock>;
+  // }
+  // if(loading || !post){
+  //   return <Loading/>;
+  // }
+
   return (
     <PostDetailBlock>
       <div className="title">

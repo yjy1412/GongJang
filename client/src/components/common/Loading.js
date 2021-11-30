@@ -12,7 +12,6 @@ const LoadingBlock = styled.div`
     transform: translate(-50%, -50%);
     width: 200px;
     height: 200px;
-    background: orange;
     img {
       width: 100%;
     }

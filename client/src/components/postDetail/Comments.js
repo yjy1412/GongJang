@@ -22,15 +22,18 @@ const CommentsBlock = styled.div`
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0.5rem;
-    input {
+    textarea {
       width: 100%;
+      height: 45px;
+      resize: none;
       font-size: 1.2rem;
       margin-right: 1rem;
-      padding: 0.7rem 0.5rem;
+      padding: 0.5rem; 
       border: 2px solid #575F95;
       border-radius: 4px;
       &::placeholder {
         color: #bcbdc4;
+        font-size: 1rem;
       }
     }
   }
@@ -80,7 +83,7 @@ const Comments = () => {
         </div>
       </div>
       <div className="comment-box">
-        <input 
+        <textarea 
         type="text" 
         placeholder="나눔 아이템에 대해 궁금한 점 남겨주세요."
         name=""

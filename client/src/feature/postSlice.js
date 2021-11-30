@@ -10,7 +10,7 @@ export const fetchGetPostDetail = createAsyncThunk(
 )
 
 export const fetchRemovePost = createAsyncThunk(
-  'write/fetchRemovePost',
+  'post/fetchRemovePost',
   async (id) => {
     await axios.delete(`http://localhost:4000/posts/${id}`);
   }
