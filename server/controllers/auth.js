@@ -119,20 +119,17 @@ module.exports = {
     // TODO 이상 없는 지 확인해보기
     try {
       console.log(req.headers)
-      return res.status(200).clearCookie('refreshToken').send('로그아웃 성공');
-
-    } catch (err) {
+      res.clearCookie('refreshToken')
+      res.status(200).send('로그아웃 성공');
+    }catch(err) {
       console.log(err)
       return res.status(500).send('서버 오류')
     }
-
   },
   // DELETE auth/sign-out
   signout: async (req, res) => {
     // TODO 이상 없는 지 확인해보기
     // console.log(req.headers)
-    console.log(req.body.email)
-    //쿠키째로 넘어옴,
     try {
 
       await User.destroy({
@@ -140,15 +137,15 @@ module.exports = {
         where: { email: req.body.email }
         
       })
-
-      return res.status(204).clearCookie('refreshToken').send('회원탈퇴가 완료되었습니다.')
-
+      res.clearCookie('refreshToken')
+      res.status(204).send('회원탈퇴에 성공했습니다.')
+      console.log(req)
     } catch (err) {
 
-      return res.status(500).send('서버 오류')
+      res.status(500).send('서버 오류')
 
     }
-
+  
   },
   // GET auth/mypage
   getMypage: async (req, res) => {

@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Button from '../components/common/Button';
 import { fetchLogin } from '../feature/userSlice';
-// import axios from 'axios';
 
 const AuthBackground = styled.div`
   margin-top: 200px;
@@ -68,12 +67,17 @@ const Message = styled.div`
 `;
 
 const ErrorMessage = styled.div`
+  position: absolute;
+  top: 50px;
   display: flex;
   justify-content: center;
+  align-items: end;
+  right: 50;
+  height: 100%;
   width: 100%;
-  font-size: 12px;
-  color: red;
+  font-size: 14px;
   margin-left: 2px;
+  color: #fa8072;
 `;
 
 const Buttons = styled.div`
@@ -189,6 +193,7 @@ const Login = () => {
               onChange={handleInputPassword}
             />
           <Message>{passwordMessage}</Message>
+          <ErrorMessage>{serverErrorMessage}</ErrorMessage>
           </div>
         </AuthLoginForm>
         <Buttons>
@@ -197,7 +202,6 @@ const Login = () => {
             <JoinButton className="cancel" >JOIN</JoinButton>
           </Link>
         </Buttons>
-        <ErrorMessage>{serverErrorMessage}</ErrorMessage>
       </AuthLoginBlock>
     </AuthBackground>
   );

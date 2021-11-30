@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import ItemList from '../components/main/ItemList';
 import GameImg from '../components/main/GameImg';
+import Loading from '../components/common/Loading';
+import { fetchGetAllPosts } from '../feature/postsSlece';
 
 const MainBlock = styled.div`
   width: 1130px;
@@ -29,6 +32,26 @@ const MainBlock = styled.div`
 `;
 
 const Main = () => {
+  // const dispatch = useDispatch();
+  // const { posts, error, loading } = useSelector(({ posts }) => ({
+  //   posts: posts.posts,
+  //   error: posts.error,
+  //   loading: posts.loading,
+  // }))
+
+  // useEffect(() => {
+  //   dispatch(fetchGetAllPosts);
+  // },[dispatch])
+
+  // if(error){
+  //   if(error.response && error.response.status === 404){
+  //     return <MainBlock>나눔글이 존재하지 않습니다.</MainBlock>;
+  //   }
+  //   return <MainBlock>예상치 못한 오류가 발생했습니다.</MainBlock>;
+  // }
+  // if(loading || !posts){
+  //   return <Loading/>;
+  // }
   return (
     <MainBlock>
       <GameImg/>
