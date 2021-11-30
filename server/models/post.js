@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    state: {
+    soldOut: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
@@ -41,6 +41,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Post.associate= (models) => {
     Post.belongsTo(models.User, {
+      foreignKey: "user_id",
       onDelete: "cascade"
     }),
     Post.hasMany(models.Wish, {
