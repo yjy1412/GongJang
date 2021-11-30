@@ -115,7 +115,7 @@ module.exports = {
   // POST auth/log-out
 
   logout : async (req, res) => {
-
+    // TODO
     try{
       console.log(req.headers)
       return res.status(200).clearCookie('refreshToken').send('로그아웃 성공');
@@ -129,6 +129,7 @@ module.exports = {
   },
   // DELETE auth/sign-out
   signout : async (req, res) => {
+    // TODO
     // console.log(req.headers)
     console.log(req.body.email)
     //쿠키째로 넘어옴, 
@@ -205,6 +206,7 @@ module.exports = {
   },
   // GET auth/mypage/posts
   getMyposts: async (req, res) => {
+    // TODO
     res.send('Get auth/mypage/posts');
   },
   // PATCH auth/mypage
