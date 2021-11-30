@@ -32,6 +32,12 @@ const ItemBlock = styled.li`
 
 const Item = () => {
 
+  // const onClickWish = () => {
+  //   if(!isLogin){
+  //     //modal
+  //   }
+  // }
+  
   return (
     <ItemBlock>
       <div className="item-img">
@@ -46,7 +52,12 @@ const Item = () => {
       </div>
       <div className="item-info">
         <p>title</p>
-        <RiHeartLine fill="red"/>
+        <div 
+        className="check-wish"
+        // onClick={onClickWish}
+        >
+          <RiHeartLine fill="red"/>
+        </div>
       </div>
     </ItemBlock>
   );

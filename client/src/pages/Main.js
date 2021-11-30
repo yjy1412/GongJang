@@ -33,10 +33,11 @@ const MainBlock = styled.div`
 
 const Main = () => {
   // const dispatch = useDispatch();
-  // const { posts, error, loading } = useSelector(({ posts }) => ({
+  // const { posts, error, loading, isLogin } = useSelector(({ posts, user }) => ({
   //   posts: posts.posts,
   //   error: posts.error,
   //   loading: posts.loading,
+  //   isLogin: user.isLogin,
   // }))
 
   // useEffect(() => {
