@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Button from '../components/common/Button';
-import axios from 'axios';
+import { fetchUpdatePassword } from '../feature/userSlice';
 
 const AuthBackground = styled.div`
   margin-top: 200px;
@@ -68,9 +69,9 @@ const ErrorMessage = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
-  font-size: 12px;
-  color: red;
+  font-size: 14px;
   margin-left: 2px;
+  color: #fa8072;
 `;
 
 const Buttons = styled.div`
@@ -96,6 +97,10 @@ const UpdatePasswordButton = styled(Button)`
 
 const UpdatePassword = () => {
 
+  const history = useHistory();
+  const dispatch = useDispatch();
+
+  const { passwordUpdated, userError } = useSelector((state) => state.user);
   const [ updatePasswordInfo, setUpdatePasswordInfo ] = useState({
     currentPassword: "",
     newPassword: "",
@@ -133,23 +138,24 @@ const UpdatePassword = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { currentPassword, newpassword } = updatePasswordInfo;
     if(newPasswordMessage === "" && confirmPasswordMessage === "") {
-      axios.post('http://localhost:4000/auth/password', { currentPassword, newpassword }, { headers: { 'Content-Type': 'application/json' } })
-        .then((data) => {
-            // 로그인 창으로 이동합니다.
-            console.log('서버응답')
-            // history.push("/login")
-        })
-        .catch((err) => {
-            // Todo: 서버로부터 받은 응답을 에러메시지에 삽입하여 나타냄
-            setServerErrorMessage('유효하지 않은 요청입니다')
-            setTimeout(() => setServerErrorMessage(''), 3000)
-        })
-    } else {
-      e.preventDefault();
+      dispatch(fetchUpdatePassword(updatePasswordInfo));
     }
+    setUpdatePasswordInfo({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    })
   }
+
+  useEffect(() => {
+    if(passwordUpdated){
+      history.push('/mypage');
+    } else {
+      setServerErrorMessage(userError);
+    }
+  },[history, passwordUpdated, userError])
+
 
   return (
     <AuthBackground>
@@ -197,13 +203,13 @@ const UpdatePassword = () => {
             <Message>{confirmPasswordMessage}</Message>
           </div>
         </AuthUpdatePasswordForm>
+        <ErrorMessage>{serverErrorMessage}</ErrorMessage>
         <Buttons>
           <Link to="/mypage">
           <CancelButton>CANCEL</CancelButton>
           </Link>
           <UpdatePasswordButton onClick={handleSubmit}>UPDATE</UpdatePasswordButton>
         </Buttons>
-        <ErrorMessage>{serverErrorMessage}</ErrorMessage>
       </AuthUpdatePasswordBlock>
     </AuthBackground>
   );
