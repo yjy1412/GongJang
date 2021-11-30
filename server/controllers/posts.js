@@ -20,10 +20,10 @@ module.exports = {
     const inputImage3 = req.body.inputImage3;
     const inputContent = req.body.content;
     const inputCategory = req.body.category;
-    const inputState = req.body.state;
+    const inputSoldOut = req.body.soldOut;
 
     // 2. 필수 입력요소 누락여부 검사
-    if (!inputTitle || !inputCategory || !inputState) {
+    if (!inputTitle || !inputCategory || !inputSoldOut) {
       return res.status(400).send("필수 입력요소가 누락되었습니다")
     }
 
@@ -43,7 +43,7 @@ module.exports = {
           title: inputTitle,
           content: inputContent,
           category: inputCategory,
-          state: inputState,
+          soldOut: inputSoldOut,
           image1: inputImage1,
           image2: inputImage2,
           image3: inputImage3
@@ -158,7 +158,7 @@ module.exports = {
         // 2-1. 요청 데이터 정리
         const postData = result.dataValues;
         const userInfo = result.User.dataValues;
-        const { id, title, content, category, state, image1, image2, image3, createdAt, updatedAt } = postData;
+        const { id, title, content, category, soldOut, image1, image2, image3, createdAt, updatedAt } = postData;
         const { email, nickname } = userInfo;
 
         res.status(201).json({
@@ -171,7 +171,7 @@ module.exports = {
             title,
             content,
             category,
-            state,
+            soldOut,
             image1,
             image2,
             image3,

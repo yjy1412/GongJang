@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    state: {
+    soldOut: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },

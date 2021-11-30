@@ -30,7 +30,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      state: {
+      soldOut: {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
