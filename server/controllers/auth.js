@@ -93,28 +93,34 @@ module.exports = {
   },
   // POST auth/log-out
   logout : async (req, res) => {
-    const authorization = req.headers.authorization;
-    // console.log(authorization);
-    const refreshToken = req.cookies.refreshToken
-    // console.log(req.headers)
 
-    //헤더에서 authorization이 안사라진다
-  //  res.send('로그아웃')
-  if(!authorization) {
-    res.status(400).send("권한 인증에 실패했습니다(토큰없음)")
-  } else {
-    try {
-      res.status(200).cookie("refreshToken", "").send('로그아웃 되었습니다')
-    } catch {
-      return res.status(500).send('서버오류')
+    try{
+      console.log(req.headers)
+      return res.status(200).clearCookie('refreshToken');
+   
+    }catch(err) {
+      console.log(err)
+      return res.status(500).send('서버 오류')
+
     }
-  }
   
   },
   // DELETE auth/sign-out
   signout : async (req, res) => {
-    console.log(req.headers)
-    res.send('회원탈퇴 완료');
+    // console.log(req.headers)
+    // res.send('회원탈퇴 완료');
+
+    try {
+
+      await Users.destroy( {
+        where : { email : req.email}
+      })
+      return res.status(200).send('회원탈퇴가 완료되었습니다.')
+    } catch(err) {
+
+      return res.status(500).send('서버 오류')
+
+    }
   },
   // GET auth/mypage
   getMypage : async (req, res) => {
