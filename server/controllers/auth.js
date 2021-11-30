@@ -115,7 +115,7 @@ module.exports = {
   // POST auth/log-out
 
   logout: async (req, res) => {
-    // TODO 이상 없는 지 확인해보기
+    // TODO: 이상 없는 지 확인해보기
     try {
       console.log(req.headers)
       res.clearCookie('refreshToken')
@@ -127,7 +127,7 @@ module.exports = {
   },
   // DELETE auth/sign-out
   signout: async (req, res) => {
-    // TODO 이상 없는 지 확인해보기
+    // TODO: 이상 없는 지 확인해보기
     // console.log(req.headers)
     try {
 
@@ -179,6 +179,17 @@ module.exports = {
   getMyposts: async (req, res) => {
     // TODO
     res.send('Get auth/mypage/posts');
+  },
+  // GET auth/wish-list/:user_email
+  getWishLists: (req, res) => {
+    // TODO
+    console.log(req.params.user_email);
+    const userEmail = req.params.user_email;
+
+    res.json({
+      method: 'GET /auth/wish-list/:user_email',
+      userEmail
+    });
   },
   // PATCH auth/mypage
   patchMypage: async (req, res) => {

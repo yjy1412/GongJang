@@ -15,15 +15,29 @@ module.exports = {
     const email = result.email;
 
     const inputTitle = req.body.title;
-    const inputImage1 = req.body.inputImage1;
-    const inputImage2 = req.body.inputImage2;
-    const inputImage3 = req.body.inputImage3;
+    const inputImage = req.body.image;
+    console.log(inputImage)
+    console.log(inputImage[0])
     const inputContent = req.body.content;
     const inputCategory = req.body.category;
     const inputSoldOut = req.body.soldOut;
+    // inputImage 배열처리
+    // TODO: 디폴트 이미지 정해지면 타입 고려해서 반영
+    let image1 = null;
+    let image2 = null;
+    let image3 = null;
+    for (let i = 0; i < inputImage.length; i += 1) {
+      if( i === 0 ) {
+        image1 = inputImage[i];
+      } else if( i === 1 ) {
+        image2 = inputImage[i];
+      } else if( i === 2 ) {
+        image3 = inputImage[i];
+      }
+    }
 
     // 2. 필수 입력요소 누락여부 검사
-    if (!inputTitle || !inputCategory || !inputSoldOut) {
+    if ( !inputTitle || !inputCategory ) {
       return res.status(400).send("필수 입력요소가 누락되었습니다")
     }
 
@@ -34,7 +48,7 @@ module.exports = {
         if (!result) {
           return res.status(404).send("요청하신 회원정보와 일치하는 회원정보가 없습니다")
         }
-        // 4. 정상적인 요청 처리
+        // 4. 정상적인 요청 처리$
         const userInfo = result.dataValues;
         const { id } = userInfo;
 
@@ -44,9 +58,9 @@ module.exports = {
           content: inputContent,
           category: inputCategory,
           soldOut: inputSoldOut,
-          image1: inputImage1,
-          image2: inputImage2,
-          image3: inputImage3
+          image1,
+          image2,
+          image3
         })
           .then(result => {
             console.log(result);
@@ -89,19 +103,9 @@ module.exports = {
   get: (req, res) => {
     res.send('GET /posts');
   },
-  // GET /posts/:user_email
-  getWishLists: (req, res) => {
-    console.log(req.params.user_email);
-    const userEmail = req.params.user_email;
-
-    res.json({
-      method: 'GET /posts/:user_email',
-      userEmail
-    });
-  },
   // GET /posts/:posts_id
   getDetail: async (req, res) => {
-    // TODO : 댓글 기능 구현 후 내용 추가하기
+    // TODO: 댓글 기능 구현 후 내용 추가하기 / 비회원 기능 구현
     console.log(req.params.posts_id);
     const postsId = req.params.posts_id;
     let wish = false;
