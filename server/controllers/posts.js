@@ -1,14 +1,15 @@
 require('dotenv').config();
-const { User, Post } = require('../models');
+const { User, Post, Wish } = require('../models');
 const { Sequelize, Op } = require('sequelize');
 const accessFunc = require('./token');
+const jwt = require('jsonwebtoken');
 
 module.exports = {
   // POST /posts
   post: (req, res) => {
     // 1. 권한 인증
     const result = accessFunc(req, res);
-    if (result.identified !== true) {
+    if (!result.identified) {
       return result;
     }
     const email = result.email;
@@ -22,7 +23,7 @@ module.exports = {
     const inputState = req.body.state;
 
     // 2. 필수 입력요소 누락여부 검사
-    if( !inputTitle || !inputCategory || !inputState ) {
+    if (!inputTitle || !inputCategory || !inputState) {
       return res.status(400).send("필수 입력요소가 누락되었습니다")
     }
 
@@ -30,7 +31,7 @@ module.exports = {
       .then(result => {
         console.log(result);
         // 3. 유저 유효성 검사
-        if ( !result ) {
+        if (!result) {
           return res.status(404).send("요청하신 회원정보와 일치하는 회원정보가 없습니다")
         }
         // 4. 정상적인 요청 처리
@@ -48,7 +49,11 @@ module.exports = {
           image3: inputImage3
         })
           .then(result => {
-            res.status(201).send("작성된 글이 업로드 되었습니다")
+            console.log(result);
+            res.status(201).json({
+              post_id: result.dataValues.id,
+              message: "작성된 글이 업로드 되었습니다"
+            })
           })
           .catch(err => {
             console.log(err);
@@ -59,7 +64,6 @@ module.exports = {
         console.log(err);
         res.status(500).send("서버에 오류가 발생했습니다")
       })
-    // 2. 
   },
   // PATCH /posts/:posts_id
   patch: (req, res) => {
@@ -82,7 +86,7 @@ module.exports = {
     });
   },
   // GET /posts
-  get : (req, res) => {
+  get: (req, res) => {
     res.send('GET /posts');
   },
   // GET /posts/:user_email
@@ -96,13 +100,91 @@ module.exports = {
     });
   },
   // GET /posts/:posts_id
-  getDetail: (req, res) => {
+  getDetail: async (req, res) => {
+    // TODO : 댓글 기능 구현 후 내용 추가하기
     console.log(req.params.posts_id);
     const postsId = req.params.posts_id;
+    let wish = false;
 
-    res.json({
-      method: 'GET /posts/:posts_id',
-      postsId
-    });
+    // 1. 회원/비회원 여부 검토
+    const result = accessFunc(req, res);
+
+    if ( result.identified ) {
+      const email = result.email;
+
+      User.findOne({ where: { email } })
+        .then(result => {
+          const userInfo = result.dataValues;
+          if (!userInfo) {
+            return res.status(404).send("요청하신 회원정보와 일치하는 회원정보가 없습니다")
+          }
+          const { id } = userInfo;
+
+          // 1-2. wish 여부 데이터 조회
+          Wish.findOne({
+            where: {
+              user_id: id,
+              post_id: postsId
+            }
+          })
+            .then(resut => {
+              if (result) {
+                wish = true;
+              }
+            })
+            .catch(err => {
+              console.log(err);
+              return res.status(500).send("서버에 오류가 발생했습니다")
+            })
+        })
+        .catch(err => {
+          console.log(err);
+          return res.status(500).send("서버에 오류가 발생했습니다")
+        })
+    }
+
+    // 2. 데이터 조회
+    Post.findOne({
+      where: { id: postsId },
+      include: {
+        model: User,
+        attributes: [ 'email', 'nickname' ]
+      }
+    })
+      .then(result => {
+        console.log(result.dataValues);
+        console.log(result.User.dataValues.email);
+
+        // 2-1. 요청 데이터 정리
+        const postData = result.dataValues;
+        const userInfo = result.User.dataValues;
+        const { id, title, content, category, state, image1, image2, image3, createdAt, updatedAt } = postData;
+        const { email, nickname } = userInfo;
+
+        res.status(201).json({
+          data: {
+            post_id: id,
+            writer: {
+              writer_email: email,
+              writer_nickname: nickname
+            },
+            title,
+            content,
+            category,
+            state,
+            image1,
+            image2,
+            image3,
+            createdAt,
+            updatedAt,
+            wish
+          },
+          message: "게시물이 업로드 되었습니다"
+        })
+      })
+      .catch(err => {
+        console.log(err);
+        return res.status(500).send("서버에 오류가 발생했습니다")
+      })
   }
 }

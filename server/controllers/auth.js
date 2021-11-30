@@ -1,6 +1,5 @@
 require('dotenv').config();
 const { User } = require('../models');
-const { Op } = require('sequelize');
 const jwt = require('jsonwebtoken');
 const accessFunc = require('./token');
 
@@ -152,7 +151,7 @@ module.exports = {
 
     const result = accessFunc(req, res);
 
-    if (result.identified !== true) {
+    if ( !result.identified ) {
       return result;
     }
     const email = result.email;
@@ -186,7 +185,7 @@ module.exports = {
     // 1. 권한 인증
     const result = accessFunc(req, res);
 
-    if (result.identified !== true) {
+    if ( !result.identified ) {
       return result;
     }
     const email = result.email;
@@ -230,7 +229,7 @@ module.exports = {
     // 1. 권한 인증
     const result = accessFunc(req, res);
 
-    if (result.identified !== true) {
+    if ( !result.identified ) {
       return result;
     }
     const email = result.email;
