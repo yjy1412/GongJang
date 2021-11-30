@@ -3,21 +3,42 @@ import axios from 'axios';
 
 export const fetchSignUp = createAsyncThunk(
   'signUp/fetchSignUp',
-  async (form) => {
+  async (form, { rejectWithValue }) => {
     const { nickname, email, password } = form;
-    const response = await axios.post('http://localhost:4000/auth/sign-up', { nickname, email, password });
-    return response.data;
+    try {
+      const response = await axios.post('http://localhost:4000/auth/sign-up', { nickname, email, password });
+      return response.data;
+    } catch(err) {
+      return rejectWithValue(err.response.data);
+    }
   }
-)
+);
 
 export const fetchLogin = createAsyncThunk(
   'login/fetchLogin',
-  async (form) => {
+  async (form, { rejectWithValue }) => {
     const { email, password } = form;
-    const response = await axios.post('http://localhost:4000/auth/log-in', { email, password });
-    return response.data;
+    try {
+      const response = await axios.post('http://localhost:4000/auth/log-in', { email, password });
+      return response.data;
+    } catch(err) {
+      return rejectWithValue(err.response.data);
+    }
   }
-)
+);
+
+export const fetchUpdatePassword = createAsyncThunk(
+  'password/fetchUpdatePassword',
+  async (form, { rejectWithValue }) => {
+    const { currentPassword, newPassword } = form;
+    try {
+      const response = await axios.patch('http://localhost:4000/auth/password', { current: currentPassword, new: newPassword });
+      return response.data
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
 
 const initialState = {
   user: null,
@@ -55,7 +76,17 @@ const userSlice = createSlice({
       state.loading = false;
       state.userError = payload;
     },
-    
+    [fetchUpdatePassword.pending]: (state) => {
+      state.loading = true;
+    },
+    [fetchUpdatePassword.fulfilled]: (state, { payload }) => {
+      state.loading = false;
+      state.user = payload;
+    },
+    [fetchUpdatePassword.rejected]: (state, { payload }) => {
+      state.loading =false;
+      state.userError = payload;
+    }
   }
 })
 
