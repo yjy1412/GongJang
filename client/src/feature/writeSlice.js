@@ -3,9 +3,13 @@ import axios from 'axios';
 
 export const fetchWritePost = createAsyncThunk(
   'write/fetchWritePost',
-  async (form) => {
-    const {} = form;
-    const response = await axios.post('http://localhost:4000/posts', {});
+  async (formData) => {
+    const { title, content, imagesFiles, category } = formData;
+    const response = await axios.post('/posts', { title, content, imagesFiles, category }, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
     return response.data;
   }
 )
@@ -14,7 +18,7 @@ export const fetchUpdatePost = createAsyncThunk(
   'write/fetchUpdatePost',
   async (form) => {
     const { id, } = form;
-    const response = await axios.patch(`http://localhost:4000/posts/${id}`, {});
+    const response = await axios.patch(`/posts/${id}`, {});
     return response.data;
   }
 )
@@ -22,8 +26,9 @@ export const fetchUpdatePost = createAsyncThunk(
 const initialState = {
   title: '',
   content: '',
-  image: [],
+  images: [],
   category: '',
+  soldOut: false,
   post: null,
   postError: null,
   originalPostId: null,
@@ -34,9 +39,8 @@ export const writeSlice = createSlice({
   name: 'write',
   initialState,
   reducers: {
-    initialize: (state) => {
-      state.post = null;
-      state.postError = null;
+    initialize: () => {
+      return initialState;
     },
     changeField: (state, { payload: { key, value }}) => {
       state[key] = value;
@@ -44,9 +48,16 @@ export const writeSlice = createSlice({
     setOriginalPost: (state, { payload: post }) => {
       state.title = post.title;
       state.content = post.body;
-      state.image = post.image;
+      state.images = post.images;
       state.category = post.category;
+      state.soldOut = post.soldOut;
       state.originalPostId = post.post_id;
+    },
+    changeCategory: (state, { payload }) => {
+      state.category = payload;
+    },
+    changeState: (state, { payload }) => {
+      state.soldOut = payload;
     }
   },
   extraReducers: {
@@ -65,7 +76,7 @@ export const writeSlice = createSlice({
       state.loading = true;
     },
     [fetchUpdatePost.fulfilled]: (state, { payload }) => {
-      state.post = payload;
+      state.post = state.originalPostId;
       state.loading = false;
     },
     [fetchUpdatePost.rejected]: (state, { payload }) => {
@@ -75,5 +86,5 @@ export const writeSlice = createSlice({
   }
 })
 
-export const { initialize, changeField, setOriginalPost } = writeSlice.actions;
+export const { initialize, changeField, setOriginalPost, changeCategory, changeState } = writeSlice.actions;
 export default writeSlice.reducer;

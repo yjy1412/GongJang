@@ -48,9 +48,7 @@ const ImgPreviewBox = styled.div`
   }
 `;
 
-const ImgUpload = () => {
-  const [imageFiles, setImageFiles] = useState([]);
-  const [imageURLs, setImageURLs] = useState([]);
+const ImgUpload = ({ setImageFiles, imageFiles, setImageURLs, imageURLs, onRemove }) => {
 
   //이미지 미리보기
   const onFileChange = (e) => {
@@ -77,11 +75,6 @@ const ImgUpload = () => {
     }
   }
   
-  const onRemove = (index) => {
-    const newURLs = imageURLs.filter((image, idx) => idx !== index);
-    setImageURLs(newURLs);
-  }
-
   return (
     <ImgUploadBlock>
       <ImgPreviewBox>
