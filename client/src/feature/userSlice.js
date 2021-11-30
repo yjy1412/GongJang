@@ -45,6 +45,8 @@ const initialState = {
   userError: null,
   isSignUp: false,
   isLogin: false,
+  userUpdated: false,
+  passwordUpdated: false,
   loading: false,
 }
 
