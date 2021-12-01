@@ -74,9 +74,9 @@ const Write = () => {
   const { post, postError, originalPostId, category, title, content, soldOut } = useSelector((state) => state.write);
 
 
-  // const onConfirm = () => {
-  //   setModal(!modal);
-  // }
+  const onConfirm = () => {
+    setModal(!modal);
+  }
 
   const onChangeForm = (e) => {
     const { name, value } = e.target;
@@ -99,13 +99,13 @@ const Write = () => {
     e.preventDefault();
 
     //글 수정 후 업데이트
-    // if(originalPostId){
-    //   const form = { title, content, category, soldOut, id: originalPostId };
-    //   dispatch(fetchUpdatePost(form))
-    // } 
-    // if([title, content].includes('')){
-    //   onConfirm();
-    // }
+    if(originalPostId){
+      const form = { id: originalPostId, title, content, category, soldOut, image };
+      dispatch(fetchUpdatePost(form))
+    } 
+    if([title, content].includes('')){
+      onConfirm();
+    }
 
     // let formData = new FormData();
 
@@ -132,18 +132,18 @@ const Write = () => {
     dispatch(fetchWritePost(formData));
   }
 
-  // useEffect(() => {
-  //   if(post){
-  //     const { post_id } = post;
-  //     history.push(`/postDetail/${post_id}`);
-  //   }
-  //   if(postError){
-  //     console.log(postError);
-  //   }
-  //   return () => { //언마운트될 때 초기화
-  //      dispatch(initialize());
-  //   }
-  // },[dispatch, history, post, postError])
+  useEffect(() => {
+    if(post){
+      const { post_id } = post;
+      history.push(`/postDetail/${post_id}`);
+    }
+    if(postError){
+      console.log(postError);
+    }
+    return () => { //언마운트될 때 초기화
+       dispatch(initialize());
+    }
+  },[dispatch, history, post, postError])
   
   return (
     <WriteBlock>
@@ -185,7 +185,7 @@ const Write = () => {
       { modal && (
       <AskRequiredInputModal 
       visible={modal} 
-      // onConfirm={onConfirm}
+      onConfirm={onConfirm}
       />
       )}
     </WriteBlock>

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import ItemList from '../components/main/ItemList';
 import GameImg from '../components/main/GameImg';
 import Loading from '../components/common/Loading';
-import { fetchGetAllPosts } from '../feature/postsSlece';
+import { fetchGetAllPosts } from '../feature/postsSlice';
 
 const MainBlock = styled.div`
   width: 1130px;

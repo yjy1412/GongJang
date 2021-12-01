@@ -93,6 +93,7 @@ export const fetchDeleteAccount = createAsyncThunk(
 
 export const initialState = {
   accessToken: null,
+  user: null,
   isSignUp: false,
   isLogin: false,
   userUpdated: false,
@@ -120,6 +121,7 @@ const userSlice = createSlice({
     [fetchLogin.fulfilled]: (state, { payload }) => {
       state.loading = false;
       state.accessToken = payload.accessToken;
+      state.user = payload.userInfo;
       state.isLogin = true;
     },
     [fetchLogin.rejected]: (state, { payload }) => {

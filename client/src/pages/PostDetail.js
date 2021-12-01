@@ -80,24 +80,24 @@ const PostDetail = () => {
     user: user.user,
   }));
 
-  // useEffect(() => {
-  //   dispatch(fetchGetPostDetail(id));
-  //   return () => {
-  //     dispatch(unloadPost());
-  //   }
-  // },[dispatch, id])
+  useEffect(() => {
+    dispatch(fetchGetPostDetail(id));
+    return () => {
+      dispatch(unloadPost());
+    }
+  },[dispatch, id])
 
-  // const onEditPost = () => {
-  //   dispatch(setOriginalPost(post));
-  //   history.push('/write');
-  // }
+  const onEditPost = () => {
+    dispatch(setOriginalPost(post));
+    history.push('/write');
+  }
 
-  // const onRemovePost = () => {
-  //   dispatch(fetchRemovePost(id));
-  //   history.push('/');
-  // }
+  const onRemovePost = () => {
+    dispatch(fetchRemovePost(id));
+    history.push('/');
+  }
 
-  // const ownPost = (user && user.userInfo.nickname) === (post && post?.writer.writer_nickname);
+  const ownPost = (user && user.nickname) === (post && post?.writer.writer_nickname);
   
   // if(error){
   //   if(error.response && error.response.status === 404){
@@ -112,7 +112,7 @@ const PostDetail = () => {
   return (
     <PostDetailBlock>
       <div className="title">
-        <h3>{}</h3>
+        <h3>{post?.title}</h3>
         { post?.soldOut && (
            <div className="share-status">
             <b>나눔완료</b>
@@ -124,15 +124,15 @@ const PostDetail = () => {
         <div className="info">
           <p>ITEM INFO</p>
         </div>
-        {/* { ownPost && (
+        { ownPost && (
           <div className="btn-box">
             <button onClick={onEditPost}>EDIT</button>
             <button onClick={onRemovePost}>DELETE</button>
           </div>
-        )} */}
+        )}
       </div>
       <div className="desc">
-        <p>{}</p>
+        <p>{post?.content}</p>
       </div>
       <div className="writer">
         <span><b>{}&nbsp;</b></span>
