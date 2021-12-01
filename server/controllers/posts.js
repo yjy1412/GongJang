@@ -23,7 +23,7 @@ module.exports = {
     const inputSoldOut = req.body.soldOut;
 
     // 2. 필수 입력요소 누락여부 검사
-    if (!inputTitle || !inputCategory || !inputSoldOut) {
+    if (!inputTitle || !inputCategory) {
       return res.status(400).send("필수 입력요소가 누락되었습니다")
     }
 
