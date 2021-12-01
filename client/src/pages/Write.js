@@ -146,10 +146,7 @@ const Write = () => {
   
   return (
     <WriteBlock>
-      <form 
-      id="writeForm"
-      // onSubmit={onSubmitForm}
-      >
+      <form>
         <input 
         type="text" 
         placeholder="나눔하고 싶은 아이템을 적어주세요.(필수)"
