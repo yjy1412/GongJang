@@ -69,10 +69,19 @@ module.exports = {
   patch: (req, res) => {
     console.log(req.params.posts_id)
     const postsId = req.params.posts_id;
+    //유저 권한 인증
+    const userInfo = result.dataValues;
+    const { id } = userInfo;
+    console.log(userInfo)
+
     const result = accessFunc(req, res);
     if (!result.identified) {
       return result;
     }
+    const email = result.email
+    //작성자의 이메일과 result.email이 같아야 한다.
+
+
 
     res.json({
       method: 'PATCH /posts/:posts_id',
@@ -89,7 +98,7 @@ module.exports = {
     if (!result.identified) {
       return result;
     }
-  
+    
     //권한이 있다면
     if(result) {
       try{
