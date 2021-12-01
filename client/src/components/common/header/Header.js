@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import MenuIcons from './MenuIcons';
 import Search from './Search';
+import { fetchLogOut } from '../../../feature/userSlice';
 
 const HeaderBlock = styled.header`
     width: 100%;
@@ -79,10 +80,11 @@ const MenuBoxBlock = styled.div`
     }
 `;
 
-const Header = () => {
-    const [show, setShow] = useState(false);
+const Header = () => {const dispatch = useDispatch();
 
-    const { isLogin } = useSelector((state) => state.user);
+    const [show, setShow] = useState(false);
+    const history = useHistory();
+    const { isLogin, accessToken } = useSelector((state) => state.user);
     
     const onClick = () => {
         setShow(!show)
@@ -93,6 +95,13 @@ const Header = () => {
             searchWrap.style.transform = 'translateY(-120%)';
             searchWrap.style.transition = 'transform .4s';
         }
+    };
+    
+    const handleLogOut = () => {
+        if(accessToken && isLogin){
+            dispatch(fetchLogOut())
+        }
+        history.push('/');
     }
   
     return (
@@ -113,7 +122,7 @@ const Header = () => {
                     <ul className="auth">
                         <li>
                             { isLogin ? (
-                                <Link to="/">LOGOUT</Link>
+                                <Link to="/" onClick={() => handleLogOut()}>LOGOUT</Link>
                             ) : (
                                 <Link to="/login">LOGIN</Link>
                             )}
