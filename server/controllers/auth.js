@@ -116,35 +116,50 @@ module.exports = {
 
   logout: async (req, res) => {
     // TODO 이상 없는 지 확인해보기
+    const result = accessFunc(req, res);
+    console.log(result.identified)
+    if (!result.identified) {
+      return result;
+    }
+    console.log(result)
+    
     try {
-      console.log(req.headers)
-      res.clearCookie('refreshToken')
-      res.status(200).send('로그아웃 성공');
-    }catch(err) {
-      console.log(err)
-      return res.status(500).send('서버 오류')
+      if(!result) {
+        return res.status(400).send('유효하지 않은 토큰입니다.')
+      } else {      
+          res.clearCookie('refreshToken')
+          res.status(200).send('로그아웃 성공');
+    }
+    }catch(err) {     
+       return res.status(500).send('서버 오류')
     }
   },
   // DELETE auth/sign-out
   signout: async (req, res) => {
     // TODO 이상 없는 지 확인해보기
     // console.log(req.headers)
-    try {
-
-      await User.destroy({
-
-        where: { email: req.body.email }
-        
-      })
-      res.clearCookie('refreshToken')
-      res.status(204).send('회원탈퇴에 성공했습니다.')
-      console.log(req)
-    } catch (err) {
-
-      res.status(500).send('서버 오류')
-
+    //1.유저검증(토큰여부)
+    const result = accessFunc(req, res);
+    console.log(result.identified)
+    if (!result.identified) {
+      return result;
     }
-  
+    const email = result.email
+
+    //2.유저정보가 없다면 400, 있다면 204번에서 destory, 서버오류 500
+    try{
+      if(!result) {
+        return res.status(400).send("요청하신 회원정보와 일치하는 회원정보가 없습니다.")
+      } else {
+          User.destroy({
+            where : { email : email}
+        })
+          res.clearCookie('refreshToken')
+          res.status(204).send('회원탈퇴에 성공했습니다')      
+      }
+    } catch(err) {
+        return res.status(500).send('서버에 오류가 발생했습니다.')
+    }      
   },
   // GET auth/mypage
   getMypage: async (req, res) => {
