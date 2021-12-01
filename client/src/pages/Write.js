@@ -65,13 +65,13 @@ const WriteButton = styled(Button)`
 `;
 
 const Write = () => {
-  const [imageFiles, setImageFiles] = useState([]);
+  const [image, setImage] = useState([]);
   const [imageURLs, setImageURLs] = useState([]);
   const [modal, setModal] = useState(false);
   
   const history = useHistory();
   const dispatch = useDispatch();
-  const { post, postError, originalPostId, category, title, content, images, soldOut } = useSelector((state) => state.write);
+  const { post, postError, originalPostId, category, title, content, soldOut } = useSelector((state) => state.write);
 
 
   const onConfirm = () => {
@@ -88,9 +88,9 @@ const Write = () => {
 
   const onRemove = (index) => {
     const newImageURLs = imageURLs.filter((image, idx) => idx !== index);
-    const newImageFiles = imageFiles.filter((image, idx) => idx !== index);
+    const newImageFiles = image.filter((image, idx) => idx !== index);
     setImageURLs(newImageURLs);
-    setImageFiles(newImageFiles);
+    setImage(newImageFiles);
   }
 
   
@@ -100,7 +100,7 @@ const Write = () => {
 
     //글 수정 후 업데이트
     if(originalPostId){
-      const form = { title, content, category, soldOut, id: originalPostId };
+      const form = { id: originalPostId, title, content, category, soldOut, image };
       dispatch(fetchUpdatePost(form))
     } 
     if([title, content].includes('')){
@@ -127,6 +127,7 @@ const Write = () => {
       content,
       category,
       soldOut,
+      image
     }
     dispatch(fetchWritePost(formData));
   }
@@ -155,8 +156,8 @@ const Write = () => {
         onChange={onChangeForm}
         />
         <ImgUpload
-        imageFiles={imageFiles}
-        setImageFiles={setImageFiles}
+        imageFiles={image}
+        setImageFiles={setImage}
         imageURLs={imageURLs}
         setImageURLs={setImageURLs}
         onRemove={onRemove}

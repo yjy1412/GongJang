@@ -92,9 +92,8 @@ export const fetchDeleteAccount = createAsyncThunk(
 )
 
 export const initialState = {
-  user: null,
   accessToken: null,
-  userError: null,
+  user: null,
   isSignUp: false,
   isLogin: false,
   userUpdated: false,
@@ -102,6 +101,10 @@ export const initialState = {
   loading: false,
   isEdited: false,
   message: "",
+  loginError: null,
+  signUpError: null,
+  userInfoError: null,
+  passwordError: null
 }
 
 const userSlice = createSlice({
@@ -109,17 +112,21 @@ const userSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: {
+    hydrate:(state, { payload }) => {
+      return payload;
+    },
     [fetchLogin.pending]: (state) => {
       state.loading = true;
     },
     [fetchLogin.fulfilled]: (state, { payload }) => {
       state.loading = false;
       state.accessToken = payload.accessToken;
+      state.user = payload.userInfo;
       state.isLogin = true;
     },
     [fetchLogin.rejected]: (state, { payload }) => {
       state.loading = false;
-      state.userError = payload;
+      state.loginError = payload;
     },
     [fetchSignUp.pending]: (state) => {
       state.loading = true;
@@ -130,7 +137,7 @@ const userSlice = createSlice({
     },
     [fetchSignUp.rejected]: (state, { payload }) => {
       state.loading = false;
-      state.userError = payload;
+      state.signUpError = payload;
     },
     [fetchUpdatePassword.pending]: (state) => {
       state.loading = true;
@@ -140,7 +147,7 @@ const userSlice = createSlice({
     },
     [fetchUpdatePassword.rejected]: (state, { payload }) => {
       state.loading = false;
-      state.userError = payload;
+      state.passwordError = payload;
     },
     [fetchLogOut.pending]: (state) => {
       state.loading = true;
@@ -160,7 +167,7 @@ const userSlice = createSlice({
     },
     [fetchUpdateUserInfo.rejected]: (state, { payload }) => {
       state.loading = false;
-      state.userError = payload;
+      state.userInfoError = payload;
     },
     [fetchMypage.pending]: (state) => {
       state.loading = true;

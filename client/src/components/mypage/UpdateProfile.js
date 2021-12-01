@@ -52,7 +52,7 @@ const UpdateProfile = () => {
   const history = useHistory();
   const dispatch = useDispatch();
 
-  const { user, isEdited, userError } = useSelector( state => state.user);
+  const { user, isEdited, userInfoError } = useSelector( state => state.user);
 
   const [visible, setVisible] = useState(false);
 
@@ -98,11 +98,11 @@ const UpdateProfile = () => {
     if(isEdited){
       history.push('/mypage');
     }
-    if(userError){
-      setServerErrorMessage(userError);
+    if(userInfoError){
+      setServerErrorMessage(userInfoError);
       setTimeout(() => setServerErrorMessage(''), 3000)
     }
-  },[history, isEdited, userError])
+  },[history, isEdited, userInfoError])
 
   return (
     <>
@@ -130,7 +130,7 @@ const UpdateProfile = () => {
         </UpdateProfileForm>
       </UpdateProfileBlock>
       {
-        visible ? <AskEditModal onCancel={onCancel} onConfirm={onConfirm} /> : null
+        visible ? <AskEditModal visible={visible} onCancel={onCancel} onConfirm={onConfirm} /> : null
       }
     </>
   );

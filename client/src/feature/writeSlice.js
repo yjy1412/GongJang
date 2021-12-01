@@ -1,19 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-
-
 export const fetchWritePost = createAsyncThunk(
   'write/fetchWritePost',
   async (formData, { rejectWithValue }) => {
-    const { title, content, category, soldOut } = formData;
+    const { title, content, category, soldOut, image } = formData;
     try {
-      const response = await axios.post('http://localhost:4000/posts', { title, content, category, soldOut } , {
-        headers: {
-          // "Content-Type": "multipart/form-data",
-          "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImdvbmdAbmF2ZXIuY29tIiwiaWF0IjoxNjM4MjY0OTk3LCJleHAiOjE2MzgzNTEzOTd9.StObLI8C1LVikuxllBMFmlLV56VEt9wThX-QBUTp1GM"
-        }
-      });
+      const response = await axios.post('/posts', { title, content, category, soldOut, image });
       return response.data;  
     } catch(err){
       return rejectWithValue(err.response.data);
@@ -24,8 +17,8 @@ export const fetchWritePost = createAsyncThunk(
 export const fetchUpdatePost = createAsyncThunk(
   'write/fetchUpdatePost',
   async (form) => {
-    const { id, } = form;
-    const response = await axios.patch(`http://localhost:4000/posts/${id}`, {});
+    const { id, title, content, category, soldOut, image } = form;
+    const response = await axios.patch(`/posts/${id}`, { title, content, category, soldOut, image });
     return response.data;
   }
 )
@@ -33,7 +26,7 @@ export const fetchUpdatePost = createAsyncThunk(
 const initialState = {
   title: '',
   content: '',
-  images: [],
+  image: [],
   category: '',
   soldOut: false,
   post: null,
@@ -54,8 +47,8 @@ export const writeSlice = createSlice({
     },
     setOriginalPost: (state, { payload: post }) => {
       state.title = post.title;
-      state.content = post.body;
-      state.images = post.images;
+      state.content = post.content;
+      state.image = post.image;
       state.category = post.category;
       state.soldOut = post.soldOut;
       state.originalPostId = post.post_id;

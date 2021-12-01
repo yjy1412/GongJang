@@ -101,7 +101,7 @@ const JoinButton = styled(Button)`
 const Join = () => {
   const history = useHistory();
   const dispatch = useDispatch();
-  const { isSignUp, userError } = useSelector((state) => state.user);
+  const { isSignUp, signUpError } = useSelector((state) => state.user);
 
   // 이름, 이메일, 비밀번호, 비밀번호 확인 
   const [joinInfo, setJoinInfo] = useState({ 
@@ -178,9 +178,10 @@ const Join = () => {
     if(isSignUp){
       history.push('/login');
     } else {
-      setServerErrorMessage(userError);
+      setServerErrorMessage(signUpError);
+      setTimeout(() => setServerErrorMessage(''), 3000);
     }
-  },[history, isSignUp, userError])
+  },[history, isSignUp, signUpError])
 
   return (
     <AuthBackground>

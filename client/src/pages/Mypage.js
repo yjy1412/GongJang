@@ -109,7 +109,7 @@ const MyPage = () => {
             </div>
             <p>사진 업데이트하기</p>
           </MyPageProfileImg>
-          <UpdateProfile onConfirm={onConfirm} onCancel={onCancel} handleDeleteButton={handleDeleteButton}/>
+          <UpdateProfile />
         </div>
         <div className="wrap">
           <div className="info">

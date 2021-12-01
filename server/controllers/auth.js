@@ -1,7 +1,8 @@
 require('dotenv').config();
-const { User } = require('../models');
+const { User, Post, Wish } = require('../models');
 const jwt = require('jsonwebtoken');
 const accessFunc = require('./token');
+const { post } = require('./posts');
 
 module.exports = {
   // POST auth/sign-up
@@ -99,7 +100,7 @@ module.exports = {
               res.cookie("refreshToken", refreshToken, { httpOnly: true, expiresIn: "30d" })
               res.json({
                 accessToken: accessToken,
-                userInfo: { email, nickname, profile_image, admin },
+                userInfo: { id, email, nickname, profile_image, admin },
                 message: "로그인에 성공했습니다"
               })
             }
@@ -189,9 +190,33 @@ module.exports = {
     // }
   },
   // GET auth/mypage/posts
-  getMyposts: async (req, res) => {
+  getMyPosts: async (req, res) => {
     // TODO
-    res.send('Get auth/mypage/posts');
+    const result= accessFunc(req, res);
+    
+    if (!result.identified) {
+      return result;
+    }
+    const email = result.email
+    console.log(result)
+
+    if(!result) {
+      res.status(400).send('유효하지 않은 토큰입니다.')
+    } else {
+        try{
+          Post.findAll({
+            attributes : ['title'],
+            where : {
+              id : result.id
+            }
+          })
+          res.status(200).send('제발 성공')
+
+        }catch(err) {
+          res.status(500).send('서버에러')
+        }
+    }
+    
   },
   // GET auth/wish-list/:user_email
   getWishLists: (req, res) => {
