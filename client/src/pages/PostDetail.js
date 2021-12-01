@@ -19,6 +19,17 @@ const PostDetailBlock = styled.div`
       width: 100%;
       font-size: 1.8rem;
     }
+    .share-status {
+      position: absolute;
+      top: 10px;
+      right: 0;
+      font-size: 1.2rem;
+      color: #575F95;
+      background: #fa8072;
+      padding: 0.5rem;
+      border: 2px solid  #575F95;
+      border-radius: 4px;
+    }
   }
   .wrap {
     display: flex;
@@ -69,19 +80,24 @@ const PostDetail = () => {
     user: user.user,
   }));
 
-  useEffect(() => {
-    dispatch(fetchGetPostDetail(id));
-    return () => {
-      dispatch(unloadPost());
-    }
-  },[dispatch, id])
+  // useEffect(() => {
+  //   dispatch(fetchGetPostDetail(id));
+  //   return () => {
+  //     dispatch(unloadPost());
+  //   }
+  // },[dispatch, id])
 
-  // const onEdit = () => {
+  // const onEditPost = () => {
   //   dispatch(setOriginalPost(post));
   //   history.push('/write');
   // }
 
-  const ownPost = (user && user.userInfo.nickname) === (post && post?.writer.writer_nickname);
+  // const onRemovePost = () => {
+  //   dispatch(fetchRemovePost(id));
+  //   history.push('/');
+  // }
+
+  // const ownPost = (user && user.userInfo.nickname) === (post && post?.writer.writer_nickname);
   
   // if(error){
   //   if(error.response && error.response.status === 404){
@@ -97,18 +113,23 @@ const PostDetail = () => {
     <PostDetailBlock>
       <div className="title">
         <h3>{post?.title}</h3>
+        { post?.soldOut && (
+           <div className="share-status">
+            <b>나눔완료</b>
+          </div>
+        )}
       </div>
       <ItemImgSlide/>
       <div className="wrap">
         <div className="info">
           <p>ITEM INFO</p>
         </div>
-        { ownPost && (
+        {/* { ownPost && (
           <div className="btn-box">
-            <button>EDIT</button>
-            <button>DELETE</button>
+            <button onClick={onEditPost}>EDIT</button>
+            <button onClick={onRemovePost}>DELETE</button>
           </div>
-        )}
+        )} */}
       </div>
       <div className="desc">
         <p>{post?.content}</p>
