@@ -17,7 +17,7 @@ module.exports = {
     const inputTitle = req.body.title;
     const inputImage = req.body.image;
     console.log(inputImage)
-    console.log(inputImage[0])
+    // console.log(inputImage[0])
     const inputContent = req.body.content;
     const inputCategory = req.body.category;
     const inputSoldOut = req.body.soldOut;
@@ -26,6 +26,7 @@ module.exports = {
     let image1 = null;
     let image2 = null;
     let image3 = null;
+    if( inputImage !== undefined){
     for (let i = 0; i < inputImage.length; i += 1) {
       if (i === 0) {
         image1 = inputImage[i];
@@ -35,7 +36,7 @@ module.exports = {
         image3 = inputImage[i];
       }
     }
-
+  }
     // 2. 필수 입력요소 누락여부 검사
     if (!inputTitle || !inputCategory) {
       return res.status(400).send("필수 입력요소가 누락되었습니다")
@@ -80,18 +81,66 @@ module.exports = {
       })
   },
   // PATCH /posts/:posts_id
-  patch: (req, res) => {
-    console.log(req.params.posts_id)
-    const postsId = req.params.posts_id;
+  patch: async (req, res) => {
+    const postsId = req.params.posts_id; 
+    //유저 유효성 검사 
     const result = accessFunc(req, res);
     if (!result.identified) {
       return result;
     }
+    
+    const inputTitle = req.body.title;   
+    const inputContent = req.body.content;
+    const inputCategory = req.body.category;
+    const inputSoldOut = req.body.soldOut;
+    const inputImage = req.body.image;
+    let image1, image2, image3 = null;
+    if( inputImage !== undefined){
+      for (let i = 0; i < inputImage.length; i += 1) {
+        if (i === 0) {
+          image1 = inputImage[i];
+        } else if (i === 1) {
+          image2 = inputImage[i];
+        } else if (i === 2) {
+          image3 = inputImage[i];
+        }
+      }
+    }
+    
+    if (!inputTitle || !inputCategory) {
+      return res.status(403).send("필수 입력요소가 누락되었습니다")
+    }
+   
+    const postsData = await Post.findOne({where : { id : postsId}})  
+    console.log(postsData.user_id)
+    const userInfo = await User.findOne({where : {email : result.email}})
+    console.log(userInfo.dataValues.id)
 
-    res.json({
-      method: 'PATCH /posts/:posts_id',
-      postsId
-    });
+    if(userInfo.dataValues.id !== postsData.user_id) { 
+      return res.status(400).send('작성자가 아닙니다.')
+      //잡아냈음
+    } else {
+    try {
+       Post.update({
+         title : inputTitle,
+         content : inputContent, 
+         category : inputCategory,
+         soldout : inputSoldOut,
+         image1 ,
+         image2 ,
+         image3  
+       }, {where : {
+         id : postsId
+       }})
+       res.status(201).json({
+         postsId : postsId,
+         message : "수정 되었습니다"
+       })
+    }catch(err) {
+      res.status(500).send('서버에 오류가 발생했습니다.')
+    }
+  }
+
   },
   // DELETE /posts/:posts_id
   delete: async (req, res) => {
@@ -103,7 +152,7 @@ module.exports = {
     if (!result.identified) {
       return result;
     }
-  
+    
     //권한이 있다면
     if(result) {
       try{
