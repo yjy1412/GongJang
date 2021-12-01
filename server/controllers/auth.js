@@ -80,14 +80,14 @@ module.exports = {
               res.status(404).send("비밀번호가 일치하지 않습니다")
             } else {
               console.log("DATA : ", data);
-              const { email, nickname, profile_image, admin } = data.dataValues;
+              const { id, email, nickname, profile_image, admin } = data.dataValues;
               const accessToken = jwt.sign(
-                { email },
+                { id, email },
                 process.env.ACCESS_SECRET,
                 { expiresIn: "1d" }
               );
               const refreshToken = jwt.sign(
-                { email },
+                { id, email },
                 process.env.REFRESH_SECRET,
                 { expiresIn: "30d" }
               )

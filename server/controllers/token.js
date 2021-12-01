@@ -34,9 +34,10 @@ module.exports = function (req, res) {
     }
   }
 
-  const { email } = accessData;
+  const { id, email } = accessData;
   return {
     identified: true,
+    id,
     email
   }
 }
