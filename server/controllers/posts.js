@@ -27,17 +27,17 @@ module.exports = {
     let image2 = null;
     let image3 = null;
     for (let i = 0; i < inputImage.length; i += 1) {
-      if( i === 0 ) {
+      if (i === 0) {
         image1 = inputImage[i];
-      } else if( i === 1 ) {
+      } else if (i === 1) {
         image2 = inputImage[i];
-      } else if( i === 2 ) {
+      } else if (i === 2) {
         image3 = inputImage[i];
       }
     }
 
     // 2. 필수 입력요소 누락여부 검사
-    if ( !inputTitle || !inputCategory ) {
+    if (!inputTitle || !inputCategory) {
       return res.status(400).send("필수 입력요소가 누락되었습니다")
     }
 
@@ -111,11 +111,39 @@ module.exports = {
     let wish = false;
 
     // 1. 회원/비회원 여부 검토
-    const result = accessFunc(req, res);
+    // 함수 실행 결과, res.send가 있으면 바로 메시지를 보내버리기 때문에 사용할 수 없음
+    // const result = accessFunc(req, res);
 
-    if ( result.identified ) {
-      const email = result.email;
+    // 1-1. 회원일때의 별도 처리과정
+    const authorization = req.headers.authorization;
 
+    if ( authorization ) {
+      const accessToken = authorization.split(' ')[1];
+      console.log(accessToken);
+
+      let accessData;
+      try {
+        accessData = jwt.verify(accessToken, process.env.ACCESS_SECRET);
+      } catch {
+        // 엑세스 토큰이 유효하지 않을 때
+        const refreshToken = req.cookies.refreshToken;
+        if (refreshToken) {
+          // 리프레쉬 토큰이 req.cookies에 담겨 있다면,
+          try {
+            // 리프레쉬 토큰을 통한 엑세스 데이터 임시추출
+            accessData = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+          } catch {
+            // 리프레쉬 토큰 마저 유효하지 않을 때(30일 경과 또는 토큰 훼손)
+            return res.status(401).send("권한인증에 실패했습니다(토큰 유효하지 않음)")
+          }
+        } else {
+          // 리프레쉬 토큰이 없다면 바로 에러메시지 전송
+          return res.status(401).send("권한인증에 실패했습니다(토큰 유효하지 않음)")
+        }
+      }
+      const { email } = accessData;
+
+      // wish 여부를 알기 위한 유저정보 조회
       User.findOne({ where: { email } })
         .then(result => {
           const userInfo = result.dataValues;
@@ -145,6 +173,7 @@ module.exports = {
           console.log(err);
           return res.status(500).send("서버에 오류가 발생했습니다")
         })
+
     }
 
     // 2. 데이터 조회
@@ -152,10 +181,13 @@ module.exports = {
       where: { id: postsId },
       include: {
         model: User,
-        attributes: [ 'email', 'nickname' ]
+        attributes: ['email', 'nickname']
       }
     })
       .then(result => {
+        if( !result ) {
+          return res.status(404).send("해당 게시물은 존재하지 않습니다")
+        }
         console.log(result.dataValues);
         console.log(result.User.dataValues.email);
 
