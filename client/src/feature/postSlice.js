@@ -4,13 +4,7 @@ import axios from 'axios';
 export const fetchGetPostDetail = createAsyncThunk(
   'post/fetchGetPost',
   async (id) => {
-    const response = await axios.get(`http://localhost:4000/posts/${id}`,
-      {
-        headers: {
-          "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImdvbmdAbmF2ZXIuY29tIiwiaWF0IjoxNjM4MjY0OTk3LCJleHAiOjE2MzgzNTEzOTd9.StObLI8C1LVikuxllBMFmlLV56VEt9wThX-QBUTp1GM"
-        }
-      }
-    );
+    const response = await axios.get(`/posts/${id}`);
     return response.data.data;
   }
 )

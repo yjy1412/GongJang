@@ -17,8 +17,8 @@ export const fetchWritePost = createAsyncThunk(
 export const fetchUpdatePost = createAsyncThunk(
   'write/fetchUpdatePost',
   async (form) => {
-    const { id, } = form;
-    const response = await axios.patch(`http://localhost:4000/posts/${id}`, {});
+    const { id, title, content, category, soldOut, image } = form;
+    const response = await axios.patch(`/posts/${id}`, { title, content, category, soldOut, image });
     return response.data;
   }
 )
@@ -26,7 +26,7 @@ export const fetchUpdatePost = createAsyncThunk(
 const initialState = {
   title: '',
   content: '',
-  images: [],
+  image: [],
   category: '',
   soldOut: false,
   post: null,
@@ -47,8 +47,8 @@ export const writeSlice = createSlice({
     },
     setOriginalPost: (state, { payload: post }) => {
       state.title = post.title;
-      state.content = post.body;
-      state.images = post.images;
+      state.content = post.content;
+      state.image = post.image;
       state.category = post.category;
       state.soldOut = post.soldOut;
       state.originalPostId = post.post_id;
