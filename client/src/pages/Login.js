@@ -115,7 +115,7 @@ const Login = () => {
 
   const history = useHistory();
   const dispatch = useDispatch();
-  const { accessToken, userError } = useSelector((state) => state.user);
+  const { accessToken, loginError } = useSelector((state) => state.user);
 
   const handleInputEmail = (e) => {
     setLoginInfo({ ...loginInfo, [e.target.name] : e.target.value});
@@ -154,10 +154,11 @@ const Login = () => {
     if(accessToken){
       history.push('/');
     }
-    if(userError){
-      setServerErrorMessage(userError);
+    if(loginError){
+      setServerErrorMessage(loginError);
+      setTimeout(() => setServerErrorMessage(''), 3000);
     }
-  },[history, accessToken, userError])
+  },[history, accessToken, loginError])
 
 
   return (

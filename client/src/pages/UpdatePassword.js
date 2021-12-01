@@ -100,7 +100,7 @@ const UpdatePassword = () => {
   const history = useHistory();
   const dispatch = useDispatch();
 
-  const { passwordUpdated, userError } = useSelector((state) => state.user);
+  const { passwordUpdated, passwordError } = useSelector((state) => state.user);
   const [ updatePasswordInfo, setUpdatePasswordInfo ] = useState({
     currentPassword: "",
     newPassword: "",
@@ -152,9 +152,10 @@ const UpdatePassword = () => {
     if(passwordUpdated){
       history.push('/mypage');
     } else {
-      setServerErrorMessage(userError);
+      setServerErrorMessage(passwordError);
+      setTimeout(() => setServerErrorMessage(''), 3000)
     }
-  },[history, passwordUpdated, userError])
+  },[history, passwordUpdated, passwordError])
 
 
   return (
