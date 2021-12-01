@@ -1,19 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-
-
 export const fetchWritePost = createAsyncThunk(
   'write/fetchWritePost',
   async (formData, { rejectWithValue }) => {
-    const { title, content, category, soldOut } = formData;
+    const { title, content, category, soldOut, image } = formData;
     try {
-      const response = await axios.post('http://localhost:4000/posts', { title, content, category, soldOut } , {
-        headers: {
-          // "Content-Type": "multipart/form-data",
-          "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImdvbmdAbmF2ZXIuY29tIiwiaWF0IjoxNjM4MjY0OTk3LCJleHAiOjE2MzgzNTEzOTd9.StObLI8C1LVikuxllBMFmlLV56VEt9wThX-QBUTp1GM"
-        }
-      });
+      const response = await axios.post('/posts', { title, content, category, soldOut, image });
       return response.data;  
     } catch(err){
       return rejectWithValue(err.response.data);
