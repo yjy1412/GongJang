@@ -1,8 +1,10 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { FiSearch, FiEdit, FiHeart } from 'react-icons/fi';
 import { AiOutlineUser } from 'react-icons/ai';
+import AskLoginModal from '../../modal/AskLoginModal';
 
 const MenuIconsBlock = styled.ul`
   flex: 1;
@@ -27,21 +29,50 @@ const MenuIconsBlock = styled.ul`
 `;
 
 const MenuIcons = ({ onClick }) => {
+
+  const history = useHistory();
+
+  const [visible, setVisible] = useState(false);
+
+  const { isLogin } = useSelector( state => state.user);
+
+  const handleModal = (e) => {
+    if(!isLogin){
+      setVisible(true);
+    }
+  }
+
+  const onCancel = () => {
+    setVisible(false);
+  }
+
+  const onConfirm = () => {
+    setVisible(false);
+    history.replace('/login')
+  }
+
   return (
-    <MenuIconsBlock >
-      <li className="search" onClick={onClick}>
-          <FiSearch/>
-      </li>
-      <li>
-          <Link to="/write"><FiEdit/></Link>
-      </li>
-      <li>
-          <Link to="wishList"><FiHeart/></Link>
-      </li>
-      <li>
-          <Link to="mypage"><AiOutlineUser/></Link>
-      </li>
-  </MenuIconsBlock>
+    <>
+      <MenuIconsBlock >
+        <li className="search" onClick={onClick}>
+            <FiSearch/>
+        </li>
+        <li>
+            <Link to={ isLogin ? "/write" : "/"} onClick={handleModal}><FiEdit/></Link>
+        </li>
+        <li>
+            <Link to={ isLogin ? "wishList" : "/"} onClick={handleModal}><FiHeart/></Link>
+        </li>
+        <li>
+            <Link to={ isLogin ? "mypage" : "/"} onClick={handleModal}><AiOutlineUser/></Link>
+        </li>
+    </MenuIconsBlock>
+    {
+      visible ? 
+      <AskLoginModal onCancel={onCancel} visible={visible} onConfirm={onConfirm} /> :
+      null
+    }
+  </>
   );
 };
 

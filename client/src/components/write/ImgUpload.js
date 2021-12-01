@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { RiImageAddLine } from 'react-icons/ri';
 import { FaTimes } from 'react-icons/fa';
@@ -52,7 +52,7 @@ const ImgUpload = ({ setImageFiles, imageFiles, setImageURLs, imageURLs, onRemov
 
   //이미지 미리보기
   const onFileChange = (e) => {
-    const files = e.target.files;
+    let files = e.target.files;
     if(files.length < 1 ){
       return;
     }

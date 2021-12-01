@@ -115,7 +115,7 @@ const Login = () => {
 
   const history = useHistory();
   const dispatch = useDispatch();
-  const { user, userError } = useSelector((state) => state.user);
+  const { accessToken, userError } = useSelector((state) => state.user);
 
   const handleInputEmail = (e) => {
     setLoginInfo({ ...loginInfo, [e.target.name] : e.target.value});
@@ -151,13 +151,13 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if(user){
+    if(accessToken){
       history.push('/');
     }
     if(userError){
       setServerErrorMessage(userError);
     }
-  },[history, user, userError])
+  },[history, accessToken, userError])
 
 
   return (

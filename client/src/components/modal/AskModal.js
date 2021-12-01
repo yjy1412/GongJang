@@ -46,11 +46,12 @@ const ModalTemplate = ({
   confirmText = 'CONFIRM',
   cancelText = 'CANCEL',
   onConfirm,
-  onCancel
+  onCancel,
+  type
 }) => {
-  // if(!visible){
-  //   return null;
-  // }
+  if(!visible){
+    return null;
+  }
   return (
     <ModalBackground>
       <ModalBox>
@@ -58,7 +59,7 @@ const ModalTemplate = ({
         <p>{description}</p>
         <p className="ask-login">{addDescription}</p>
         <div className="btn-box">
-          <WhiteButton onClick={onCancel}>{cancelText}</WhiteButton>
+          { type !== 'required' && <WhiteButton onClick={onCancel}>{cancelText}</WhiteButton>}
           <Button onClick={onConfirm}>{confirmText}</Button>
         </div>
       </ModalBox>

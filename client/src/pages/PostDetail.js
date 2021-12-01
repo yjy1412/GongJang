@@ -1,11 +1,11 @@
-import React from 'react';
-// import { useHistory, useParams } from 'react-router-dom';
-// import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Comments from '../components/postDetail/Comments';
 import ItemImgSlide from '../components/postDetail/ItemImgSlide';
-// import { fetchGetPostDetail, unloadPost, fetchRemovePost } from '../feature/postsSlece';
-// import { setOriginalPost } from '../feature/writeSlice';
+import { fetchGetPostDetail, unloadPost, fetchRemovePost } from '../feature/postSlice';
+import { setOriginalPost } from '../feature/writeSlice';
 
 const PostDetailBlock = styled.div`
   width: 1130px;
@@ -17,7 +17,18 @@ const PostDetailBlock = styled.div`
     h3 {
       text-align: center;
       width: 100%;
-      font-size: 2rem;
+      font-size: 1.8rem;
+    }
+    .share-status {
+      position: absolute;
+      top: 10px;
+      right: 0;
+      font-size: 1.2rem;
+      color: #575F95;
+      background: #fa8072;
+      padding: 0.5rem;
+      border: 2px solid  #575F95;
+      border-radius: 4px;
     }
   }
   .wrap {
@@ -59,32 +70,35 @@ const PostDetailBlock = styled.div`
 `;
 
 const PostDetail = () => {
-  /*
   const { id } = useParams();
   const dispatch = useDispatch();
   const history = useHistory();
-  const { post, error, loading, user } = useSelecter(({ post , user }) => ({
+  const { post, error, loading, user } = useSelector(({ post , user }) => ({
     post: post.post,
     error: post.error,
     loading: post.loading,
     user: user.user,
   }));
 
-  useEffect(() => {
-    dispatch(fetchGetPostDetail(id));
-    return () => {
-      dispatch(unloadPost);
-    }
-  },[dispatch, id])
+  // useEffect(() => {
+  //   dispatch(fetchGetPostDetail(id));
+  //   return () => {
+  //     dispatch(unloadPost());
+  //   }
+  // },[dispatch, id])
 
-  const onEdit = () => {
-    dispatch(setOriginalPost(post));
-    history.push('/write');
-  }
+  // const onEditPost = () => {
+  //   dispatch(setOriginalPost(post));
+  //   history.push('/write');
+  // }
 
-  const ownPost = (user && user.userInfo.nickname) === (post && post.writer.writer_nickname);
-  */
+  // const onRemovePost = () => {
+  //   dispatch(fetchRemovePost(id));
+  //   history.push('/');
+  // }
 
+  // const ownPost = (user && user.userInfo.nickname) === (post && post?.writer.writer_nickname);
+  
   // if(error){
   //   if(error.response && error.response.status === 404){
   //     return <PostDetailBlock>나눔글이 존재하지 않습니다.</PostDetailBlock>;
@@ -98,24 +112,31 @@ const PostDetail = () => {
   return (
     <PostDetailBlock>
       <div className="title">
-        <h3>Title</h3>
+        <h3>{}</h3>
+        { post?.soldOut && (
+           <div className="share-status">
+            <b>나눔완료</b>
+          </div>
+        )}
       </div>
       <ItemImgSlide/>
       <div className="wrap">
         <div className="info">
           <p>ITEM INFO</p>
         </div>
-        <div className="btn-box">
-          <button>EDIT</button>
-          <button>DELETE</button>
-        </div>
+        {/* { ownPost && (
+          <div className="btn-box">
+            <button onClick={onEditPost}>EDIT</button>
+            <button onClick={onRemovePost}>DELETE</button>
+          </div>
+        )} */}
       </div>
       <div className="desc">
-        <p>Description</p>
+        <p>{}</p>
       </div>
       <div className="writer">
-        <span><b>writer</b></span>
-        <span> 2021.11.23</span>
+        <span><b>{}&nbsp;</b></span>
+        <span> {}</span>
       </div>
       <Comments/>
     </PostDetailBlock>

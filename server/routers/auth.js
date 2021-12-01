@@ -19,4 +19,6 @@ router.patch('/password', authControllers.patchPassword);
 
 router.get('/mypage/posts', authControllers.getMyposts);
 
+router.get('/wish-list/:user_email', authControllers.getWishLists);
+
 module.exports = router;

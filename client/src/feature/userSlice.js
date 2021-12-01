@@ -1,12 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+axios.defaults.baseURL = 'http://localhost:4000';
+axios.defaults.withCredentials = true;
+
 export const fetchSignUp = createAsyncThunk(
   'signUp/fetchSignUp',
   async (form, { rejectWithValue }) => {
     const { nickname, email, password } = form;
     try {
-      const response = await axios.post('http://localhost:4000/auth/sign-up', { nickname, email, password });
+      const response = await axios.post('/auth/sign-up', { nickname, email, password });
       return response.data;
     } catch(err) {
       return rejectWithValue(err.response.data);
@@ -14,12 +17,22 @@ export const fetchSignUp = createAsyncThunk(
   }
 );
 
+export const fetchMypage = createAsyncThunk(
+  'mypage/fetch',
+  async() => {
+    const response = await axios.get('/auth/mypage');
+    return response.data;
+  }
+)
+
 export const fetchLogin = createAsyncThunk(
   'login/fetchLogin',
   async (form, { rejectWithValue }) => {
     const { email, password } = form;
     try {
-      const response = await axios.post('http://localhost:4000/auth/log-in', { email, password });
+      const response = await axios.post('/auth/log-in', { email, password });
+      // token이 필요한 API 요청 시 header Authorization에 token 담아서 보내기
+      axios.defaults.headers.common['authorization'] = `Bearer ${response.data.accessToken}`;
       return response.data;
     } catch(err) {
       return rejectWithValue(err.response.data);
@@ -32,7 +45,7 @@ export const fetchUpdatePassword = createAsyncThunk(
   async (form, { rejectWithValue }) => {
     const { currentPassword, newPassword } = form;
     try {
-      const response = await axios.patch('http://localhost:4000/auth/password', { current: currentPassword, new: newPassword });
+      const response = await axios.patch('/auth/password', { current: currentPassword, new: newPassword });
       return response.data
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -40,14 +53,55 @@ export const fetchUpdatePassword = createAsyncThunk(
   }
 );
 
-const initialState = {
+export const fetchLogOut = createAsyncThunk(
+  'logOut/fetchLogOut',
+  async () => {
+      const response = await axios.post(
+        '/auth/log-out'
+      );
+      return response.data;
+  }
+);
+
+export const fetchUpdateUserInfo = createAsyncThunk(
+  'mypage/fetchUpdateUserInfo',
+  async (form, { rejectWithValue }) => {
+    const { newNickname, profileImage } = form;
+    try {
+      const response = await axios.patch(
+        '/auth/mypage', 
+        { nickname: newNickname, profile_image: profileImage },
+      )
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const fetchDeleteAccount = createAsyncThunk(
+  'mypage/fetchDeleteAccount',
+  async (form, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete('/auth/sign-out');
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data)
+    }
+  }
+)
+
+export const initialState = {
   user: null,
+  accessToken: null,
   userError: null,
   isSignUp: false,
   isLogin: false,
   userUpdated: false,
   passwordUpdated: false,
   loading: false,
+  isEdited: false,
+  message: "",
 }
 
 const userSlice = createSlice({
@@ -60,7 +114,7 @@ const userSlice = createSlice({
     },
     [fetchLogin.fulfilled]: (state, { payload }) => {
       state.loading = false;
-      state.user = payload;
+      state.accessToken = payload.accessToken;
       state.isLogin = true;
     },
     [fetchLogin.rejected]: (state, { payload }) => {
@@ -81,14 +135,55 @@ const userSlice = createSlice({
     [fetchUpdatePassword.pending]: (state) => {
       state.loading = true;
     },
-    [fetchUpdatePassword.fulfilled]: (state, { payload }) => {
+    [fetchUpdatePassword.fulfilled]: (state) => {
+      state.loading = false;
+    },
+    [fetchUpdatePassword.rejected]: (state, { payload }) => {
+      state.loading = false;
+      state.userError = payload;
+    },
+    [fetchLogOut.pending]: (state) => {
+      state.loading = true;
+    },
+    [fetchLogOut.fulfilled]: (state) => {
+      state.loading = false;
+      state.isLogin = false;
+      state.user = null;
+      state.accessToken = null;
+    },
+    [fetchUpdateUserInfo.pending]: (state) => {
+      state.loading = true;
+    },
+    [fetchUpdateUserInfo.fulfilled]: (state) => {
+      state.loading = false;
+      state.isEdited = true;
+    },
+    [fetchUpdateUserInfo.rejected]: (state, { payload }) => {
+      state.loading = false;
+      state.userError = payload;
+    },
+    [fetchMypage.pending]: (state) => {
+      state.loading = true;
+    },
+    [fetchMypage.fulfilled]: (state, { payload }) => {
       state.loading = false;
       state.user = payload;
     },
-    [fetchUpdatePassword.rejected]: (state, { payload }) => {
-      state.loading =false;
+    [fetchMypage.rejected]: (state, { payload }) => {
+      state.loading = false;
       state.userError = payload;
-    }
+    },
+    [fetchDeleteAccount.pending]: (state) => {
+      state.loading = true;
+    },
+    [fetchDeleteAccount.fulfilled]: (state, { payload }) => {
+      state.loading = false;
+      state.message = payload;
+    },
+    [fetchDeleteAccount.rejected]: (state, { payload }) => {
+      state.loading = false;
+      state.userError = payload;
+    },
   }
 })
 
