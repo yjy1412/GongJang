@@ -16,8 +16,8 @@ module.exports = {
 
     const inputTitle = req.body.title;
     const inputImage = req.body.image;
-    console.log(inputImage)
-    console.log(inputImage[0])
+    // console.log(inputImage)
+    // console.log(inputImage[0])
     const inputContent = req.body.content;
     const inputCategory = req.body.category;
     const inputSoldOut = req.body.soldOut;
@@ -26,15 +26,15 @@ module.exports = {
     let image1 = null;
     let image2 = null;
     let image3 = null;
-    for (let i = 0; i < inputImage.length; i += 1) {
-      if (i === 0) {
-        image1 = inputImage[i];
-      } else if (i === 1) {
-        image2 = inputImage[i];
-      } else if (i === 2) {
-        image3 = inputImage[i];
-      }
-    }
+    // for (let i = 0; i < inputImage.length; i += 1) {
+    //   if (i === 0) {
+    //     image1 = inputImage[i];
+    //   } else if (i === 1) {
+    //     image2 = inputImage[i];
+    //   } else if (i === 2) {
+    //     image3 = inputImage[i];
+    //   }
+    // }
 
     // 2. 필수 입력요소 누락여부 검사
     if (!inputTitle || !inputCategory) {
@@ -80,27 +80,60 @@ module.exports = {
       })
   },
   // PATCH /posts/:posts_id
-  patch: (req, res) => {
-    console.log(req.params.posts_id)
-    const postsId = req.params.posts_id;
-    //유저 권한 인증
-    const userInfo = result.dataValues;
-    const { id } = userInfo;
-    console.log(userInfo)
-
+  patch: async (req, res) => {
+    const postsId = req.params.posts_id; 
+    //유저 유효성 검사 
     const result = accessFunc(req, res);
     if (!result.identified) {
       return result;
     }
-    const email = result.email
-    //작성자의 이메일과 result.email이 같아야 한다.
+    
+    const inputTitle = req.body.title;   
+    const inputContent = req.body.content;
+    const inputCategory = req.body.category;
+    const inputSoldOut = req.body.soldOut;
+    let image1, image2, image3 = null
+    
+    if (!inputTitle || !inputCategory) {
+      return res.status(403).send("필수 입력요소가 누락되었습니다")
+    }
+   
+    const postsData = await Post.findOne({where : { id : postsId}})  
+    console.log(postsData.user_id)
+    const userInfo = await User.findOne({where : {email : result.email}})
+    console.log(userInfo.dataValues.id)
+
+    if(userInfo.dataValues.id !== postsData.user_id) { 
+      return res.status(400).send('작성자가 아닙니다.')
+      //잡아냈음
+    } else {
+    try {
+       Post.update({
+         title : inputTitle,
+         content : inputContent, 
+         category : inputCategory,
+         soldout : inputSoldOut,
+         image1 ,
+         image2 ,
+         image3  
+       }, {where : {
+         id : postsId
+       }})
+       res.status(201).send('수정완료')
+    }catch(err) {
+      res.status(500).send('서버에 오류가 발생했습니다.')
+    }
+  }
+
+    // 작성자의 이메일과 result.email이 같아야 한다.
 
 
-
-    res.json({
-      method: 'PATCH /posts/:posts_id',
-      postsId
-    });
+    // const userInfo = result.dataValues;
+    // const { id } = userInfo;
+    // res.json({
+    //   method: 'PATCH /posts/:posts_id',
+    //   postsId
+    // });
   },
   // DELETE /posts/:posts_id
   delete: async (req, res) => {
