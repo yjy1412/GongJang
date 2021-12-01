@@ -69,6 +69,10 @@ module.exports = {
   patch: (req, res) => {
     console.log(req.params.posts_id)
     const postsId = req.params.posts_id;
+    const result = accessFunc(req, res);
+    if (!result.identified) {
+      return result;
+    }
 
     res.json({
       method: 'PATCH /posts/:posts_id',
@@ -95,11 +99,11 @@ module.exports = {
         await postInfo.destroy({});
         return res.status(204).send('게시물 삭제 성공')
       }catch(err) {
-        return res.status(401).send('유효하지 않은 토큰입니다.')
+        return res.status(500).send('서버에 오류가 발생했습니다.')
       }
       //권한이 없다면
     }else { 
-      return res.status(400).send('잘못된 요청입니다.')
+      return res.status(401).send('유효하지 않은 토큰입니다.')
     }
   
   },

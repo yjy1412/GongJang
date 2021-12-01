@@ -117,21 +117,21 @@ module.exports = {
   logout: async (req, res) => {
     // TODO 이상 없는 지 확인해보기
     const result = accessFunc(req, res);
-    console.log(result.identified)
+    // console.log(result.identified)
     if (!result.identified) {
       return result;
     }
-    console.log(result)
+    // console.log(result)
     
     try {
       if(!result) {
         return res.status(400).send('유효하지 않은 토큰입니다.')
       } else {      
           res.clearCookie('refreshToken')
-          res.status(200).send('로그아웃 성공');
+          res.status(200).send('로그아웃에 성공했습니다.');
     }
     }catch(err) {     
-       return res.status(500).send('서버 오류')
+       return res.status(500).send('서버에 오류가 발생했습니다.')
     }
   },
   // DELETE auth/sign-out
