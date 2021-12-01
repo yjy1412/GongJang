@@ -112,7 +112,7 @@ const PostDetail = () => {
   return (
     <PostDetailBlock>
       <div className="title">
-        <h3>{post?.title}</h3>
+        <h3>{}</h3>
         { post?.soldOut && (
            <div className="share-status">
             <b>나눔완료</b>
@@ -132,11 +132,11 @@ const PostDetail = () => {
         )} */}
       </div>
       <div className="desc">
-        <p>{post?.content}</p>
+        <p>{}</p>
       </div>
       <div className="writer">
-        <span><b>{post?.writer.writer_nickname}&nbsp;</b></span>
-        <span> {post?.createdAt.slice(0, 10)}</span>
+        <span><b>{}&nbsp;</b></span>
+        <span> {}</span>
       </div>
       <Comments/>
     </PostDetailBlock>
