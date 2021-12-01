@@ -1,11 +1,11 @@
-import React from 'react';
-// import { useHistory, useParams } from 'react-router-dom';
-// import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Comments from '../components/postDetail/Comments';
 import ItemImgSlide from '../components/postDetail/ItemImgSlide';
-// import { fetchGetPostDetail, unloadPost, fetchRemovePost } from '../feature/postsSlece';
-// import { setOriginalPost } from '../feature/writeSlice';
+import { fetchGetPostDetail, unloadPost, fetchRemovePost } from '../feature/postSlice';
+import { setOriginalPost } from '../feature/writeSlice';
 
 const PostDetailBlock = styled.div`
   width: 1130px;
@@ -17,7 +17,7 @@ const PostDetailBlock = styled.div`
     h3 {
       text-align: center;
       width: 100%;
-      font-size: 2rem;
+      font-size: 1.8rem;
     }
   }
   .wrap {
@@ -59,11 +59,10 @@ const PostDetailBlock = styled.div`
 `;
 
 const PostDetail = () => {
-  /*
   const { id } = useParams();
   const dispatch = useDispatch();
   const history = useHistory();
-  const { post, error, loading, user } = useSelecter(({ post , user }) => ({
+  const { post, error, loading, user } = useSelector(({ post , user }) => ({
     post: post.post,
     error: post.error,
     loading: post.loading,
@@ -73,18 +72,17 @@ const PostDetail = () => {
   useEffect(() => {
     dispatch(fetchGetPostDetail(id));
     return () => {
-      dispatch(unloadPost);
+      dispatch(unloadPost());
     }
   },[dispatch, id])
 
-  const onEdit = () => {
-    dispatch(setOriginalPost(post));
-    history.push('/write');
-  }
+  // const onEdit = () => {
+  //   dispatch(setOriginalPost(post));
+  //   history.push('/write');
+  // }
 
-  const ownPost = (user && user.userInfo.nickname) === (post && post.writer.writer_nickname);
-  */
-
+  const ownPost = (user && user.userInfo.nickname) === (post && post?.writer.writer_nickname);
+  
   // if(error){
   //   if(error.response && error.response.status === 404){
   //     return <PostDetailBlock>나눔글이 존재하지 않습니다.</PostDetailBlock>;
@@ -98,24 +96,26 @@ const PostDetail = () => {
   return (
     <PostDetailBlock>
       <div className="title">
-        <h3>Title</h3>
+        <h3>{post?.title}</h3>
       </div>
       <ItemImgSlide/>
       <div className="wrap">
         <div className="info">
           <p>ITEM INFO</p>
         </div>
-        <div className="btn-box">
-          <button>EDIT</button>
-          <button>DELETE</button>
-        </div>
+        { ownPost && (
+          <div className="btn-box">
+            <button>EDIT</button>
+            <button>DELETE</button>
+          </div>
+        )}
       </div>
       <div className="desc">
-        <p>Description</p>
+        <p>{post?.content}</p>
       </div>
       <div className="writer">
-        <span><b>writer</b></span>
-        <span> 2021.11.23</span>
+        <span><b>{post?.writer.writer_nickname}&nbsp;</b></span>
+        <span> {post?.createdAt.slice(0, 10)}</span>
       </div>
       <Comments/>
     </PostDetailBlock>
