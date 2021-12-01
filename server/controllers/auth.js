@@ -115,14 +115,12 @@ module.exports = {
   // POST auth/log-out
 
   logout: async (req, res) => {
-    // TODO 이상 없는 지 확인해보기
     const result = accessFunc(req, res);
     // console.log(result.identified)
     if (!result.identified) {
       return result;
     }
     // console.log(result)
-    
     try {
       if(!result) {
         return res.status(400).send('유효하지 않은 토큰입니다.')
@@ -136,7 +134,7 @@ module.exports = {
   },
   // DELETE auth/sign-out
   signout: async (req, res) => {
-    // TODO 이상 없는 지 확인해보기
+    // TODO: 이상 없는 지 확인해보기
     // console.log(req.headers)
     //1.유저검증(토큰여부)
     const result = accessFunc(req, res);
@@ -194,6 +192,17 @@ module.exports = {
   getMyposts: async (req, res) => {
     // TODO
     res.send('Get auth/mypage/posts');
+  },
+  // GET auth/wish-list/:user_email
+  getWishLists: (req, res) => {
+    // TODO
+    console.log(req.params.user_email);
+    const userEmail = req.params.user_email;
+
+    res.json({
+      method: 'GET /auth/wish-list/:user_email',
+      userEmail
+    });
   },
   // PATCH auth/mypage
   patchMypage: async (req, res) => {
