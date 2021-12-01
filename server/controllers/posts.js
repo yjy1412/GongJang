@@ -170,7 +170,7 @@ module.exports = {
             let postData = post.dataValues;
             const writerId = postData.user_id;
 
-            // Sequelize 쿼리는 스코프 밖의 변수에 영향을 줄 수 없다??
+            // Sequelize 쿼리는 스코프 밖의 변수에 영향을 줄 수 없다?? 노노
             // 아아!! 비동기 처리기 때문에 undefined 상태에서 처리가 될 수 있구나
             return await User.findOne({ where: { id: writerId } })
               .then(async result => {
@@ -282,7 +282,7 @@ module.exports = {
       const { email } = accessData;
 
       // wish 여부를 알기 위한 유저정보 조회
-      User.findOne({ where: { email } })
+      wish = await User.findOne({ where: { email } })
         .then(result => {
           const userInfo = result.dataValues;
           if (!userInfo) {
@@ -299,7 +299,7 @@ module.exports = {
           })
             .then(resut => {
               if (result) {
-                wish = true;
+                return true;
               }
             })
             .catch(err => {
