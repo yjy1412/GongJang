@@ -282,6 +282,11 @@ module.exports = {
           })
         )
         console.log(responseData);
+
+        // 날짜 순 정렬(작성 일 기준 최신 순)
+        responseData.sort((a,b) => {
+          return Number(new Date(b.createdAt)) - Number(new Date(a.createdAt));
+        })
         res.status(200).json(responseData);
       })
       .catch(err => {
@@ -292,7 +297,7 @@ module.exports = {
   },
   // GET /posts/:posts_id
   getDetail: async (req, res) => {
-    // TODO: 댓글 기능 구현 후 내용 추가하기 / 비회원 기능 구현
+    // TODO: 댓글 기능 구현 후 내용 추가하기
     console.log(req.params.posts_id);
     const postsId = req.params.posts_id;
     let wish = false;

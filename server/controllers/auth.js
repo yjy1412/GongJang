@@ -114,7 +114,6 @@ module.exports = {
     }
   },
   // POST auth/log-out
-
   logout: async (req, res) => {
     const result = accessFunc(req, res);
     // console.log(result.identified)
@@ -218,16 +217,39 @@ module.exports = {
     }
     
   },
-  // GET auth/wish-list/:user_email
-  getWishLists: (req, res) => {
+  // GET auth/wish-list
+  getWishLists: async (req, res) => {
     // TODO
+    // 0. 연결 테스트
     console.log(req.params.user_email);
     const userEmail = req.params.user_email;
 
-    res.json({
-      method: 'GET /auth/wish-list/:user_email',
-      userEmail
-    });
+    // 1. 권한 인증
+    const accessResult = accessFunc(req, res);
+
+    if( !accessResult.identified ) {
+      return accessResult;
+    }
+    const { id, email } = accessResult;
+    
+    // 2. 자료 조회
+    // TODO: wish post 구현 후 다시 작성
+    Wish.findAll({
+      where: { user_id: id },
+      include: {
+        model: Post,
+        attributes: ['id', 'title', 'image1', 'category', 'soldOut', 'createdAt']
+      }
+    })
+      .then(result => {
+        console.log(result);
+        res.end();
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).send("서버에 오류가 발생했습니다")
+      })
+
   },
   // PATCH auth/mypage
   patchMypage: async (req, res) => {
