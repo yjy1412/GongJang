@@ -133,7 +133,8 @@ module.exports = {
          id : postsId
        }})
        res.status(201).json({
-         postsId : postsId,
+         user_id : postsData.user_id,
+         post_id : postsId,
          message : "수정 되었습니다"
        })
     }catch(err) {
