@@ -233,7 +233,6 @@ module.exports = {
     const { id, email } = accessResult;
 
     // 2. 자료 조회
-    // TODO: wish post 구현 후 다시 작성
     Wish.findAll({
       where: { user_id: id },
       include: {
@@ -242,7 +241,9 @@ module.exports = {
       }
     })
       .then(result => {
-        if (!result) { res.status(204) }
+        if (!result) { 
+          res.status(204).send("현재 요청에 해당하는 자료가 없습니다")
+        }
         const responseData = result.map(data => {
           const postData = data.dataValues.Post.dataValues;
           postData.wish = true;
@@ -256,7 +257,10 @@ module.exports = {
         responseData.sort((a, b) => {
           return Number(new Date(b.createdAt)) - Number(new Date(a.createdAt));
         })
-        return res.status(200).json(responseData)
+        return res.status(200).json({
+          data: responseData,
+          message: "내가 찜한 게시글이 리스트업 되었습니다"
+        })
       })
       .catch(err => {
         console.log(err);

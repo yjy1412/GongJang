@@ -213,6 +213,9 @@ module.exports = {
     // 2. 데이터 조회
     Post.findAll()
       .then(async result => {
+        if (!result) {
+          res.status(204).send("현재 요청 목록에 해당하는 자료가 없습니다")
+        }
         // console.log(result);
         const responseData = await Promise.all(
           result.map(async post => {
@@ -287,7 +290,10 @@ module.exports = {
         responseData.sort((a,b) => {
           return Number(new Date(b.createdAt)) - Number(new Date(a.createdAt));
         })
-        res.status(200).json(responseData);
+        res.status(200).json({
+          data: responseData,
+          message: "전체 게시글 목록이 리스트업 되었습니다"
+        });
       })
       .catch(err => {
         console.log(err);
