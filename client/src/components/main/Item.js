@@ -31,22 +31,16 @@ const ItemBlock = styled.li`
 `;
 
 const Item = () => {
-
-  // const onClickWish = () => {
-  //   if(!isLogin){
-  //     //modal
-  //   }
-  // }
   
   return (
     <ItemBlock>
       <div className="item-img">
         {/* 
-        <Link to="/postDetail/${id}">
+        <Link to="/${id}">
           <img src="" alt="" />
         </Link>
         */}
-        <Link to="/postDetail/1">
+        <Link to="/1">
           <img src="" alt="" />
         </Link>
       </div>
