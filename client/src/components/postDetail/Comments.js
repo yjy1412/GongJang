@@ -71,6 +71,10 @@ const CommentBtn = styled(Button)`
 
 const Comments = () => {
 
+  const onChangeComment = (e) => {
+    console.log(e.target.value)
+  }
+
   return (
     <CommentsBlock>
       <div className="interest">
@@ -88,6 +92,7 @@ const Comments = () => {
         placeholder="나눔 아이템에 대해 궁금한 점 남겨주세요."
         name=""
         value=""
+        onChange={onChangeComment}
         />
         <CommentBtn>COMMENT</CommentBtn>
       </div>
