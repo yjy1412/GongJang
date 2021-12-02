@@ -10,7 +10,8 @@ const ItemListBlock = styled.ul`
   padding: 2rem 0 4rem;
 `;
 
-const ItemList = () => {
+const ItemList = ({ posts }) => {
+  
   return (
     <ItemListBlock>
       <Item/>

@@ -31,7 +31,6 @@ const ItemBlock = styled.li`
 `;
 
 const Item = () => {
-  
   return (
     <ItemBlock>
       <div className="item-img">

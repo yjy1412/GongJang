@@ -4,8 +4,12 @@ import axios from 'axios';
 export const fetchGetAllPosts = createAsyncThunk(
   'posts/fetchGetAllPosts',
   async () => {
-    const response = await axios.get('/posts');
-    return response.data;
+    try {
+      const response = await axios.get('/posts');
+      return response.data;
+    } catch(err){
+      return err.response.data;
+    }
   }
 )
 
@@ -25,11 +29,11 @@ export const postsSlice = createSlice({
     },
     [fetchGetAllPosts.fulfilled]: (state, { payload }) => {
       state.posts = payload;
-      state.loading = true;
+      state.loading = false;
     },
     [fetchGetAllPosts.rejected]: (state, { payload }) => {
       state.error = payload;
-      state.loading = true;
+      state.loading = false;
     },
   }
 })
