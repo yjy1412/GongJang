@@ -32,34 +32,34 @@ const MainBlock = styled.div`
 `;
 
 const Main = () => {
-  // const dispatch = useDispatch();
-  // const { posts, error, loading, isLogin } = useSelector(({ posts, user }) => ({
-  //   posts: posts.posts,
-  //   error: posts.error,
-  //   loading: posts.loading,
-  //   isLogin: user.isLogin,
-  // }))
+  const dispatch = useDispatch();
+  const { posts, error, loading, } = useSelector(({ posts }) => ({
+    posts: posts.posts,
+    error: posts.error,
+    loading: posts.loading,
+  }))
 
-  // useEffect(() => {
-  //   dispatch(fetchGetAllPosts);
-  // },[dispatch])
-
+  useEffect(() => {
+    dispatch(fetchGetAllPosts());
+  },[dispatch])
+  
+  console.log(posts)
   // if(error){
   //   if(error.response && error.response.status === 404){
   //     return <MainBlock>나눔글이 존재하지 않습니다.</MainBlock>;
   //   }
   //   return <MainBlock>예상치 못한 오류가 발생했습니다.</MainBlock>;
   // }
-  // if(loading || !posts){
-  //   return <Loading/>;
-  // }
+  if(loading || !posts){
+    return <Loading/>;
+  }
   return (
     <MainBlock>
       <GameImg/>
       <div className="share-text">
         <h2>공.장 나눔 공간</h2>
       </div>
-      <ItemList/>
+      <ItemList posts={posts} />
     </MainBlock>
   );
 };
