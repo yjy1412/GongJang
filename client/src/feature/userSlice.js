@@ -65,12 +65,11 @@ export const fetchLogOut = createAsyncThunk(
 
 export const fetchUpdateUserInfo = createAsyncThunk(
   'mypage/fetchUpdateUserInfo',
-  async (form, { rejectWithValue }) => {
-    const { newNickname, profileImage } = form;
+  async ( newNickname, { rejectWithValue }) => {
     try {
       const response = await axios.patch(
         '/auth/mypage', 
-        { nickname: newNickname, profile_image: profileImage },
+        { nickname: newNickname },
       )
       return response.data;
     } catch (err) {
@@ -78,6 +77,21 @@ export const fetchUpdateUserInfo = createAsyncThunk(
     }
   }
 );
+
+export const fetchUpdateProfileImage = createAsyncThunk(
+  'mypage/fetchUpdateProfileImage',
+  async ( newProfileImage, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(
+        '/auth/mypage',
+        { profile_image: newProfileImage },
+      )
+      return response.data
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+)
 
 export const fetchDeleteAccount = createAsyncThunk(
   'mypage/fetchDeleteAccount',
@@ -105,12 +119,17 @@ export const initialState = {
   signUpError: null,
   userInfoError: null,
   passwordError: null
+
 }
 
 const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {},
+  reducers: {
+    changeNickname: (state, { payload: value }) => {
+      state.user.nickname = value; // 수정된 닉네임 user에 저장 
+    },
+  },
   extraReducers: {
     hydrate:(state, { payload }) => {
       return payload;
@@ -169,12 +188,23 @@ const userSlice = createSlice({
       state.loading = false;
       state.userInfoError = payload;
     },
+    [fetchUpdateProfileImage.pending]: (state) => {
+      state.loading = true;
+    },
+    [fetchUpdateProfileImage.fulfilled]: (state) => {
+      state.loading = false;
+      state.isEdited = true;
+    },
+    [fetchUpdateProfileImage.rejected]: (state, { payload }) => {
+      state.loading = false;
+      state.userInfoError = payload;
+    },
     [fetchMypage.pending]: (state) => {
       state.loading = true;
     },
     [fetchMypage.fulfilled]: (state, { payload }) => {
       state.loading = false;
-      state.user = payload;
+      state.user = payload.userInfo;
     },
     [fetchMypage.rejected]: (state, { payload }) => {
       state.loading = false;
@@ -193,5 +223,5 @@ const userSlice = createSlice({
     },
   }
 })
-
+export const { changeNickname } = userSlice.actions
 export default userSlice.reducer;
