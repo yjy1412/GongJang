@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useHistory } from 'react-router-dom';
-import { fetchMypage, fetchUpdateUserInfo } from '../../feature/userSlice';
+import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { fetchUpdateUserInf, changeNickname, fetchUpdateUserInfo } from '../../feature/userSlice';
 import AskEditModal from '../modal/AskEditModal';
 
 const UpdateProfileBlock = styled.div`
@@ -47,74 +47,52 @@ const ErrorMessage = styled.div`
 `;
 
 
-const UpdateProfile = () => {
-  
-  const history = useHistory();
+const UpdateProfile = ({ user, userInfoError, isEdited, setNewNickname, newNickname }) => {
   const dispatch = useDispatch();
 
-  const { user, isEdited, userInfoError } = useSelector( state => state.user);
-
   const [visible, setVisible] = useState(false);
-
-  const [ newUserInfo, setNewUserInfo ] = useState({
-    newNickname : "",
-    profileImage: null,
-  });
-
+  
   const [serverErrorMessage, setServerErrorMessage] = useState("");
-
-  const handleUpdateUserInfo = () => {
-    dispatch(fetchUpdateUserInfo(newUserInfo));
-    setNewUserInfo({
-      newNickname: "",
-      profileImage: null,
-    })
+  const handleNewNickname = (e) => {
+    setNewNickname(e.target.value);
   }
   
-  const handleNewNickname = (e) => {
-    setNewUserInfo({ ...newUserInfo, [e.target.name] : e.target.value});
-  }
-
   const handleEditButton = () => {
     setVisible(true)
   }
 
   const onCancel = () => {
     setVisible(false);
-    history.replace('/mypage');
   }
 
   const onConfirm = () => {
     setVisible(false);
-    handleUpdateUserInfo();
-    history.replace('/mypage')
+    dispatch(fetchUpdateUserInfo(newNickname));
+    dispatch(changeNickname(newNickname));
+    setNewNickname('');
   }
 
-  useEffect(() => {
-    dispatch(fetchMypage());                                      
-  }, [dispatch]);
-
-  useEffect(() => {
-    if(isEdited){
-      history.push('/mypage');
-    }
-    if(userInfoError){
-      setServerErrorMessage(userInfoError);
-      setTimeout(() => setServerErrorMessage(''), 3000)
-    }
-  },[history, isEdited, userInfoError])
+  // useEffect(() => {
+  //   if(isEdited){
+  //     history.push('/mypage');
+  //   }
+  //   if(userInfoError){
+  //     setServerErrorMessage(userInfoError);
+  //     setTimeout(() => setServerErrorMessage(''), 3000)
+  //   }
+  // },[history, isEdited, userInfoError])
 
   return (
     <>
       <UpdateProfileBlock>
-        <h1><span>{user ? user.userInfo.nickname : ""}</span> 님, 안녕하세요.</h1>
+        <h1><span>{user ? user.nickname : ""}</span> 님, 안녕하세요.</h1>
         <UpdateProfileForm>
           <div className="update-nickname">
             <input 
               type="text" 
               name="newNickname"
               placeholder="닉네임을 수정하세요."
-              value={newUserInfo.newNickname}
+              value={newNickname}
               onChange={handleNewNickname}
             />
             <span onClick={handleEditButton}>EDIT</span>
@@ -130,7 +108,13 @@ const UpdateProfile = () => {
         </UpdateProfileForm>
       </UpdateProfileBlock>
       {
-        visible ? <AskEditModal visible={visible} onCancel={onCancel} onConfirm={onConfirm} /> : null
+        visible && ( 
+        <AskEditModal 
+        visible={visible} 
+        onCancel={onCancel} 
+        onConfirm={onConfirm} 
+        /> 
+        )
       }
     </>
   );
