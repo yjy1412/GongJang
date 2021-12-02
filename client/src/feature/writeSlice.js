@@ -16,10 +16,14 @@ export const fetchWritePost = createAsyncThunk(
 
 export const fetchUpdatePost = createAsyncThunk(
   'write/fetchUpdatePost',
-  async (form) => {
+  async (form, { rejectWithValue }) => {
     const { id, title, content, category, soldOut, image } = form;
-    const response = await axios.patch(`/posts/${id}`, { title, content, category, soldOut, image });
-    return response.data;
+    try {
+      const response = await axios.patch(`/posts/${id}`, { title, content, category, soldOut, image });
+      return response.data;  
+    } catch(err){
+      return rejectWithValue(err.response.data);
+    }
   }
 )
 
@@ -50,7 +54,7 @@ export const writeSlice = createSlice({
       state.content = post.content;
       state.image = post.image;
       state.category = post.category;
-      state.soldOut = post.soldOut;
+      state.soldOut = false;
       state.originalPostId = post.post_id;
     },
     changeCategory: (state, { payload }) => {
@@ -76,7 +80,7 @@ export const writeSlice = createSlice({
       state.loading = true;
     },
     [fetchUpdatePost.fulfilled]: (state, { payload }) => {
-      state.post = state.originalPostId;
+      state.post = payload;
       state.loading = false;
     },
     [fetchUpdatePost.rejected]: (state, { payload }) => {
