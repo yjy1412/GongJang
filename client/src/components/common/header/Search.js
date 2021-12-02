@@ -4,14 +4,6 @@ import { FiSearch } from 'react-icons/fi';
 import { FaTimes } from 'react-icons/fa';
 
 const SearchBlock = styled.div`
-  /* position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  background: #dadcec;
-  transform: translateY(-120%);
-  transition: transform .3s; */
   .wrap {
     position: relative;
     width:70%;
@@ -34,7 +26,7 @@ const SearchBlock = styled.div`
           border-bottom: 1px solid #575F95;
           padding-bottom: 0.2rem;
           &::placeholder {
-            color: #b2b0b0;
+            color: #828cbf;
           }
         }
         .search-icon {
@@ -65,6 +57,7 @@ const SearchBlock = styled.div`
       right: 0;
       padding: 2rem;
       font-size: 1.2rem;
+      cursor: pointer;
     }
   }
 `;
