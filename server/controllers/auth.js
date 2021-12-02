@@ -122,14 +122,14 @@ module.exports = {
     }
     // console.log(result)
     try {
-      if(!result) {
+      if (!result) {
         return res.status(400).send('유효하지 않은 토큰입니다.')
-      } else {      
-          res.clearCookie('refreshToken')
-          res.status(200).send('로그아웃에 성공했습니다.');
-    }
-    }catch(err) {     
-       return res.status(500).send('서버에 오류가 발생했습니다.')
+      } else {
+        res.clearCookie('refreshToken')
+        res.status(200).send('로그아웃에 성공했습니다.');
+      }
+    } catch (err) {
+      return res.status(500).send('서버에 오류가 발생했습니다.')
     }
   },
   // DELETE auth/sign-out
@@ -145,26 +145,26 @@ module.exports = {
     const email = result.email
 
     //2.유저정보가 없다면 400, 있다면 204번에서 destory, 서버오류 500
-    try{
-      if(!result) {
+    try {
+      if (!result) {
         return res.status(400).send("요청하신 회원정보와 일치하는 회원정보가 없습니다.")
       } else {
-          User.destroy({
-            where : { email : email}
+        User.destroy({
+          where: { email: email }
         })
-          res.clearCookie('refreshToken')
-          res.status(204).send('회원탈퇴에 성공했습니다')      
+        res.clearCookie('refreshToken')
+        res.status(204).send('회원탈퇴에 성공했습니다')
       }
-    } catch(err) {
-        return res.status(500).send('서버에 오류가 발생했습니다.')
-    }      
+    } catch (err) {
+      return res.status(500).send('서버에 오류가 발생했습니다.')
+    }
   },
   // GET auth/mypage
   getMypage: async (req, res) => {
 
     const result = accessFunc(req, res);
 
-    if ( !result.identified ) {
+    if (!result.identified) {
       return result;
     }
     const email = result.email;
@@ -191,31 +191,31 @@ module.exports = {
   // GET auth/mypage/posts
   getMyPosts: async (req, res) => {
     // TODO
-    const result= accessFunc(req, res);
-    
+    const result = accessFunc(req, res);
+
     if (!result.identified) {
       return result;
     }
     const email = result.email
     console.log(result)
 
-    if(!result) {
+    if (!result) {
       res.status(400).send('유효하지 않은 토큰입니다.')
     } else {
-        try{
-          Post.findAll({
-            attributes : ['title'],
-            where : {
-              id : result.id
-            }
-          })
-          res.status(200).send('제발 성공')
+      try {
+        Post.findAll({
+          attributes: ['title'],
+          where: {
+            id: result.id
+          }
+        })
+        res.status(200).send('제발 성공')
 
-        }catch(err) {
-          res.status(500).send('서버에러')
-        }
+      } catch (err) {
+        res.status(500).send('서버에러')
+      }
     }
-    
+
   },
   // GET auth/wish-list
   getWishLists: async (req, res) => {
@@ -227,11 +227,11 @@ module.exports = {
     // 1. 권한 인증
     const accessResult = accessFunc(req, res);
 
-    if( !accessResult.identified ) {
+    if (!accessResult.identified) {
       return accessResult;
     }
     const { id, email } = accessResult;
-    
+
     // 2. 자료 조회
     // TODO: wish post 구현 후 다시 작성
     Wish.findAll({
@@ -242,8 +242,21 @@ module.exports = {
       }
     })
       .then(result => {
-        console.log(result);
-        res.end();
+        if (!result) { res.status(204) }
+        const responseData = result.map(data => {
+          const postData = data.dataValues.Post.dataValues;
+          postData.wish = true;
+          return postData;
+        })
+        console.log(responseData)
+        if ( !responseData ) {
+          res.status(500).send("서버에 에러가 발생했습니다")
+        }
+        // 날짜 순 정렬(작성 일 기준 최신 순)
+        responseData.sort((a, b) => {
+          return Number(new Date(b.createdAt)) - Number(new Date(a.createdAt));
+        })
+        return res.status(200).json(responseData)
       })
       .catch(err => {
         console.log(err);
@@ -256,7 +269,7 @@ module.exports = {
     // 1. 권한 인증
     const result = accessFunc(req, res);
 
-    if ( !result.identified ) {
+    if (!result.identified) {
       return result;
     }
     const email = result.email;
@@ -300,7 +313,7 @@ module.exports = {
     // 1. 권한 인증
     const result = accessFunc(req, res);
 
-    if ( !result.identified ) {
+    if (!result.identified) {
       return result;
     }
     const email = result.email;
