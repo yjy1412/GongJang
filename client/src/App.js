@@ -17,13 +17,13 @@ function App() {
       <Header/>
       <Switch>
         <Route component={Main} exact path="/"/>
-        <Route component={Join} path="/join"/>
-        <Route component={Login} path="/login"/>
-        <Route component={Mypage} path="/mypage"/>
-        <Route component={PostDetail} path="/postDetail/:id"/>
-        <Route component={UpdatePassword} path="/updatePassword"/>
-        <Route component={WishList} path="/wishList"/>
-        <Route component={Write} path="/write"/>
+        <Route component={Join} exact path="/join"/>
+        <Route component={Login} exact path="/login"/>
+        <Route component={Mypage} exact path="/mypage"/>
+        <Route component={UpdatePassword} exact path="/updatePassword"/>
+        <Route component={WishList} exact path="/wishList"/>
+        <Route component={Write} exact path="/write"/>
+        <Route component={PostDetail} exact path="/:id"/>
       </Switch>
       <Footer/>
     </>
