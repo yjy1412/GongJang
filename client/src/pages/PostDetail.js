@@ -21,8 +21,8 @@ const PostDetailBlock = styled.div`
     }
     .share-status {
       position: absolute;
-      top: 10px;
       right: 0;
+      bottom: 0;
       font-size: 1.2rem;
       color: #575F95;
       background: #fa8072;
