@@ -48,7 +48,7 @@ const MenuIcons = ({ onClick }) => {
 
   const onConfirm = () => {
     setVisible(false);
-    history.replace('/login')
+    history.push('/login')
   }
 
   return (
