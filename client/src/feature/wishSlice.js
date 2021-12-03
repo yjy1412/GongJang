@@ -18,7 +18,7 @@ export const fetchWish = createAsyncThunk(
 )
 
 export const fetchRemoveWish = createAsyncThunk(
-  'wish/fetchWish',
+  'wish/fetchRemoveWish',
   async (post_id) => {
     const response = await axios.delete('/wish', {data: { post_id }});
     return response.data;

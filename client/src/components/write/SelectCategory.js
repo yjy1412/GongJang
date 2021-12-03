@@ -20,7 +20,7 @@ const SelectCategoryBlock = styled.div`
 
 const SelectCategory = () => {
   const dispatch = useDispatch();  
-  const categories = ['--카테고리를 선택하세요.--', '보드게임', '퍼즐', '레고'];
+  const categories = ['보드게임', '퍼즐', '레고'];
 
   const onChangeSelect = (e) => {
     const categorySelect = document.querySelector('#category-select');
@@ -36,6 +36,7 @@ const SelectCategory = () => {
       id="category-select"
       onChange={onChangeSelect}
       >
+        <option value='--카테고리를 선택하세요.--' selected>--카테고리를 선택하세요.--</option>
         { categories.map((category, index) => (
           <option key={index} value={category}>{category}</option>
         ))}
