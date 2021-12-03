@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { fetchUpdateUserInf, changeNickname, fetchUpdateUserInfo } from '../../feature/userSlice';
+import { changeNickname, fetchUpdateUserInfo } from '../../feature/userSlice';
 import AskEditModal from '../modal/AskEditModal';
 
 const UpdateProfileBlock = styled.div`
@@ -58,7 +58,9 @@ const UpdateProfile = ({ user, userInfoError, isEdited, setNewNickname, newNickn
   }
   
   const handleEditButton = () => {
-    setVisible(true)
+    if(newNickname) {
+      setVisible(true)
+    }
   }
 
   const onCancel = () => {
