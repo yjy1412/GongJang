@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import ItemList from '../components/main/ItemList';
 import GameImg from '../components/main/GameImg';
 import Loading from '../components/common/Loading';
-import { fetchGetAllPosts } from '../feature/postsSlice';
+import { fetchGetAllPosts, initialize } from '../feature/postsSlice';
 
 const MainBlock = styled.div`
   width: 1130px;
@@ -33,17 +33,22 @@ const MainBlock = styled.div`
 
 const Main = () => {
   const dispatch = useDispatch();
-  const { posts, error, loading, } = useSelector(({ posts }) => ({
+  const { posts, error, loading, user, wishError } = useSelector(({ posts, user, wish }) => ({
     posts: posts.posts,
     error: posts.error,
     loading: posts.loading,
+    user: user.user,
+    wishError: wish.wishError,
   }))
 
   useEffect(() => {
-    dispatch(fetchGetAllPosts());
-  },[dispatch])
+    if(!user){
+      dispatch(fetchGetAllPosts());
+    } else {
+      dispatch(fetchGetAllPosts());
+    }
+  },[dispatch, user]);
   
-  console.log(posts)
   // if(error){
   //   if(error.response && error.response.status === 404){
   //     return <MainBlock>나눔글이 존재하지 않습니다.</MainBlock>;
@@ -59,7 +64,11 @@ const Main = () => {
       <div className="share-text">
         <h2>공.장 나눔 공간</h2>
       </div>
-      <ItemList posts={posts} />
+      <ItemList 
+      posts={posts} 
+      user={user} 
+      wishError={wishError}
+      />
     </MainBlock>
   );
 };

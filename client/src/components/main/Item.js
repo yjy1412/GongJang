@@ -1,7 +1,11 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
+import { useDispatch } from 'react-redux';
+import { fetchRemoveWish, fetchWish } from '../../feature/wishSlice';
+import AskLoginModal from '../modal/AskLoginModal';
+import { changeWish } from '../../feature/postsSlice';
 
 const ItemBlock = styled.li`
   max-width: 250px;
@@ -27,31 +31,72 @@ const ItemBlock = styled.li`
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
+    p {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 `;
 
-const Item = () => {
+const Item = ({ post, user, wishError }) => {
+  const [modal, setModal] = useState(false);
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  
+  const onClickWish = () => {
+    console.log(post?.id)
+    if(!user){
+      setModal(!modal);
+    }
+    if(user){
+      if(post?.wish){
+        dispatch(fetchRemoveWish(post?.id));
+        dispatch(changeWish(post?.id));
+      } else {
+        dispatch(fetchWish(post?.id));
+        dispatch(changeWish(post?.id));
+      }
+    }
+  }
+
+  const onCancel = () => {
+    setModal(!modal);
+  }
+
+  const onConfirm = () => {
+    setModal(!modal);
+    history.push('/login');
+  }
+
   return (
     <ItemBlock>
       <div className="item-img">
-        {/* 
-        <Link to="/${id}">
-          <img src="" alt="" />
-        </Link>
-        */}
-        <Link to="/1">
+        <Link to={`/${post?.id}`}>
           <img src="" alt="" />
         </Link>
       </div>
       <div className="item-info">
-        <p>title</p>
+        <p>{post?.title}</p>
         <div 
         className="check-wish"
-        // onClick={onClickWish}
+        onClick={onClickWish}
         >
-          <RiHeartLine fill="red"/>
+          { post?.wish ? (
+            <RiHeartFill fill="red"/>
+          ) : (
+            <RiHeartLine fill="red"/>
+          )}
         </div>
       </div>
+      { modal && (
+        <AskLoginModal 
+        visible={modal}
+        onCancel={onCancel}
+        onConfirm={onConfirm}
+        />
+      )}
     </ItemBlock>
   );
 };

@@ -2,6 +2,7 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import postSlice from '../feature/postSlice';
 import postsSlice from '../feature/postsSlice';
 import userSlice from '../feature/userSlice';
+import wishSlice from '../feature/wishSlice';
 import writeSlice from '../feature/writeSlice';
 
 import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
   write: writeSlice,
   post: postSlice,
   posts: postsSlice,
+  wish: wishSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

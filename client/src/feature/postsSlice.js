@@ -22,7 +22,23 @@ const initialState = {
 export const postsSlice = createSlice({
   name: 'posts',
   initialState,
-  reducers: {},
+  reducers: {
+    initialize: () => {
+      return initialState;
+    },
+    changeWish: (state, { payload: id }) => {
+      state.posts.map(post => {
+        if(post.id === id){
+          if(post.wish){
+            post.wish = false;
+          } else {
+            post.wish = true;
+          }
+        }
+        return post;
+      })
+    }
+  },
   extraReducers: {
     [fetchGetAllPosts.pending]: (state) => {
       state.loading = true;
@@ -38,4 +54,5 @@ export const postsSlice = createSlice({
   }
 })
 
+export const { changeWish, initialize } = postsSlice.actions;
 export default postsSlice.reducer;
