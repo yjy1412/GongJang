@@ -4,29 +4,31 @@ import axios from 'axios';
 export const fetchWishList = createAsyncThunk(
   'wish/fetchWishList',
   async () => {
-    const response = await axios.get('http://localhost:4000/wish');
+    const response = await axios.get('/wish');
     return response.data;
   }
 )
 
 export const fetchWish = createAsyncThunk(
   'wish/fetchWish',
-  async (id) => {
-    await axios.post(`http://localhost:4000/wish/${id}`);
+  async (post_id) => {
+    const response = await axios.post('/wish', { post_id });
+    return response.data;
   }
 )
 
 export const fetchRemoveWish = createAsyncThunk(
-  'wish/fetchRemoveWish',
-  async (id) => {
-    await axios.delete(`http://localhost:4000/wish/${id}`);
+  'wish/fetchWish',
+  async (post_id) => {
+    const response = await axios.delete('/wish', {data: { post_id }});
+    return response.data;
   }
 )
 
 const initialState = {
   wish: false,
   wishList: null,
-  error: null,
+  wishError: null,
   loading: false,
 }
 
@@ -56,15 +58,17 @@ export const wishSlice = createSlice({
       state.loading = false;
     },
     [fetchWishList.rejected]: (state, { payload }) => {
-      state.error = payload;
+      state.wishError = payload;
       state.loading = false;
     },
     [fetchWish.fulfilled]: (state) => {
-      // state.wish = true;
+      state.loading = false;
+    },
+    [fetchWish.rejected]: (state, { payload }) => {
+      state.wishError = payload;
     },
     [fetchRemoveWish.fulfilled]: (state) => {
-      // state.wish = false;
-    }
+    },
   }
 })
 

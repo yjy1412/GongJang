@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Main from './pages/Main';
@@ -10,8 +11,12 @@ import WishList from './pages/WishList';
 import Write from './pages/Write';
 import Header from './components/common/header/Header';
 import Footer from './components/common/Footer';
+import { useSelector } from 'react-redux';
 
 function App() {
+  
+  const { accessToken } = useSelector( state => state.user);
+  axios.defaults.headers.common['authorization'] = `${accessToken ? `Bearer ${accessToken}` : ''}`;
   return (
     <>
       <Header/>
