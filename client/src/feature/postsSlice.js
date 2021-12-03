@@ -37,7 +37,7 @@ export const postsSlice = createSlice({
     },
     removePost: (state, { payload: id }) => {
       const newPosts = state.posts.filter(post => post.id !== id);
-      return state.posts = newPosts;
+      state.posts = newPosts;
     }
   },
   extraReducers: {
