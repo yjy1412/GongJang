@@ -6,7 +6,7 @@ const { use } = require('../routers');
 
 module.exports = {
   // POST /comments
-  post: (req, res) => {
+  post: async (req, res) => {
      console.log(req.body)
      const postId = req.body.post_id; //postId
      const accessResult = accessFunc(req, res); //유저인증(토큰확인)
@@ -20,8 +20,7 @@ module.exports = {
      if(!inputContent) {
        return res.status(400).send('내용을 입력해주세요')
      }
-
-     Comment.create({
+     await Comment.create({
        content : inputContent,
        post_id: postId,
        user_id: id
@@ -36,18 +35,46 @@ module.exports = {
     
   },
   // PATCH /comments/:comments_id
-  patch: (req, res) => {
-    console.log(req.params.comments_id);
-    console.log(req.body);
-
-    const commentsId = req.params.comments_id;
-    const reqBody = req.body;
-
-    res.json({
-      method: 'PATCH /comments/:comments_id',
-      commentsId,
-      reqBody
-    });
+  patch: async (req, res) => {
+     const accessResult = accessFunc(req, res); //유저인증(토큰확인) 
+     if (!accessResult.identified) {
+       return accessResult;
+     }
+     const inputContent = req.body.content
+     const userId = accessResult.id
+     const commentsId = req.params.comments_id
+     const postId = req.body.post_id
+     //댓글 수정 - 빈칸
+     if(!inputContent) {
+       res.status(400).send('내용을 입력해주세요.')
+     } 
+     // 아니라면 try
+       const comment = await Comment.findOne({
+         where : {
+          id : commentsId
+         }
+       }) //수정하고 싶은 댓글 찾기 
+       console.log(comment.dataValues.user_id)  
+       console.log(userId)    
+       
+       if(comment.dataValues.user_id !== userId || comment.dataValues.post_id !== postId) {
+        return res.status(401).send('권한이 없습니다.')
+       }else {
+        await Comment.update({
+           content : inputContent
+         },{
+           where : {
+             id : commentsId
+           }
+         })
+         .then(result => {
+           console.log(result)
+           res.status(201).send('댓글이 수정되었습니다.')
+         })
+         .catch(err => {
+           res.status(500).send('서버에 오류가 발생했습니다.')
+         })
+       }
   },
   // DELETE /comments/:comments_id
   delete: async (req, res) => {
@@ -57,6 +84,7 @@ module.exports = {
     if (!accessResult.identified) {
       return accessResult;
     }
+    const userId = accessResult.id
     const commentsId = req.params.comments_id; //commentsid 
     
     try{
@@ -65,8 +93,16 @@ module.exports = {
           id : commentsId
         }
       })
-      comment.destroy({});
-      return res.sendStatus(204)
+      if(comment.dataValues.user_id !== userId) {
+        res.status(401).send('권한이 없습니다.')
+      }else {
+        Comment.destroy({
+          where : {
+            id : commentsId
+          }
+        })
+        res.sendStatus(204)
+      }
     }catch(err) {
       return res.status(500).send('서버에서 오류가 발생했습니다.')
     }

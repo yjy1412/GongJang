@@ -118,7 +118,7 @@ module.exports = {
     console.log(userInfo.dataValues.id)
 
     if(userInfo.dataValues.id !== postsData.user_id) { 
-      return res.status(400).send('작성자가 아닙니다.')
+      return res.status(401).send('권한이 아닙니다.')
       //잡아냈음
     } else {
     try {
@@ -147,30 +147,34 @@ module.exports = {
   // DELETE /posts/:posts_id
   delete: async (req, res) => {
     console.log(req.params.posts_id)
-    const postsId = req.params.posts_id;
-
+    const postsId = req.params.posts_id;    
     //유저 권한 인증
     const result = accessFunc(req, res);
     if (!result.identified) {
       return result;
     }
-    
+    try{
+    const userId = result.id
     //권한이 있다면
-    if (result) {
-      try {
-        const postInfo = await Post.findOne({
-          where: { id: postsId }
-        })
-        await postInfo.destroy({});
-        return res.sendStatus(204)
-      } catch (err) {
-        return res.status(500).send('서버에 오류가 발생했습니다.')
+    const postInfo = await Post.findOne({
+      where : {
+        id : postsId
       }
-      //권한이 없다면
-    } else {
-      return res.status(401).send('유효하지 않은 토큰입니다.')
+    })
+    console.log(postInfo.dataValues.user_id)
+    if(postInfo.dataValues.user_id !== userId) {
+      return res.status(401).send('권한이 없습니다.')
+    }else {
+      Post.destroy({
+        where : {
+          id : postsId
+        }
+      })
+      res.sendStatus(204)
     }
-
+    }catch(err) {
+      return res.status(500).send('서버에 오류가 발생했습니다.')
+    }
   },
   // GET /posts
   get: async (req, res) => {
