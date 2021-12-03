@@ -46,7 +46,6 @@ const Item = ({ post, user, wishError }) => {
 
   
   const onClickWish = () => {
-    console.log(post?.id)
     if(!user){
       setModal(!modal);
     }
