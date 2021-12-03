@@ -30,7 +30,7 @@ const SelectCategory = () => {
 
   return (
     <SelectCategoryBlock>
-      <label For="category-select">연관 카테고리를 선택하세요.</label>
+      <label htmlFor="category-select">연관 카테고리를 선택하세요.</label>
       <select 
       name="categories" 
       id="category-select"
