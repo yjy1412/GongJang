@@ -101,7 +101,9 @@ const Header = () => {const dispatch = useDispatch();
         if(accessToken && isLogin){
             dispatch(fetchLogOut())
         }
-        history.push('/');
+        if(!isLogin){
+            history.push('/');
+        }
     }
   
     return (
@@ -122,7 +124,7 @@ const Header = () => {const dispatch = useDispatch();
                     <ul className="auth">
                         <li>
                             { isLogin ? (
-                                <Link to="/" onClick={() => handleLogOut()}>LOGOUT</Link>
+                                <Link to="/" onClick={handleLogOut}>LOGOUT</Link>
                             ) : (
                                 <Link to="/login">LOGIN</Link>
                             )}
