@@ -34,6 +34,7 @@ const SelectCategory = () => {
       <select 
       name="categories" 
       id="category-select"
+      defaultValue="categories"
       onChange={onChangeSelect}
       >
         <option value='--카테고리를 선택하세요.--' selected>--카테고리를 선택하세요.--</option>
