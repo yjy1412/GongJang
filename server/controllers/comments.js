@@ -1,16 +1,39 @@
 const express = require('express');
 const router = express.Router();
+const accessFunc = require('./token');
+const { User, Post, Wish, Comment } = require('../models');
+const { use } = require('../routers');
 
 module.exports = {
   // POST /comments
   post: (req, res) => {
-    console.log(req.body);
-    const reqBody = req.body;
+     console.log(req.body)
+     const postId = req.body.post_id; //postId
+     const accessResult = accessFunc(req, res); //유저인증(토큰확인)
+ 
+     if (!accessResult.identified) {
+       return accessResult;
+     }
+     const id = accessResult.id; //userId
+     const inputContent = req.body.content //내용이 있어야 함
 
-    res.json({
-      method: 'POST /comments',
-      reqBody
-    });
+     if(!inputContent) {
+       return res.status(400).send('내용을 입력해주세요')
+     }
+
+     Comment.create({
+       content : inputContent,
+       post_id: postId,
+       user_id: id
+     })
+       .then(result => {
+         console.log(result);
+         res.status(201).send("댓글이 등록되었습니다.")
+       })
+       .catch(err => {
+         res.status(500).send("서버에 오류가 발생했습니다")
+       })
+    
   },
   // PATCH /comments/:comments_id
   patch: (req, res) => {
