@@ -47,7 +47,7 @@ const MyPageBlock = styled.div`
 
 const DeleteButton = styled.button`
   font-size: 1.2rem;
-  font-weight: 500;
+  font-weight: 600;
   /* text-decoration-line: underline; */
   color: #575F95;
   padding: 0.5rem 0.5rem 0;
