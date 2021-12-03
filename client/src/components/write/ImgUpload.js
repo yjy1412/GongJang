@@ -23,6 +23,7 @@ const ImgPreviewBox = styled.div`
     background: orchid;
     img {
       width: 100%;
+      height: 100%;
     }
     .remove-btn {
       position: absolute;

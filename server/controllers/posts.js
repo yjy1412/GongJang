@@ -134,7 +134,7 @@ module.exports = {
          id : postsId
        }})
        res.status(201).json({
-         postsId : postsId,
+         post_id : postsId,
          message : "수정 되었습니다"
        })
     }catch(err) {
