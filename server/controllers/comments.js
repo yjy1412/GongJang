@@ -14,6 +14,7 @@ module.exports = {
      if (!accessResult.identified) {
        return accessResult;
      }
+     try{
      const id = accessResult.id; //userId
      const inputContent = req.body.content //내용이 있어야 함
 
@@ -24,15 +25,11 @@ module.exports = {
        content : inputContent,
        post_id: postId,
        user_id: id
-     })
-       .then(result => {
-         console.log(result);
-         res.status(201).send("댓글이 등록되었습니다.")
-       })
-       .catch(err => {
-         res.status(500).send("서버에 오류가 발생했습니다")
-       })
-    
+     })  
+     res.status(201).send("댓글이 등록되었습니다.")    
+    } catch(err) {
+      res.status(500).send("서버에 오류가 발생했습니다")
+      }     
   },
   // PATCH /comments/:comments_id
   patch: async (req, res) => {
@@ -48,7 +45,7 @@ module.exports = {
      if(!inputContent) {
        res.status(400).send('내용을 입력해주세요.')
      } 
-     // 아니라면 try
+      try{
        const comment = await Comment.findOne({
          where : {
           id : commentsId
@@ -59,22 +56,20 @@ module.exports = {
        
        if(comment.dataValues.user_id !== userId || comment.dataValues.post_id !== postId) {
          return res.status(401).send('권한이 없습니다.')
-       }else {
-        await Comment.update({
-           content : inputContent
-         },{
-           where : {
-             id : commentsId
-           }
-         })
-         .then(result => {
-           console.log(result)
+       } else {
+          await Comment.update({
+            content : inputContent
+           },{
+             where : {
+               id : commentsId
+             }
+           }) 
            res.status(201).send('댓글이 수정되었습니다.')
-         })
-         .catch(err => {
-           res.status(500).send('서버에 오류가 발생했습니다.')
-         })
-       }
+          }
+        } catch(err) {        
+          res.status(500).send('서버에 오류가 발생했습니다.')
+          }
+       
   },
   // DELETE /comments/:comments_id
   delete: async (req, res) => {
@@ -87,7 +82,7 @@ module.exports = {
     const userId = accessResult.id
     const commentsId = req.params.comments_id; //commentsid 
     
-  
+    try{
      const comment = await Comment.findOne({
         where : {
           id : commentsId
@@ -101,15 +96,10 @@ module.exports = {
             id : commentsId
           }
         })
-        .then(result => {
-          console.log(result);
-          res.sendStatus(204);
-        })
-        .catch(err => {
-          console.log(err);
-          res.status(500).send('서버에서 오류가 발생했습니다.')
-        })        
+        res.sendStatus(204);
+      } 
+    }catch(err) {
+      return res.status(500).send('서버에서 오류가 발생했습니다.')
       }
-    } 
-  
+ }
 }
