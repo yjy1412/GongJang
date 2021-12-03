@@ -7,7 +7,7 @@ import writeSlice from '../feature/writeSlice';
 
 import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
 
-// Redcer-Persist
+// Reducer-Persist
 import { persistReducer, persistStore } from "redux-persist";
 import storage from 'redux-persist/lib/storage'
 
