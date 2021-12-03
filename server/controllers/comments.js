@@ -50,17 +50,25 @@ module.exports = {
     });
   },
   // DELETE /comments/:comments_id
-  delete: (req, res) => {
+  delete: async (req, res) => {
     console.log(req.params.comments_id);
-    console.log(req.body);
-
-    const commentsId = req.params.comments_id;
-    const reqBody = req.body;
-
-    res.json({
-      method: 'DELETE /comments/:comments_id',
-      commentsId,
-      reqBody
-    });
+    console.log(req.body.post_id)
+    const accessResult = accessFunc(req, res);
+    if (!accessResult.identified) {
+      return accessResult;
+    }
+    const commentsId = req.params.comments_id; //commentsid 
+    
+    try{
+     const comment = await Comment.findOne({
+        where : {
+          id : commentsId
+        }
+      })
+      comment.destroy({});
+      return res.sendStatus(204)
+    }catch(err) {
+      return res.status(500).send('서버에서 오류가 발생했습니다.')
+    }
   }
 }
