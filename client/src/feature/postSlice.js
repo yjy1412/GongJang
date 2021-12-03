@@ -28,7 +28,7 @@ export const postSlice = createSlice({
   reducers: {
     unloadPost: () => {
       return initialState;
-    }
+    },
   },
   extraReducers: {
     [fetchGetPostDetail.pending]: (state) => {
