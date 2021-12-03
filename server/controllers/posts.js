@@ -162,7 +162,7 @@ module.exports = {
           where: { id: postsId }
         })
         await postInfo.destroy({});
-        return res.status(204).send('게시물 삭제 성공')
+        return res.sendStatus(204)
       } catch (err) {
         return res.status(500).send('서버에 오류가 발생했습니다.')
       }
