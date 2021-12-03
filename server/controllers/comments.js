@@ -58,7 +58,7 @@ module.exports = {
        console.log(userId)    
        
        if(comment.dataValues.user_id !== userId || comment.dataValues.post_id !== postId) {
-        return res.status(401).send('권한이 없습니다.')
+         return res.status(401).send('권한이 없습니다.')
        }else {
         await Comment.update({
            content : inputContent
@@ -87,24 +87,29 @@ module.exports = {
     const userId = accessResult.id
     const commentsId = req.params.comments_id; //commentsid 
     
-    try{
+  
      const comment = await Comment.findOne({
         where : {
           id : commentsId
         }
       })
       if(comment.dataValues.user_id !== userId) {
-        res.status(401).send('권한이 없습니다.')
+        return res.status(401).send('권한이 없습니다.');
       }else {
         Comment.destroy({
           where : {
             id : commentsId
           }
         })
-        res.sendStatus(204)
+        .then(result => {
+          console.log(result);
+          res.sendStatus(204);
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(500).send('서버에서 오류가 발생했습니다.')
+        })        
       }
-    }catch(err) {
-      return res.status(500).send('서버에서 오류가 발생했습니다.')
-    }
-  }
+    } 
+  
 }
