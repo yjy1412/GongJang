@@ -219,7 +219,6 @@ module.exports = {
   },
   // GET auth/wish-list
   getWishLists: async (req, res) => {
-    // TODO
     // 0. 연결 테스트
     console.log(req.params.user_email);
     const userEmail = req.params.user_email;
@@ -242,7 +241,7 @@ module.exports = {
     })
       .then(result => {
         if (!result) { 
-          res.status(204).send("현재 요청에 해당하는 자료가 없습니다")
+          res.sendStatus(204);
         }
         const responseData = result.map(data => {
           const postData = data.dataValues.Post.dataValues;

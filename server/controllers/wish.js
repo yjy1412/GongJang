@@ -52,7 +52,7 @@ module.exports = {
       .then(result => {
         console.log(result);
         // 상태코드 204는 메시지를 보낼 수 없음
-        res.status(200).send("해당 게시글의 위시등록이 취소되었습니다")
+        res.sendStatus(204)
       })
       .catch(err => {
         console.log(err);
