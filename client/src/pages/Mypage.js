@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useHistory } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
 import UpdateProfile from '../components/mypage/UpdateProfile';
-import AskRemoveModal from '../components/modal/AskRemoveModal';
+import AskAccountDeleteModal from '../components/modal/AskAccountDeleteModal'
 import { fetchDeleteAccount, fetchLogOut } from '../feature/userSlice';
 
 const MyPageBlock = styled.div`
@@ -65,20 +65,27 @@ const MyPageProfileImg = styled.div`
     border-radius: 100px;
   }
 
-  p {
+  span {
     margin-top: 5px;
     text-align: center;
+    cursor: pointer;
   }
 `;
 
 const MyPage = () => {
 
+  const [ newNickname, setNewNickname ] = useState('');
+  const [ newProfileImage, setNewProfileImage ] = useState(null);
+  const [visible, setVisible] = useState(false);
+
   const history = useHistory();
   const dispatch = useDispatch();
   
-  const { user } = useSelector( state => state.user );
+  const { user, isEdited, userInfoError } = useSelector( state => state.user );
 
-  const [visible, setVisible] = useState(false);
+  const handleProfileImage = () => {
+    alert("하이")
+  }
 
   const handleDeleteButton = () => {
     setVisible(true)
@@ -86,7 +93,6 @@ const MyPage = () => {
 
   const onCancel = () => {
     setVisible(false);
-    history.replace('/mypage');
   }
 
   const onConfirm = () => {
@@ -107,9 +113,15 @@ const MyPage = () => {
                 alt="profile" 
               />
             </div>
-            <p>사진 업데이트하기</p>
+            <span>사진 업데이트하기</span>
           </MyPageProfileImg>
-          <UpdateProfile />
+          <UpdateProfile 
+          user={user}
+          isEdited={isEdited}
+          userInfoError={userInfoError}
+          newNickname={newNickname}
+          setNewNickname={setNewNickname}
+          />
         </div>
         <div className="wrap">
           <div className="info">
@@ -122,10 +134,10 @@ const MyPage = () => {
         </div>
       </MyPageBlock>
       { 
-        visible ? 
-        <AskRemoveModal visible={visible} onConfirm={onConfirm} onCancel={onCancel}/> :
-        null
-      }
+        visible && (
+        <AskAccountDeleteModal visible={visible} onConfirm={onConfirm} onCancel={onCancel}
+        />
+      )}
     </>
   );
 };

@@ -22,7 +22,7 @@ const SalesStatus = () => {
   
   return (
     <SalesStatusBlock>
-      <label for="status">
+      <label htmlFor="status">
       <input 
       type="checkbox"
       id="status" 

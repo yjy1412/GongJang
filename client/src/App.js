@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Main from './pages/Main';
@@ -10,20 +11,24 @@ import WishList from './pages/WishList';
 import Write from './pages/Write';
 import Header from './components/common/header/Header';
 import Footer from './components/common/Footer';
+import { useSelector } from 'react-redux';
 
 function App() {
+  
+  const { accessToken } = useSelector( state => state.user);
+  axios.defaults.headers.common['authorization'] = `${accessToken ? `Bearer ${accessToken}` : ''}`;
   return (
     <>
       <Header/>
       <Switch>
         <Route component={Main} exact path="/"/>
-        <Route component={Join} path="/join"/>
-        <Route component={Login} path="/login"/>
-        <Route component={Mypage} path="/mypage"/>
-        <Route component={PostDetail} path="/postDetail/:id"/>
-        <Route component={UpdatePassword} path="/updatePassword"/>
-        <Route component={WishList} path="/wishList"/>
-        <Route component={Write} path="/write"/>
+        <Route component={Join} exact path="/join"/>
+        <Route component={Login} exact path="/login"/>
+        <Route component={Mypage} exact path="/mypage"/>
+        <Route component={UpdatePassword} exact path="/updatePassword"/>
+        <Route component={WishList} exact path="/wishList"/>
+        <Route component={Write} exact path="/write"/>
+        <Route component={PostDetail} exact path="/:id"/>
       </Switch>
       <Footer/>
     </>

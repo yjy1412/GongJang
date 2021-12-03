@@ -98,14 +98,16 @@ const Write = () => {
   const onSubmitForm = (e) => {
     e.preventDefault();
 
-    //글 수정 후 업데이트
-    if(originalPostId){
-      const form = { id: originalPostId, title, content, category, soldOut, image };
-      dispatch(fetchUpdatePost(form))
-    } 
     if([title, content].includes('')){
       onConfirm();
     }
+
+    //글 수정 후 업데이트
+    if(originalPostId){
+      const form = { id: originalPostId, title, content, category, soldOut, image };
+      dispatch(fetchUpdatePost(form));
+      return;
+    } 
 
     // let formData = new FormData();
 
@@ -135,7 +137,7 @@ const Write = () => {
   useEffect(() => {
     if(post){
       const { post_id } = post;
-      history.push(`/postDetail/${post_id}`);
+      history.push(`/${post_id}`);
     }
     if(postError){
       console.log(postError);

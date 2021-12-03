@@ -6,6 +6,7 @@ import Comments from '../components/postDetail/Comments';
 import ItemImgSlide from '../components/postDetail/ItemImgSlide';
 import { fetchGetPostDetail, unloadPost, fetchRemovePost } from '../feature/postSlice';
 import { setOriginalPost } from '../feature/writeSlice';
+import Loading from '../components/common/Loading';
 
 const PostDetailBlock = styled.div`
   width: 1130px;
@@ -21,8 +22,8 @@ const PostDetailBlock = styled.div`
     }
     .share-status {
       position: absolute;
-      top: 10px;
       right: 0;
+      bottom: 0;
       font-size: 1.2rem;
       color: #575F95;
       background: #fa8072;
@@ -73,7 +74,7 @@ const PostDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const history = useHistory();
-  const { post, error, loading, user } = useSelector(({ post , user }) => ({
+  const { post, loading, user } = useSelector(({ post , user }) => ({
     post: post.post,
     error: post.error,
     loading: post.loading,
@@ -96,7 +97,7 @@ const PostDetail = () => {
     dispatch(fetchRemovePost(id));
     history.push('/');
   }
-
+  
   const ownPost = (user && user.nickname) === (post && post?.writer.writer_nickname);
   
   // if(error){
@@ -105,9 +106,9 @@ const PostDetail = () => {
   //   }
   //   return <PostDetailBlock>예상치 못한 오류가 발생했습니다.</PostDetailBlock>;
   // }
-  // if(loading || !post){
-  //   return <Loading/>;
-  // }
+  if(loading || !post){
+    return <Loading/>;
+  }
 
   return (
     <PostDetailBlock>
