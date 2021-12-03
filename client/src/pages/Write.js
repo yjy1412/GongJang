@@ -73,7 +73,6 @@ const Write = () => {
   const dispatch = useDispatch();
   const { post, postError, originalPostId, category, title, content, soldOut } = useSelector((state) => state.write);
 
-
   const onConfirm = () => {
     setModal(!modal);
   }
@@ -87,50 +86,57 @@ const Write = () => {
   }
 
   const onRemove = (index) => {
-    const newImageURLs = imageURLs.filter((image, idx) => idx !== index);
-    const newImageFiles = image.filter((image, idx) => idx !== index);
+    const newImageURLs = imageURLs.filter((file, idx) => idx !== index);
+    const newImage = image.filter((image, idx) => idx !== index);
     setImageURLs(newImageURLs);
-    setImage(newImageFiles);
+    setImage(newImage);
+    
   }
+
+  console.log(title);
+  console.log(content)
+  console.log(category)
 
   
   //글 폼 전송하기
   const onSubmitForm = (e) => {
     e.preventDefault();
 
-    if([title, content].includes('')){
-      onConfirm();
-    }
+    // if([title, content].includes('')){
+    //   onConfirm();
+    // }
 
-    //글 수정 후 업데이트
-    if(originalPostId){
-      const form = { id: originalPostId, title, content, category, soldOut, image };
-      dispatch(fetchUpdatePost(form));
-      return;
-    } 
+    // //글 수정 후 업데이트
+    // if(originalPostId){
+    //   const form = { id: originalPostId, title, content, category, soldOut, image };
+    //   dispatch(fetchUpdatePost(form));
+    //   return;
+    // } 
 
-    // let formData = new FormData();
 
-    // imageFiles.forEach((file) => {
-    //   formData.append('image[]', file);
-    // });
+    const formData = new FormData();
 
-    // formData.append('title', title);
-    // formData.append('content', content);
-    // formData.append('category', category);
-    // formData.append('soldOut', soldOut);
+    formData.append('title', title);
+    formData.append('content', content);
+    formData.append('category', category);
+    formData.append('soldOut', soldOut);
+    image.forEach((file, index) => {
+      formData.append('image', file);
+    });
 
+
+    
     // for (let data of formData) {
     //   console.log(data);
     // }
 
-    const formData = {
-      title,
-      content,
-      category,
-      soldOut,
-      image
-    }
+    // const formData = {
+    //   title,
+    //   content,
+    //   category,
+    //   soldOut,
+    //   image
+    // }
     dispatch(fetchWritePost(formData));
   }
 

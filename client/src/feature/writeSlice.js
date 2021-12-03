@@ -4,9 +4,14 @@ import axios from 'axios';
 export const fetchWritePost = createAsyncThunk(
   'write/fetchWritePost',
   async (formData, { rejectWithValue }) => {
-    const { title, content, category, soldOut, image } = formData;
+    // const { title, content, category, soldOut, image } = formData;
     try {
-      const response = await axios.post('/posts', { title, content, category, soldOut, image });
+      const config = {
+        headers: {
+          'Content-Type' : 'multipart/form-data'
+        }
+      }
+      const response = await axios.post('/posts', formData, config);
       return response.data;  
     } catch(err){
       return rejectWithValue(err.response.data);
@@ -49,6 +54,9 @@ export const writeSlice = createSlice({
     changeField: (state, { payload: { key, value }}) => {
       state[key] = value;
     },
+    changeImg: (state, { payload: files }) => {
+      state.image = [...state.image, ...files];
+    },
     setOriginalPost: (state, { payload: post }) => {
       state.title = post.title;
       state.content = post.content;
@@ -90,5 +98,5 @@ export const writeSlice = createSlice({
   }
 })
 
-export const { initialize, changeField, setOriginalPost, changeCategory, changeState } = writeSlice.actions;
+export const { initialize, changeField, setOriginalPost, changeCategory, changeState, changeImg } = writeSlice.actions;
 export default writeSlice.reducer;
