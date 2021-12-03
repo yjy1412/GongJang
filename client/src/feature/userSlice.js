@@ -34,8 +34,6 @@ export const fetchLogin = createAsyncThunk(
     const { email, password } = form;
     try {
       const response = await axios.post('/auth/log-in', { email, password });
-      // token이 필요한 API 요청 시 header Authorization에 token 담아서 보내기
-      axios.defaults.headers.common['authorization'] = `Bearer ${response.data.accessToken}`;
       return response.data;
     } catch(err) {
       return rejectWithValue(err.response.data);
@@ -109,7 +107,7 @@ export const fetchDeleteAccount = createAsyncThunk(
 )
 
 export const initialState = {
-  accessToken: null,
+  accessToken: "",
   user: null,
   isSignUp: false,
   isLogin: false,
@@ -117,7 +115,6 @@ export const initialState = {
   passwordUpdated: false,
   loading: false,
   isEdited: false,
-  message: "",
   loginError: null,
   signUpError: null,
   userInfoError: null,
@@ -173,12 +170,12 @@ const userSlice = createSlice({
     },
     [fetchLogOut.pending]: (state) => {
       state.loading = true;
+      state.accessToken = "";
     },
     [fetchLogOut.fulfilled]: (state) => {
       state.loading = false;
       state.isLogin = false;
       state.user = null;
-      state.accessToken = null;
     },
     [fetchUpdateUserInfo.pending]: (state) => {
       state.loading = true;
