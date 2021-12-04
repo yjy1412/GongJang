@@ -1,4 +1,5 @@
 'use strict';
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('Users', {
@@ -27,7 +28,8 @@ module.exports = {
         defaultValue: false
       },
       profile_image: {
-        type: Sequelize.BLOB
+        type: Sequelize.STRING,
+        defaultValue: __dirname + '/../source/profileImg.jpg'
       },
       createdAt: {
         allowNull: false,

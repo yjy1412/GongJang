@@ -1,4 +1,5 @@
 require('dotenv').config();
+const fs = require('fs');
 const { User, Post, Wish } = require('../models');
 const jwt = require('jsonwebtoken');
 const accessFunc = require('./token');
@@ -98,9 +99,19 @@ module.exports = {
 
               // response
               res.cookie("refreshToken", refreshToken, { httpOnly: true, expiresIn: "30d" })
+
+              // 프로필 이미지 처리
+              const convertImg = fs.readFileSync(profile_image, (err, data) => {
+                if (err) {
+                  console.log(err);
+                  res.status(500).send("서버에 오류가 발생했습니다")
+                }
+                return Buffer.from(data).toString('base64');
+              })
+              console.log(convertImg);
               res.json({
                 accessToken: accessToken,
-                userInfo: { id, email, nickname, profile_image, admin },
+                userInfo: { id, email, nickname, profile_image: convertImg, admin },
                 message: "로그인에 성공했습니다"
               })
             }
@@ -177,6 +188,8 @@ module.exports = {
         }
         // 2-2. 정상적인 조회 요청이 이루어졌을 때
         const { email, nickname, admin, profile_image } = userInfo
+        // 2-3. 프로필이미지 path를 통한 이미지 데이터 전송
+        console.log(profile_image);
         res.json({
           userInfo: { email, nickname, profile_image, admin },
           message: "회원정보 요청에 성공했습니다"
@@ -240,7 +253,7 @@ module.exports = {
       }
     })
       .then(result => {
-        if (!result) { 
+        if (!result) {
           res.sendStatus(204);
         }
         const responseData = result.map(data => {
@@ -249,7 +262,7 @@ module.exports = {
           return postData;
         })
         console.log(responseData)
-        if ( !responseData ) {
+        if (!responseData) {
           res.status(500).send("서버에 에러가 발생했습니다")
         }
         // 날짜 순 정렬(작성 일 기준 최신 순)
@@ -267,8 +280,8 @@ module.exports = {
       })
 
   },
-  // PATCH auth/mypage
-  patchMypage: async (req, res) => {
+  // PATCH auth/nickname
+  patchNickname: async (req, res) => {
     // 1. 권한 인증
     const result = accessFunc(req, res);
 
@@ -279,7 +292,8 @@ module.exports = {
 
     // 2. 입력 데이터 DB 반영
     const inputNickname = req.body.nickname;
-    const inputProfileImage = req.body.profile_image;
+    // const inputProfileImage = req.file;
+    // console.log(inputProfileImage);
 
     if (inputNickname === "") {
       // !! null과 ""의 차이가 뭘까??
@@ -293,12 +307,12 @@ module.exports = {
         };
         // 2-2. 회원정보 수정 반영
         User.update({
-          nickname: inputNickname,
-          profile_image: inputProfileImage
+          nickname: inputNickname
+          // profile_image: inputProfileImage
         }, { where: { email } })
           .then(result => {
             console.log(result);
-            res.status(201).send("회원정보가 수정되었습니다")
+            res.status(201).send("닉네임이 변경 되었습니다")
           })
           .catch(err => {
             console.log(err);
@@ -310,6 +324,35 @@ module.exports = {
         res.status(500).send("서버에 오류가 발생했습니다")
       })
 
+  },
+  // PATCH auth/profile-image
+  patchProfileImg: async (req, res) => {
+    // 1. 권한 인증
+    const accessResult = accessFunc(req, res);
+
+    if (!accessResult.identified) {
+      return accessResult;
+    }
+    const { email } = accessResult;
+
+    // 2. 입력 데이터 DB 반영
+    const inputProfileImage = req.file;
+    const imgPath = inputProfileImage.path
+    console.log("req.file: ", inputProfileImage);
+    console.log("req.file.path: ", imgPath);
+    console.log("req.body: ", req.body);
+
+    User.update({
+      profile_image: imgPath
+    }, { where: { email } })
+      .then(result => {
+        console.log("updateResult: ", result);
+        res.status(201).send("프로필 이미지가 업로드 되었습니다")
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).send("서버에 오류가 발생했습니다")
+      })
   },
   // PATCH auth/password
   patchPassword: async (req, res) => {
