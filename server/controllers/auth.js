@@ -3,8 +3,6 @@ const fs = require('fs');
 const { User, Post, Wish } = require('../models');
 const jwt = require('jsonwebtoken');
 const accessFunc = require('./token');
-const { post } = require('./posts');
-const { response } = require('express');
 
 module.exports = {
   // POST auth/sign-up
@@ -190,9 +188,17 @@ module.exports = {
         // 2-2. 정상적인 조회 요청이 이루어졌을 때
         const { email, nickname, admin, profile_image } = userInfo
         // 2-3. 프로필이미지 path를 통한 이미지 데이터 전송
-        console.log(profile_image);
+        // 프로필 이미지 처리
+        const convertImg = fs.readFileSync(profile_image, (err, data) => {
+          if (err) {
+            console.log(err);
+            res.status(500).send("서버에 오류가 발생했습니다")
+          }
+          return Buffer.from(data).toString('base64');
+        })
+        console.log(convertImg);
         res.json({
-          userInfo: { email, nickname, profile_image, admin },
+          userInfo: { email, nickname, profile_image: convertImg, admin },
           message: "회원정보 요청에 성공했습니다"
         });
       })
