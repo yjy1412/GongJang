@@ -23,9 +23,6 @@ export const postsSlice = createSlice({
   name: 'posts',
   initialState,
   reducers: {
-    initialize: () => {
-      return initialState;
-    },
     changeWish: (state, { payload: id }) => {
       state.posts.map(post => {
         if(post.id === id){
@@ -37,6 +34,10 @@ export const postsSlice = createSlice({
         }
         return post;
       })
+    },
+    removePost: (state, { payload: id }) => {
+      const newPosts = state.posts.filter(post => post.id !== id);
+      state.posts = newPosts;
     }
   },
   extraReducers: {
@@ -54,5 +55,5 @@ export const postsSlice = createSlice({
   }
 })
 
-export const { changeWish, initialize } = postsSlice.actions;
+export const { changeWish, removePost } = postsSlice.actions;
 export default postsSlice.reducer;

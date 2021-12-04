@@ -7,6 +7,7 @@ import ItemImgSlide from '../components/postDetail/ItemImgSlide';
 import { fetchGetPostDetail, unloadPost, fetchRemovePost } from '../feature/postSlice';
 import { setOriginalPost } from '../feature/writeSlice';
 import Loading from '../components/common/Loading';
+import { removePost } from '../feature/postsSlice';
 
 const PostDetailBlock = styled.div`
   width: 1130px;
@@ -95,6 +96,7 @@ const PostDetail = () => {
 
   const onRemovePost = () => {
     dispatch(fetchRemovePost(id));
+    dispatch(removePost(id));
     history.push('/');
   }
   

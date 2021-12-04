@@ -4,6 +4,7 @@ const { User, Post, Wish } = require('../models');
 const jwt = require('jsonwebtoken');
 const accessFunc = require('./token');
 const { post } = require('./posts');
+const { response } = require('express');
 
 module.exports = {
   // POST auth/sign-up
@@ -172,7 +173,7 @@ module.exports = {
   },
   // GET auth/mypage
   getMypage: async (req, res) => {
-
+   
     const result = accessFunc(req, res);
 
     if (!result.identified) {
@@ -204,31 +205,40 @@ module.exports = {
   // GET auth/mypage/posts
   getMyPosts: async (req, res) => {
     // TODO
-    const result = accessFunc(req, res);
-
-    if (!result.identified) {
-      return result;
+    const accessResult = accessFunc(req, res);
+//사용자 인증
+    if (!accessResult.identified) {
+      return accessResult;
     }
-    const email = result.email
-    console.log(result)
+    console.log(accessResult)
+    const {id} = accessResult
+//accessResult는 user_id
 
-    if (!result) {
-      res.status(400).send('유효하지 않은 토큰입니다.')
-    } else {
-      try {
-        Post.findAll({
-          attributes: ['title'],
-          where: {
-            id: result.id
-          }
-        })
-        res.status(200).send('제발 성공')
-
-      } catch (err) {
-        res.status(500).send('서버에러')
+    Post.findAll({
+      // attributes : ['id', 'title', 'image1'],
+      where : { user_id : id}, 
+    })
+    .then(result => {
+      if(!result) {
+        res.sendStatus(204)
+      } else {          
+        //불러올 데이터는 배열화 되어 있기 때문에 map으로 처리           
+      const responseData = result.map(data => {       
+      const postData = data.dataValues
+       return postData
+      })         
+      if(!responseData) { 
+        res.status(400).send('가져올 데이터 없음')
       }
-    }
-
+      responseData.sort((a, b) => {
+        return Number(new Date(b.createdAt) - Number(new Date(a.createdAt)))
+      })
+      return res.status(200).json(responseData)
+    }})
+    .catch(err => {
+      console.log(err)
+      res.status(500).send('서버에 오류가 발생했습니다.')
+    })    
   },
   // GET auth/wish-list
   getWishLists: async (req, res) => {
@@ -253,9 +263,7 @@ module.exports = {
       }
     })
       .then(result => {
-        if (!result) {
-          res.sendStatus(204);
-        }
+        if (!result) { res.sendStatus(204) }
         const responseData = result.map(data => {
           const postData = data.dataValues.Post.dataValues;
           postData.wish = true;
