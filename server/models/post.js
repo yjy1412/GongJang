@@ -31,9 +31,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
-    image1: DataTypes.BLOB,
-    image2: DataTypes.BLOB,
-    image3: DataTypes.BLOB
+    image1: DataTypes.STRING,
+    image2: DataTypes.STRING,
+    image3: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Post',

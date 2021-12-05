@@ -100,14 +100,15 @@ module.exports = {
               res.cookie("refreshToken", refreshToken, { httpOnly: true, expiresIn: "30d" })
 
               // 프로필 이미지 처리
-              const convertImg = fs.readFileSync(profile_image, (err, data) => {
-                if (err) {
-                  console.log(err);
-                  res.status(500).send("서버에 오류가 발생했습니다")
-                }
-                return Buffer.from(data).toString('base64');
-              })
-              console.log(convertImg);
+              let convertImg;
+              try {
+                convertImg = fs.readFileSync(profile_image, (err, data) => {
+                  return Buffer.from(data).toString('base64');
+                })
+              } catch {
+                console.log(convertImg);
+                return res.status(500).send("서버에 오류가 발생했습니다")
+              }
               res.json({
                 accessToken: accessToken,
                 userInfo: { id, email, nickname, profile_image: convertImg, admin },
@@ -171,7 +172,7 @@ module.exports = {
   },
   // GET auth/mypage
   getMypage: async (req, res) => {
-   
+
     const result = accessFunc(req, res);
 
     if (!result.identified) {
@@ -189,13 +190,15 @@ module.exports = {
         const { email, nickname, admin, profile_image } = userInfo
         // 2-3. 프로필이미지 path를 통한 이미지 데이터 전송
         // 프로필 이미지 처리
-        const convertImg = fs.readFileSync(profile_image, (err, data) => {
-          if (err) {
-            console.log(err);
-            res.status(500).send("서버에 오류가 발생했습니다")
-          }
-          return Buffer.from(data).toString('base64');
-        })
+        let convertImg;
+        try {
+          convertImg = fs.readFileSync(profile_image, (err, data) => {
+            return Buffer.from(data).toString('base64');
+          })
+        } catch {
+          console.log(convertImg);
+          res.status(500).send("서버에 오류가 발생했습니다")
+        }
         console.log(convertImg);
         res.json({
           userInfo: { email, nickname, profile_image: convertImg, admin },
@@ -212,39 +215,40 @@ module.exports = {
   getMyPosts: async (req, res) => {
     // TODO
     const accessResult = accessFunc(req, res);
-//사용자 인증
+    //사용자 인증
     if (!accessResult.identified) {
       return accessResult;
     }
     console.log(accessResult)
-    const {id} = accessResult
-//accessResult는 user_id
+    const { id } = accessResult
+    //accessResult는 user_id
 
     Post.findAll({
       // attributes : ['id', 'title', 'image1'],
-      where : { user_id : id}, 
+      where: { user_id: id },
     })
-    .then(result => {
-      if(!result) {
-        res.sendStatus(204)
-      } else {          
-        //불러올 데이터는 배열화 되어 있기 때문에 map으로 처리           
-      const responseData = result.map(data => {       
-      const postData = data.dataValues
-       return postData
-      })         
-      if(!responseData) { 
-        res.status(400).send('가져올 데이터 없음')
-      }
-      responseData.sort((a, b) => {
-        return Number(new Date(b.createdAt) - Number(new Date(a.createdAt)))
+      .then(result => {
+        if (!result) {
+          res.sendStatus(204)
+        } else {
+          //불러올 데이터는 배열화 되어 있기 때문에 map으로 처리           
+          const responseData = result.map(data => {
+            const postData = data.dataValues
+            return postData
+          })
+          if (!responseData) {
+            res.status(400).send('가져올 데이터 없음')
+          }
+          responseData.sort((a, b) => {
+            return Number(new Date(b.createdAt) - Number(new Date(a.createdAt)))
+          })
+          return res.status(200).json(responseData)
+        }
       })
-      return res.status(200).json(responseData)
-    }})
-    .catch(err => {
-      console.log(err)
-      res.status(500).send('서버에 오류가 발생했습니다.')
-    })    
+      .catch(err => {
+        console.log(err)
+        res.status(500).send('서버에 오류가 발생했습니다.')
+      })
   },
   // GET auth/wish-list
   getWishLists: async (req, res) => {

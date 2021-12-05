@@ -1,15 +1,7 @@
 const express = require('express');
-// multer 설정
 const multer = require('multer');
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, __dirname + '/../uploads/profileImg')
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname)
-  }
-})
-const upload = multer({ storage: storage })
+
+const upload = multer({ dest: 'uploads/' })
 const router = express.Router();
 const authControllers = require('../controllers/auth')
 

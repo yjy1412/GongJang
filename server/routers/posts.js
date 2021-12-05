@@ -1,11 +1,13 @@
 const express = require('express');
+const multer = require('multer');
 
+const upload = multer({ dest: 'uploads/' });
 const router = express.Router();
 const postsControllers = require('../controllers/posts');
 
-router.post('/', postsControllers.post);
+router.post('/', upload.array('image', 3) ,postsControllers.post);
 
-router.patch('/:posts_id', postsControllers.patch);
+router.patch('/:posts_id', upload.array('image', 3), postsControllers.patch);
 
 router.delete('/:posts_id', postsControllers.delete);
 

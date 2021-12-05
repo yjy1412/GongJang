@@ -1,4 +1,5 @@
 require('dotenv').config();
+const fs = require('fs');
 const { User, Post, Wish } = require('../models');
 const { Sequelize, Op } = require('sequelize');
 const accessFunc = require('./token');
@@ -15,26 +16,25 @@ module.exports = {
     const email = result.email;
 
     const inputTitle = req.body.title;
-    const inputImage = req.body.image;
-    console.log(inputImage)
+    const inputImage = req.files;
+    console.log("req.files: ", inputImage)
     // console.log(inputImage[0])
     const inputContent = req.body.content;
     const inputCategory = req.body.category;
     const inputSoldOut = req.body.soldOut;
     // inputImage 배열처리
-    // TODO: 디폴트 이미지 정해지면 타입 고려해서 반영
-    let image1 = null;
-    let image2 = null;
-    let image3 = null;
+    let image1 = '';
+    let image2 = '';
+    let image3 = '';
 
     if (inputImage !== undefined) {
       for (let i = 0; i < inputImage.length; i += 1) {
         if (i === 0) {
-          image1 = inputImage[i];
+          image1 = __dirname + '/../' + inputImage[i].path;
         } else if (i === 1) {
-          image2 = inputImage[i];
+          image2 = __dirname + '/../' + inputImage[i].path;
         } else if (i === 2) {
-          image3 = inputImage[i];
+          image3 = __dirname + '/../' + inputImage[i].path;
         }
       }
     }
@@ -50,7 +50,7 @@ module.exports = {
         if (!result) {
           return res.status(404).send("요청하신 회원정보와 일치하는 회원정보가 없습니다")
         }
-        // 4. 정상적인 요청 처리$
+        // 4. 정상적인 요청 처리
         const userInfo = result.dataValues;
         const { id } = userInfo;
 
@@ -83,65 +83,94 @@ module.exports = {
   },
   // PATCH /posts/:posts_id
   patch: async (req, res) => {
-    const postsId = req.params.posts_id; 
+    const postsId = req.params.posts_id;
     //유저 유효성 검사 
     const result = accessFunc(req, res);
     if (!result.identified) {
       return result;
     }
-    
-    const inputTitle = req.body.title;   
+
+    const inputTitle = req.body.title;
     const inputContent = req.body.content;
     const inputCategory = req.body.category;
     const inputSoldOut = req.body.soldOut;
-    const inputImage = req.body.image;
-    let image1, image2, image3 = null;
-    if( inputImage !== undefined){
+    const inputImage = req.files;
+    // 이미지 배열 처리
+    // 게시글에서 디폴트 이미지 필요 없을 것 같음.
+    console.log(req.files);
+    // 기존 저장된 이미지파일 패스 초기화/ 왜냐하면, 기존 파일들을 삭제시키기 때문
+    let image1 = '';
+    let image2 = '';
+    let image3 = '';
+
+    if (inputImage !== undefined) {
       for (let i = 0; i < inputImage.length; i += 1) {
         if (i === 0) {
-          image1 = inputImage[i];
+          image1 = __dirname + '/../' + inputImage[i].path;
         } else if (i === 1) {
-          image2 = inputImage[i];
+          image2 = __dirname + '/../' + inputImage[i].path;
         } else if (i === 2) {
-          image3 = inputImage[i];
+          image3 = __dirname + '/../' + inputImage[i].path;
         }
       }
     }
-    
+
     if (!inputTitle || !inputCategory) {
       return res.status(403).send("필수 입력요소가 누락되었습니다")
     }
-   
-    const postsData = await Post.findOne({where : { id : postsId}})  
+
+    const postsData = await Post.findOne({ where: { id: postsId } })
     console.log(postsData.user_id)
-    const userInfo = await User.findOne({where : {email : result.email}})
+    // 게시글 이미지 수정 시 기존에 업로드한 이미지파일이 있다면 삭제
+    const image1Path = postsData.image1;
+    const image2Path = postsData.image2;
+    const image3Path = postsData.image3;
+    const images = [image1Path, image2Path, image3Path];
+
+    for (let i = 0; i < images.length; i += 1) {
+      if (!!images[i]) {
+        fs.unlink(images[i], (err) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).send("서버에 오류가 발생했습니다")
+          }
+        })
+      }
+    }
+
+    const userInfo = await User.findOne({ where: { email: result.email } })
     console.log(userInfo.dataValues.id)
 
-    if(userInfo.dataValues.id !== postsData.user_id) { 
+    if (userInfo.dataValues.id !== postsData.user_id) {
       return res.status(400).send('작성자가 아닙니다.')
       //잡아냈음
     } else {
-    try {
-       Post.update({
-         title : inputTitle,
-         content : inputContent, 
-         category : inputCategory,
-         soldout : inputSoldOut,
-         image1 ,
-         image2 ,
-         image3  
-       }, {where : {
-         id : postsId
-       }})
-       res.status(201).json({
-         user_id : postsData.user_id,
-         post_id : postsId,
-         message : "수정 되었습니다"
-       })
-    }catch(err) {
-      res.status(500).send('서버에 오류가 발생했습니다.')
+      try {
+        Post.update({
+          title: inputTitle,
+          content: inputContent,
+          category: inputCategory,
+          soldout: inputSoldOut,
+          image1,
+          image2,
+          image3
+        }, {
+          where: {
+            id: postsId
+          }
+        })
+          .then(result => {
+            res.status(201).json({
+              user_id: postsData.user_id,
+              post_id: postsId,
+              message: "수정 되었습니다"
+            })
+          })
+
+      } catch (err) {
+        res.status(500).send('서버에 오류가 발생했습니다.')
+      }
     }
-  }
 
   },
   // DELETE /posts/:posts_id
@@ -154,7 +183,7 @@ module.exports = {
     if (!result.identified) {
       return result;
     }
-    
+
     //권한이 있다면
     if (result) {
       try {
@@ -288,7 +317,7 @@ module.exports = {
         console.log(responseData);
 
         // 날짜 순 정렬(작성 일 기준 최신 순)
-        responseData.sort((a,b) => {
+        responseData.sort((a, b) => {
           return Number(new Date(b.createdAt)) - Number(new Date(a.createdAt));
         })
         res.status(200).json({
