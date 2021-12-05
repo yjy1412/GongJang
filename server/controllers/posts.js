@@ -121,6 +121,7 @@ module.exports = {
 
     const postsData = await Post.findOne({ where: { id: postsId } })
     console.log(postsData.user_id)
+
     // 게시글 이미지 수정 시 기존에 업로드한 이미지파일이 있다면 삭제
     const image1Path = postsData.image1;
     const image2Path = postsData.image2;
@@ -128,7 +129,7 @@ module.exports = {
     const images = [image1Path, image2Path, image3Path];
 
     for (let i = 0; i < images.length; i += 1) {
-      if (!!images[i]) {
+      if (images[i]) {
         fs.unlink(images[i], (err) => {
           if (err) {
             console.log(err);
@@ -190,6 +191,23 @@ module.exports = {
         const postInfo = await Post.findOne({
           where: { id: postsId }
         })
+        // 게시글에 이미지 업로드한 파일이 있다면 삭제
+        const image1Path = postInfo.image1;
+        const image2Path = postInfo.image2;
+        const image3Path = postInfo.image3;
+        const images = [image1Path, image2Path, image3Path];
+
+        for (let i = 0; i < images.length; i += 1) {
+          if (images[i]) {
+            fs.unlink(images[i], (err) => {
+              if (err) {
+                console.log(err);
+                return res.status(500).send("서버에 오류가 발생했습니다")
+              }
+            })
+          }
+        }
+
         await postInfo.destroy({});
         return res.sendStatus(204)
       } catch (err) {
@@ -250,6 +268,35 @@ module.exports = {
         const responseData = await Promise.all(
           result.map(async post => {
             let postData = post.dataValues;
+
+            // 게시글 이미지 파일 처리
+            const { image1, image2, image3 } = postData;
+            const images = [image1, image2, image3];
+
+            for (let i = 0; i < images.length; i += 1) {
+              // 이미지가 널값이 아니라면,
+              if (images[i]) {
+                console.log("images : ", images[i])
+                let convertData
+                try {
+                  convertData = fs.readFileSync(images[i], (err, data) => {
+                    // console.log(data);
+                    return Buffer.from(data).toString('base64');
+                  })
+                } catch(err) {
+                  console.log(err);
+                  return res.status(500).send("서버에 오류가 발생했습니다")
+                }
+
+                if (i === 0) {
+                  postData.image1 = convertData;
+                } else if(i === 1) {
+                  postData.image2 = convertData;
+                } else if(i === 2) {
+                  postData.image2 = convertData;
+                }
+              }
+            }
             const writerId = postData.user_id;
 
             // Sequelize 쿼리는 스코프 밖의 변수에 영향을 줄 수 없다?? 노노
@@ -421,8 +468,35 @@ module.exports = {
         // 2-1. 요청 데이터 정리
         const postData = result.dataValues;
         const userInfo = result.User.dataValues;
-        const { id, title, content, category, soldOut, image1, image2, image3, createdAt, updatedAt } = postData;
+        const { id, title, content, category, soldOut, createdAt, updatedAt } = postData;
         const { email, nickname } = userInfo;
+        // 2-2. 게시글 이미지 파일 처리
+        let { image1, image2, image3 }= postData;
+        const images = [image1, image2, image3];
+
+        for (let i = 0; i < images.length; i += 1) {
+          // 이미지가 널값이 아니라면,
+          if (images[i]) {
+            console.log("images : ", images[i])
+            let convertData
+            try {
+              convertData = fs.readFileSync(images[i], (err, data) => {
+                return Buffer.from(data).toString('base64');
+              })
+            } catch(err) {
+              console.log(err);
+              return res.status(500).send("서버에 오류가 발생했습니다")
+            }
+
+            if (i === 0) {
+              image1 = convertData;
+            } else if(i === 1) {
+              image2 = convertData;
+            } else if(i === 2) {
+              image2 = convertData;
+            }
+          }
+        }
 
         res.status(201).json({
           data: {

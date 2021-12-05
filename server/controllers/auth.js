@@ -360,18 +360,27 @@ module.exports = {
     console.log("req.file.path: ", imgPath);
     console.log("req.body: ", req.body);
 
-    User.update({
-      profile_image: imgPath
-    }, { where: { email } })
-      .then(result => {
-        console.log("updateResult: ", result);
-        res.status(201).send("프로필 이미지가 업로드 되었습니다")
-      })
-      .catch(err => {
+    // 3. 기존 프로필 사진 삭제
+    fs.unlink(imgPath, (err, data) => {
+      if(err) {
         console.log(err);
         res.status(500).send("서버에 오류가 발생했습니다")
-      })
-  },
+      }
+    })
+    
+    // 4. DB 업데이트
+    User.update({
+    profile_image: imgPath
+  }, { where: { email } })
+    .then(result => {
+      console.log("updateResult: ", result);
+      res.status(201).send("프로필 이미지가 업로드 되었습니다")
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).send("서버에 오류가 발생했습니다")
+    })
+},
   // PATCH auth/password
   patchPassword: async (req, res) => {
     // 1. 권한 인증
