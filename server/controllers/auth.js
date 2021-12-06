@@ -200,7 +200,7 @@ module.exports = {
     console.log(accessResult)
     const {id} = accessResult
 //accessResult는 user_id
-
+    
     Post.findAll({
       // attributes : ['id', 'title', 'image1'],
       where : { user_id : id}, 
@@ -359,5 +359,11 @@ module.exports = {
         console.log(err);
         res.status(500).send("서버에 오류가 발생했습니다")
       })
+  },
+  googleLogin: async (req, res) => {
+
+  },
+  googleCallback: async (req, res) => {
+    
   }
 }
