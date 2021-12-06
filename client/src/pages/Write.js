@@ -8,7 +8,7 @@ import Button from '../components/common/Button';
 import WhiteButton from '../components/common/WhiteButton';
 import { changeField, fetchUpdatePost, fetchWritePost, initialize } from '../feature/writeSlice';
 import SalesStatus from '../components/write/SalesStatus';
-import AskRequiredInputModal from '../components/modal/AskRequiredInputModal';
+import AskModal from '../components/modal/AskModal';
 
 const WriteBlock = styled.div`
   width: 1130px;
@@ -65,16 +65,28 @@ const WriteButton = styled(Button)`
 `;
 
 const Write = () => {
-  const [image, setImage] = useState([]);
+  const [uploadImages, setUploadImages] = useState([]);
   const [imageURLs, setImageURLs] = useState([]);
   const [modal, setModal] = useState(false);
   
   const history = useHistory();
   const dispatch = useDispatch();
-  const { post, postError, originalPostId, category, title, content, soldOut } = useSelector((state) => state.write);
+  const { 
+    post, 
+    postError, 
+    originalPostId, 
+    category, 
+    title, 
+    content, 
+    soldOut,
+  } = useSelector((state) => state.write);
 
   const onConfirm = () => {
     setModal(!modal);
+  }
+
+  const onCancel = () => {
+    history.push('/');
   }
 
   const onChangeForm = (e) => {
@@ -86,57 +98,37 @@ const Write = () => {
   }
 
   const onRemove = (index) => {
-    const newImageURLs = imageURLs.filter((file, idx) => idx !== index);
-    const newImage = image.filter((image, idx) => idx !== index);
+    const newImageURLs = imageURLs.filter((url, idx) => idx !== index);
+    const newImages = uploadImages.filter((image, idx) => idx !== index);
     setImageURLs(newImageURLs);
-    setImage(newImage);
-    
+    setUploadImages(newImages);
   }
-
-  console.log(title);
-  console.log(content)
-  console.log(category)
-
   
   //글 폼 전송하기
   const onSubmitForm = (e) => {
     e.preventDefault();
 
-    // if([title, content].includes('')){
-    //   onConfirm();
-    // }
+    if([title, content, category].includes('')){
+      onConfirm();
+    }
 
-    // //글 수정 후 업데이트
-    // if(originalPostId){
-    //   const form = { id: originalPostId, title, content, category, soldOut, image };
-    //   dispatch(fetchUpdatePost(form));
-    //   return;
-    // } 
-
-
+    //formData 전송
+    //이미지 변경시 파일로 첨부된 변경 이미지만 보내는게 좋을 듯
     const formData = new FormData();
 
     formData.append('title', title);
     formData.append('content', content);
     formData.append('category', category);
     formData.append('soldOut', soldOut);
-    image.forEach((file, index) => {
+    uploadImages.forEach((file) => {
       formData.append('image', file);
     });
-
-
     
-    // for (let data of formData) {
-    //   console.log(data);
-    // }
-
-    // const formData = {
-    //   title,
-    //   content,
-    //   category,
-    //   soldOut,
-    //   image
-    // }
+    //글 수정 후 업데이트
+    if(originalPostId){
+      dispatch(fetchUpdatePost({formData, id: originalPostId}));
+      return;
+    } 
     dispatch(fetchWritePost(formData));
   }
 
@@ -164,15 +156,15 @@ const Write = () => {
         onChange={onChangeForm}
         />
         <ImgUpload
-        imageFiles={image}
-        setImageFiles={setImage}
+        uploadImages={uploadImages}
+        setUploadImages={setUploadImages}
         imageURLs={imageURLs}
         setImageURLs={setImageURLs}
         onRemove={onRemove}
         />
         <div className="select-box">
-          <SelectCategory />
-          <SalesStatus/>
+          <SelectCategory category={category}/>
+          <SalesStatus soldOut={soldOut}/>
         </div>
         <div className="info-title">
           <p>ITEM INFO</p>
@@ -185,15 +177,18 @@ const Write = () => {
         />
       </form>
       <div className="btn-box">
-          <WhiteButton>CANCEL</WhiteButton>
+          <WhiteButton onClick={onCancel}>CANCEL</WhiteButton>
           <WriteButton 
           onClick={onSubmitForm}
           >PUBLISH</WriteButton>
       </div>
       { modal && (
-      <AskRequiredInputModal 
+      <AskModal 
       visible={modal} 
+      title='알림'
+      description='필수 입력란을 작성해주세요.'
       onConfirm={onConfirm}
+      type='required'
       />
       )}
     </WriteBlock>

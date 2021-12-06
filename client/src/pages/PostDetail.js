@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -8,6 +8,8 @@ import { fetchGetPostDetail, unloadPost, fetchRemovePost } from '../feature/post
 import { setOriginalPost } from '../feature/writeSlice';
 import Loading from '../components/common/Loading';
 import { removePost } from '../feature/postsSlice';
+import AskModal from '../components/modal/AskModal';
+import checkTime from '../components/postDetail/Time';
 
 const PostDetailBlock = styled.div`
   width: 1130px;
@@ -26,10 +28,9 @@ const PostDetailBlock = styled.div`
       right: 0;
       bottom: 0;
       font-size: 1.2rem;
-      color: #575F95;
+      color: #fff;
       background: #fa8072;
       padding: 0.5rem;
-      border: 2px solid  #575F95;
       border-radius: 4px;
     }
   }
@@ -75,6 +76,7 @@ const PostDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const history = useHistory();
+  const [modal, setModal] = useState(false);
   const { post, loading, user } = useSelector(({ post , user }) => ({
     post: post.post,
     error: post.error,
@@ -94,11 +96,17 @@ const PostDetail = () => {
     history.push('/write');
   }
 
-  const onRemovePost = () => {
+  const onCancel = () => {
+    setModal(!modal);
+  }
+
+  const onConfirm = () => {
     dispatch(fetchRemovePost(id));
     dispatch(removePost(id));
     history.push('/');
   }
+
+  const date = checkTime(post?.createdAt);
   
   const ownPost = (user && user.nickname) === (post && post?.writer.writer_nickname);
   
@@ -113,36 +121,47 @@ const PostDetail = () => {
   }
 
   return (
-    <PostDetailBlock>
-      <div className="title">
-        <h3>{post?.title}</h3>
-        { post?.soldOut && (
-           <div className="share-status">
-            <b>나눔완료</b>
-          </div>
-        )}
-      </div>
-      <ItemImgSlide/>
-      <div className="wrap">
-        <div className="info">
-          <p>ITEM INFO</p>
+    <>
+      <PostDetailBlock>
+        <div className="title">
+          <h3>{post?.title}</h3>
+          { post?.soldOut && (
+            <div className="share-status">
+              <b>나눔완료</b>
+            </div>
+          )}
         </div>
-        { ownPost && (
-          <div className="btn-box">
-            <button onClick={onEditPost}>EDIT</button>
-            <button onClick={onRemovePost}>DELETE</button>
+        <ItemImgSlide/>
+        <div className="wrap">
+          <div className="info">
+            <p>ITEM INFO</p>
           </div>
-        )}
-      </div>
-      <div className="desc">
-        <p>{post?.content}</p>
-      </div>
-      <div className="writer">
-        <span><b>{}&nbsp;</b></span>
-        <span> {}</span>
-      </div>
-      <Comments/>
-    </PostDetailBlock>
+          { ownPost && (
+            <div className="btn-box">
+              <button onClick={onEditPost}>EDIT</button>
+              <button onClick={() => setModal(!modal)}>DELETE</button>
+            </div>
+          )}
+        </div>
+        <div className="desc">
+          <p>{post?.content}</p>
+        </div>
+        <div className="writer">
+          <span><b>{post?.writer.writer_nickname}&nbsp;</b></span>
+          <span> {date}</span>
+        </div>
+        <Comments/>
+      </PostDetailBlock>
+      { modal && (
+        <AskModal
+        visible={modal}
+        title='나눔 글 삭제'
+        description='나눔 글을 정말 삭제하시겠습니까?'
+        onConfirm={onConfirm}
+        onCancel={onCancel}
+        />
+      )}
+    </>
   );
 };
 
