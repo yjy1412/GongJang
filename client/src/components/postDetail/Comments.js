@@ -15,6 +15,7 @@ const CommentsBlock = styled.div`
     .heart {
       display: flex;
       padding: 0 0.5rem;
+      cursor: pointer;
     }
   }
   .comment-box {
@@ -76,47 +77,47 @@ const Comments = () => {
   }
 
   return (
-    <CommentsBlock>
-      <div className="interest">
-        <div>
-          <span>댓글</span>
-          <span>1</span>
-        </div>
-        <div className="heart">
-          <RiHeartFill fill="red"/>
-        </div>
-      </div>
-      <div className="comment-box">
-        <textarea 
-        type="text" 
-        placeholder="나눔 아이템에 대해 궁금한 점 남겨주세요."
-        name=""
-        value=""
-        onChange={onChangeComment}
-        />
-        <CommentBtn>COMMENT</CommentBtn>
-      </div>
-      <ul>
-        <li>
+      <CommentsBlock>
+        <div className="interest">
           <div>
-            <div>
-              <span><b>nickname</b></span>
-              <span> 2021.11.24</span>
-            </div>
-            <div className="comment">
-              <div className="text">
-                <p>comment</p>
-              </div>
-              <AiOutlineMore className="comment-edit"/>
-              <div className="comment-edit-icons">
-                <FiEdit/>
-                <RiDeleteBinLine/>
-              </div>
-            </div>
+            <span>댓글</span>
+            <span>1</span>
           </div>
-        </li>
-      </ul>
-    </CommentsBlock>
+          <div className="heart">
+              <RiHeartFill fill="red"/>
+          </div>
+        </div>
+        <div className="comment-box">
+          <textarea 
+          type="text" 
+          placeholder="나눔 아이템에 대해 궁금한 점 남겨주세요."
+          name=""
+          value=""
+          onChange={onChangeComment}
+          />
+          <CommentBtn>COMMENT</CommentBtn>
+        </div>
+        <ul>
+          <li>
+            <div>
+              <div>
+                <span><b>nickname</b></span>
+                <span> 2021.11.24</span>
+              </div>
+              <div className="comment">
+                <div className="text">
+                  <p>comment</p>
+                </div>
+                <AiOutlineMore className="comment-edit"/>
+                <div className="comment-edit-icons">
+                  <FiEdit/>
+                  <RiDeleteBinLine/>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </CommentsBlock>
   );
 };
 
