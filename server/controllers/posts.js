@@ -147,7 +147,7 @@ module.exports = {
     console.log(userInfo.dataValues.id)
 
     if (userInfo.dataValues.id !== postsData.user_id) {
-      return res.status(400).send('작성자가 아닙니다.')
+      return res.status(401).send('권한이 아닙니다.')
       //잡아냈음
     } else {
       try {
@@ -181,47 +181,52 @@ module.exports = {
   delete: async (req, res) => {
     console.log(req.params.posts_id)
     const postsId = req.params.posts_id;
-
     //유저 권한 인증
     const result = accessFunc(req, res);
     if (!result.identified) {
       return result;
     }
 
-    //권한이 있다면
-    if (result) {
-      try {
-        const postInfo = await Post.findOne({
-          where: { id: postsId }
-        })
-        // !! 변경부분
-        // 게시글에 이미지 업로드한 파일이 있다면 삭제
-        const image1Path = postInfo.image1;
-        const image2Path = postInfo.image2;
-        const image3Path = postInfo.image3;
-        const images = [image1Path, image2Path, image3Path];
-
-        for (let i = 0; i < images.length; i += 1) {
-          if (images[i]) {
-            fs.unlink(images[i], (err) => {
-              if (err) {
-                console.log(err);
-                return res.status(500).send("서버에 오류가 발생했습니다")
-              }
-            })
-          }
+    // 게시글을 삭제할 권한이 있는 지
+    try {
+      const userId = result.id
+      const postInfo = await Post.findOne({
+        where: {
+          id: postsId
         }
-        // !! 끝
-        await postInfo.destroy({});
-        return res.sendStatus(204)
-      } catch (err) {
-        return res.status(500).send('서버에 오류가 발생했습니다.')
+      })
+      console.log(postInfo.dataValues.user_id)
+      if (postInfo.dataValues.user_id !== userId) {
+        return res.status(401).send('권한이 없습니다.')
+      } else {
+        Post.destroy({
+          where: {
+            id: postsId
+          }
+        })
+        res.sendStatus(204)
       }
-      //권한이 없다면
-    } else {
-      return res.status(401).send('유효하지 않은 토큰입니다.')
-    }
+      // !! 변경부분
+      // 게시글에 이미지 업로드한 파일이 있다면 삭제
+      const image1Path = postInfo.image1;
+      const image2Path = postInfo.image2;
+      const image3Path = postInfo.image3;
+      const images = [image1Path, image2Path, image3Path];
 
+      for (let i = 0; i < images.length; i += 1) {
+        if (images[i]) {
+          fs.unlink(images[i], (err) => {
+            if (err) {
+              console.log(err);
+              return res.status(500).send("서버에 오류가 발생했습니다")
+            }
+          })
+        }
+      }
+      // !! 끝
+    } catch (err) {
+      return res.status(500).send('서버에 오류가 발생했습니다.')
+    }
   },
   // GET /posts
   get: async (req, res) => {
@@ -287,16 +292,16 @@ module.exports = {
                     // console.log(data);
                     return Buffer.from(data).toString('base64');
                   })
-                } catch(err) {
+                } catch (err) {
                   console.log(err);
                   return res.status(500).send("서버에 오류가 발생했습니다")
                 }
 
                 if (i === 0) {
                   postData.image1 = convertData;
-                } else if(i === 1) {
+                } else if (i === 1) {
                   postData.image2 = convertData;
-                } else if(i === 2) {
+                } else if (i === 2) {
                   postData.image2 = convertData;
                 }
               }
@@ -474,7 +479,7 @@ module.exports = {
         const { email, nickname } = userInfo;
         // !! 변경부분
         // 2-2. 게시글 이미지 파일 처리
-        let { image1, image2, image3 }= postData;
+        let { image1, image2, image3 } = postData;
         const images = [image1, image2, image3];
 
         for (let i = 0; i < images.length; i += 1) {
@@ -486,16 +491,16 @@ module.exports = {
               convertData = fs.readFileSync(images[i], (err, data) => {
                 return Buffer.from(data).toString('base64');
               })
-            } catch(err) {
+            } catch (err) {
               console.log(err);
               return res.status(500).send("서버에 오류가 발생했습니다")
             }
 
             if (i === 0) {
               image1 = convertData;
-            } else if(i === 1) {
+            } else if (i === 1) {
               image2 = convertData;
-            } else if(i === 2) {
+            } else if (i === 2) {
               image2 = convertData;
             }
           }
