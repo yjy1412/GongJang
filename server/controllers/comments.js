@@ -31,6 +31,11 @@ module.exports = {
       res.status(500).send("서버에 오류가 발생했습니다")
       }     
   },
+  //GET /comments/:comments_id
+  get: async (req, res) => {
+
+    res.send('get comments')
+  },
   // PATCH /comments/:comments_id
   patch: async (req, res) => {
      const accessResult = accessFunc(req, res); //유저인증(토큰확인) 
