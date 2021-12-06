@@ -81,11 +81,12 @@ export const fetchUpdateUserInfo = createAsyncThunk(
 
 export const fetchUpdateProfileImage = createAsyncThunk(
   'mypage/fetchUpdateProfileImage',
-  async ( newProfileImage, { rejectWithValue }) => {
+  async ( previewProfileImage, { rejectWithValue }) => {
     try {
       const response = await axios.patch(
         '/auth/mypage',
-        { profile_image: newProfileImage },
+        { profile_image: previewProfileImage },
+        { Headers : {'content-type' : 'multipart/form-data'} }
       )
       return response.data
     } catch (err) {
@@ -115,6 +116,7 @@ export const initialState = {
   passwordUpdated: false,
   loading: false,
   isEdited: false,
+  message: "",
   loginError: null,
   signUpError: null,
   userInfoError: null,
@@ -170,12 +172,12 @@ const userSlice = createSlice({
     },
     [fetchLogOut.pending]: (state) => {
       state.loading = true;
-      state.accessToken = "";
     },
     [fetchLogOut.fulfilled]: (state) => {
       state.loading = false;
       state.isLogin = false;
       state.user = null;
+      state.accessToken = "";
     },
     [fetchUpdateUserInfo.pending]: (state) => {
       state.loading = true;
@@ -191,8 +193,9 @@ const userSlice = createSlice({
     [fetchUpdateProfileImage.pending]: (state) => {
       state.loading = true;
     },
-    [fetchUpdateProfileImage.fulfilled]: (state) => {
+    [fetchUpdateProfileImage.fulfilled]: (state, { payload }) => {
       state.loading = false;
+      state.profile_image = payload;
       state.isEdited = true;
     },
     [fetchUpdateProfileImage.rejected]: (state, { payload }) => {
