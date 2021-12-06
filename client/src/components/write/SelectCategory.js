@@ -10,6 +10,9 @@ const SelectCategoryBlock = styled.div`
   label {
     font-size: 1.2rem;
     margin-right: 0.5rem;
+    span {
+      color: #bcbdc4;
+    }
   }
   select {
     color: inherit;
@@ -18,26 +21,25 @@ const SelectCategoryBlock = styled.div`
   }
 `;
 
-const SelectCategory = () => {
-  const dispatch = useDispatch();  
-  const categories = ['보드게임', '퍼즐', '레고'];
+const categories = ['--카테고리를 선택하세요.--', '보드게임', '퍼즐', '레고'];
+const SelectCategory = ({ category }) => {
+  const dispatch = useDispatch();
 
   const onChangeSelect = (e) => {
-    const categorySelect = document.querySelector('#category-select');
-    let selectValue = categorySelect.options[categorySelect.selectedIndex].value;
-    dispatch(changeCategory(selectValue));
+    dispatch(changeCategory(e.target.value));
   }
 
   return (
     <SelectCategoryBlock>
-      <label htmlFor="category-select">연관 카테고리를 선택하세요.</label>
+      <label htmlFor="category-select">연관 카테고리를 선택하세요.
+        <span>(필수)</span>
+      </label>
       <select 
       name="categories" 
       id="category-select"
-      defaultValue="categories"
+      value={category}
       onChange={onChangeSelect}
       >
-        <option value='--카테고리를 선택하세요.--' selected>--카테고리를 선택하세요.--</option>
         { categories.map((category, index) => (
           <option key={index} value={category}>{category}</option>
         ))}

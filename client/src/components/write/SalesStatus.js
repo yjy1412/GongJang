@@ -13,7 +13,7 @@ const SalesStatusBlock = styled.div`
   }
 `;
 
-const SalesStatus = () => {
+const SalesStatus = ({ soldOut }) => {
   const dispatch = useDispatch();
 
   const onCangeCheck = (e) => {
@@ -27,6 +27,7 @@ const SalesStatus = () => {
       type="checkbox"
       id="status" 
       name="status"
+      checked={soldOut}
       onChange={onCangeCheck}
       />
       나눔상태</label>
