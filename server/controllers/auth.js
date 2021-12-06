@@ -83,12 +83,12 @@ module.exports = {
               console.log("DATA : ", data);
               const { id, email, nickname, profile_image, admin } = data.dataValues;
               const accessToken = jwt.sign(
-                { id, email },
+                { id, email, admin },
                 process.env.ACCESS_SECRET,
                 { expiresIn: "1d" }
               );
               const refreshToken = jwt.sign(
-                { id, email },
+                { id, email, admin },
                 process.env.REFRESH_SECRET,
                 { expiresIn: "30d" }
               )
@@ -367,7 +367,7 @@ module.exports = {
         res.status(500).send("서버에 오류가 발생했습니다")
       }
     })
-    
+
     // 4. DB 업데이트
     User.update({
     profile_image: imgPath

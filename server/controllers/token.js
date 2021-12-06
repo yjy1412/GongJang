@@ -33,11 +33,6 @@ module.exports = function (req, res) {
       return res.status(401).send("권한인증에 실패했습니다(토큰 유효하지 않음)")
     }
   }
-
-  const { email, id } = accessData;
-  return {
-    identified: true,
-    email,
-    id
-  }
+  const { id, email, admin } = accessData;
+  return { identified: true, id, email, admin }
 }

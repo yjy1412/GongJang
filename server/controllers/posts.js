@@ -420,7 +420,7 @@ module.exports = {
 
       // wish 여부를 알기 위한 유저정보 조회
       wish = await User.findOne({ where: { email } })
-        .then(result => {
+        .then(async result => {
           const userInfo = result.dataValues;
           if (!userInfo) {
             return res.status(404).send("요청하신 회원정보와 일치하는 회원정보가 없습니다")
@@ -428,15 +428,17 @@ module.exports = {
           const { id } = userInfo;
 
           // 1-2. wish 여부 데이터 조회
-          Wish.findOne({
+          return await Wish.findOne({
             where: {
               user_id: id,
               post_id: postsId
             }
           })
-            .then(resut => {
+            .then(result => {
               if (result) {
                 return true;
+              } else {
+                return false;
               }
             })
             .catch(err => {
@@ -512,9 +514,9 @@ module.exports = {
             image1,
             image2,
             image3,
+            wish,
             createdAt,
-            updatedAt,
-            wish
+            updatedAt
           },
           message: "게시물이 업로드 되었습니다"
         })

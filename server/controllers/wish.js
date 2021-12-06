@@ -16,7 +16,7 @@ module.exports = {
     }
     const { id, email } = accessResult;
 
-    // 2. 데이터 조회
+    // 2. 데이터 처리
     Wish.create({
       post_id: postId,
       user_id: id
@@ -42,7 +42,7 @@ module.exports = {
     }
     const { id, email } = accessResult;
 
-    // 2. 데이터 조회
+    // 2. 데이터 처리
     Wish.destroy({
       where: {
         post_id: postId,
@@ -50,6 +50,9 @@ module.exports = {
       }
     })
       .then(result => {
+        if( !result ) {
+          res.status(400).send("사용자가 할 수 없는 요청입니다")
+        }
         console.log(result);
         // 상태코드 204는 메시지를 보낼 수 없음
         res.sendStatus(204)
