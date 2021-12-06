@@ -10,16 +10,15 @@ const ItemListBlock = styled.ul`
   padding: 2rem 0 4rem;
 `;
 
-const ItemList = ({ posts, user, wishError }) => {
+const ItemList = ({ posts, user }) => {
   
   return (
     <ItemListBlock>
       { posts.map((post) => (
         <Item 
-        key={post.id} 
+        key={post?.id} 
         post={post} 
         user={user}
-        wishError={wishError}
         />
       ))}
     </ItemListBlock>

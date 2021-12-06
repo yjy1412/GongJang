@@ -4,9 +4,13 @@ import axios from 'axios';
 export const fetchWritePost = createAsyncThunk(
   'write/fetchWritePost',
   async (formData, { rejectWithValue }) => {
-    const { title, content, category, soldOut, image } = formData;
     try {
-      const response = await axios.post('/posts', { title, content, category, soldOut, image });
+      const config = {
+        headers: {
+          'Content-Type' : 'multipart/form-data'
+        }
+      }
+      const response = await axios.post('/posts', formData, config);
       return response.data;  
     } catch(err){
       return rejectWithValue(err.response.data);
@@ -17,9 +21,14 @@ export const fetchWritePost = createAsyncThunk(
 export const fetchUpdatePost = createAsyncThunk(
   'write/fetchUpdatePost',
   async (form, { rejectWithValue }) => {
-    const { id, title, content, category, soldOut, image } = form;
+    const { id, formData } = form;
     try {
-      const response = await axios.patch(`/posts/${id}`, { title, content, category, soldOut, image });
+      const config = {
+        headers: {
+          'Content-Type' : 'multipart/form-data'
+        }
+      }
+      const response = await axios.patch(`/posts/${id}`, formData, config);
       return response.data;  
     } catch(err){
       return rejectWithValue(err.response.data);
@@ -30,12 +39,12 @@ export const fetchUpdatePost = createAsyncThunk(
 const initialState = {
   title: '',
   content: '',
-  image: [],
   category: '',
+  image: [],
   soldOut: false,
+  originalPostId: null,
   post: null,
   postError: null,
-  originalPostId: null,
   loading: false,
 }
 
@@ -54,7 +63,7 @@ export const writeSlice = createSlice({
       state.content = post.content;
       state.image = post.image;
       state.category = post.category;
-      state.soldOut = false;
+      state.soldOut = post.soldOut;
       state.originalPostId = post.post_id;
     },
     changeCategory: (state, { payload }) => {
@@ -90,5 +99,11 @@ export const writeSlice = createSlice({
   }
 })
 
-export const { initialize, changeField, setOriginalPost, changeCategory, changeState } = writeSlice.actions;
+export const { 
+  initialize, 
+  changeField, 
+  setOriginalPost, 
+  changeCategory, 
+  changeState, 
+} = writeSlice.actions;
 export default writeSlice.reducer;

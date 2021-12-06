@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import { fetchRemoveWish, fetchWish } from '../../feature/wishSlice';
-import AskLoginModal from '../modal/AskLoginModal';
+import AskModal from '../modal/AskModal';
 import { changeWish } from '../../feature/postsSlice';
 
 const ItemBlock = styled.li`
@@ -12,9 +12,9 @@ const ItemBlock = styled.li`
   width: 100%;
   box-shadow: -5px -5px 10px rgba(255, 255, 255, 0.5),
     2px 2px 5px rgba(94, 104, 121, 0.3);
+  background: #ffdeb7;
   .item-img {
     height: 150px;
-    background: #ffdeb7;
     a {
       display: block;
       width: 100%;
@@ -36,17 +36,18 @@ const ItemBlock = styled.li`
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    .check-wish {
+      cursor: pointer;
+    }
   }
 `;
 
-const Item = ({ post, user, wishError }) => {
+const Item = ({ post, user }) => {
   const [modal, setModal] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
 
-  
   const onClickWish = () => {
-    console.log(post?.id)
     if(!user){
       setModal(!modal);
     }
@@ -70,6 +71,8 @@ const Item = ({ post, user, wishError }) => {
     history.push('/login');
   }
 
+  //이미지 없을 경우 기본 이미지 보여주기
+
   return (
     <ItemBlock>
       <div className="item-img">
@@ -91,10 +94,13 @@ const Item = ({ post, user, wishError }) => {
         </div>
       </div>
       { modal && (
-        <AskLoginModal 
+        <AskModal 
         visible={modal}
-        onCancel={onCancel}
+        title='알림'
+        description='로그인이 필요한 서비스입니다.'
+        addDescription='로그인 하시겠습니까?'
         onConfirm={onConfirm}
+        onCancel={onCancel}
         />
       )}
     </ItemBlock>

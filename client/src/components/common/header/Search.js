@@ -71,6 +71,7 @@ const Search = ({ onClick }) => {
             <input 
             type="text"
             placeholder="나눔 아이템을 검색하세요." 
+            defaultValue=""
             />
             <div className="search-icon" >
               <FiSearch/>
