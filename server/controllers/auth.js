@@ -98,7 +98,7 @@ module.exports = {
 
               // response
               res.cookie("refreshToken", refreshToken, { httpOnly: true, expiresIn: "30d" })
-
+              // !! 변경부분
               // 프로필 이미지 처리
               let convertImg;
               try {
@@ -115,7 +115,7 @@ module.exports = {
                 message: "로그인에 성공했습니다"
               })
             }
-
+            // !! 끝
           }
         })
         .catch(err => {
@@ -189,6 +189,7 @@ module.exports = {
         // 2-2. 정상적인 조회 요청이 이루어졌을 때
         const { email, nickname, admin, profile_image } = userInfo
         // 2-3. 프로필이미지 path를 통한 이미지 데이터 전송
+        // !! 변경부분
         // 프로필 이미지 처리
         let convertImg;
         try {
@@ -204,6 +205,7 @@ module.exports = {
           userInfo: { email, nickname, profile_image: convertImg, admin },
           message: "회원정보 요청에 성공했습니다"
         });
+        // !! 끝
       })
       .catch(err => {
         console.log(err);
@@ -213,7 +215,6 @@ module.exports = {
   },
   // GET auth/mypage/posts
   getMyPosts: async (req, res) => {
-    // TODO
     const accessResult = accessFunc(req, res);
     //사용자 인증
     if (!accessResult.identified) {
@@ -275,6 +276,7 @@ module.exports = {
       .then(result => {
         if (!result) { res.sendStatus(204) }
         const responseData = result.map(data => {
+          // TODO: 이미지 파일 처리
           const postData = data.dataValues.Post.dataValues;
           postData.wish = true;
           return postData;
@@ -354,6 +356,7 @@ module.exports = {
     const { email } = accessResult;
 
     // 2. 입력 데이터 DB 반영
+    // !! 변경부분
     const inputProfileImage = req.file;
     const imgPath = inputProfileImage.path
     console.log("req.file: ", inputProfileImage);
@@ -367,7 +370,7 @@ module.exports = {
         res.status(500).send("서버에 오류가 발생했습니다")
       }
     })
-    
+    // !! 끝
     // 4. DB 업데이트
     User.update({
     profile_image: imgPath

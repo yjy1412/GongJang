@@ -22,6 +22,7 @@ module.exports = {
     const inputContent = req.body.content;
     const inputCategory = req.body.category;
     const inputSoldOut = req.body.soldOut;
+    // !! 변경 부분
     // inputImage 배열처리
     let image1 = '';
     let image2 = '';
@@ -38,6 +39,7 @@ module.exports = {
         }
       }
     }
+    // !! 끝
     // 2. 필수 입력요소 누락여부 검사
     if (!inputTitle || !inputCategory) {
       return res.status(400).send("필수 입력요소가 누락되었습니다")
@@ -95,6 +97,7 @@ module.exports = {
     const inputCategory = req.body.category;
     const inputSoldOut = req.body.soldOut;
     const inputImage = req.files;
+    // !! 변경부분
     // 이미지 배열 처리
     // 게시글에서 디폴트 이미지 필요 없을 것 같음.
     console.log(req.files);
@@ -114,7 +117,7 @@ module.exports = {
         }
       }
     }
-
+    // !! 끝
     if (!inputTitle || !inputCategory) {
       return res.status(403).send("필수 입력요소가 누락되었습니다")
     }
@@ -122,6 +125,7 @@ module.exports = {
     const postsData = await Post.findOne({ where: { id: postsId } })
     console.log(postsData.user_id)
 
+    // !! 변경 부분
     // 게시글 이미지 수정 시 기존에 업로드한 이미지파일이 있다면 삭제
     const image1Path = postsData.image1;
     const image2Path = postsData.image2;
@@ -138,7 +142,7 @@ module.exports = {
         })
       }
     }
-
+    // !! 끝
     const userInfo = await User.findOne({ where: { email: result.email } })
     console.log(userInfo.dataValues.id)
 
@@ -167,7 +171,6 @@ module.exports = {
               message: "수정 되었습니다"
             })
           })
-
       } catch (err) {
         res.status(500).send('서버에 오류가 발생했습니다.')
       }
@@ -191,6 +194,7 @@ module.exports = {
         const postInfo = await Post.findOne({
           where: { id: postsId }
         })
+        // !! 변경부분
         // 게시글에 이미지 업로드한 파일이 있다면 삭제
         const image1Path = postInfo.image1;
         const image2Path = postInfo.image2;
@@ -207,7 +211,7 @@ module.exports = {
             })
           }
         }
-
+        // !! 끝
         await postInfo.destroy({});
         return res.sendStatus(204)
       } catch (err) {
@@ -268,7 +272,7 @@ module.exports = {
         const responseData = await Promise.all(
           result.map(async post => {
             let postData = post.dataValues;
-
+            // !! 변경부분
             // 게시글 이미지 파일 처리
             const { image1, image2, image3 } = postData;
             const images = [image1, image2, image3];
@@ -297,6 +301,7 @@ module.exports = {
                 }
               }
             }
+            // !! 끝
             const writerId = postData.user_id;
 
             // Sequelize 쿼리는 스코프 밖의 변수에 영향을 줄 수 없다?? 노노
@@ -367,10 +372,7 @@ module.exports = {
         responseData.sort((a, b) => {
           return Number(new Date(b.createdAt)) - Number(new Date(a.createdAt));
         })
-        res.status(200).json({
-          data: responseData,
-          message: "전체 게시글 목록이 리스트업 되었습니다"
-        });
+        res.status(200).json(responseData);
       })
       .catch(err => {
         console.log(err);
@@ -470,6 +472,7 @@ module.exports = {
         const userInfo = result.User.dataValues;
         const { id, title, content, category, soldOut, createdAt, updatedAt } = postData;
         const { email, nickname } = userInfo;
+        // !! 변경부분
         // 2-2. 게시글 이미지 파일 처리
         let { image1, image2, image3 }= postData;
         const images = [image1, image2, image3];
@@ -497,7 +500,7 @@ module.exports = {
             }
           }
         }
-
+        // !! 끝
         res.status(201).json({
           data: {
             post_id: id,
