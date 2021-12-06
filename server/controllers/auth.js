@@ -1,9 +1,8 @@
 require('dotenv').config();
+const fs = require('fs');
 const { User, Post, Wish } = require('../models');
 const jwt = require('jsonwebtoken');
 const accessFunc = require('./token');
-const { post } = require('./posts');
-const { response } = require('express');
 
 module.exports = {
   // POST auth/sign-up
@@ -99,13 +98,24 @@ module.exports = {
 
               // response
               res.cookie("refreshToken", refreshToken, { httpOnly: true, expiresIn: "30d" })
+              // !! 변경부분
+              // 프로필 이미지 처리
+              let convertImg;
+              try {
+                convertImg = fs.readFileSync(profile_image, (err, data) => {
+                  return Buffer.from(data).toString('base64');
+                })
+              } catch {
+                console.log(convertImg);
+                return res.status(500).send("서버에 오류가 발생했습니다")
+              }
               res.json({
                 accessToken: accessToken,
-                userInfo: { id, email, nickname, profile_image, admin },
+                userInfo: { id, email, nickname, profile_image: convertImg, admin },
                 message: "로그인에 성공했습니다"
               })
             }
-
+            // !! 끝
           }
         })
         .catch(err => {
@@ -162,7 +172,7 @@ module.exports = {
   },
   // GET auth/mypage
   getMypage: async (req, res) => {
-   
+
     const result = accessFunc(req, res);
 
     if (!result.identified) {
@@ -178,10 +188,24 @@ module.exports = {
         }
         // 2-2. 정상적인 조회 요청이 이루어졌을 때
         const { email, nickname, admin, profile_image } = userInfo
+        // 2-3. 프로필이미지 path를 통한 이미지 데이터 전송
+        // !! 변경부분
+        // 프로필 이미지 처리
+        let convertImg;
+        try {
+          convertImg = fs.readFileSync(profile_image, (err, data) => {
+            return Buffer.from(data).toString('base64');
+          })
+        } catch {
+          console.log(convertImg);
+          res.status(500).send("서버에 오류가 발생했습니다")
+        }
+        console.log(convertImg);
         res.json({
-          userInfo: { email, nickname, profile_image, admin },
+          userInfo: { email, nickname, profile_image: convertImg, admin },
           message: "회원정보 요청에 성공했습니다"
         });
+        // !! 끝
       })
       .catch(err => {
         console.log(err);
@@ -191,45 +215,44 @@ module.exports = {
   },
   // GET auth/mypage/posts
   getMyPosts: async (req, res) => {
-    // TODO
     const accessResult = accessFunc(req, res);
-//사용자 인증
+    //사용자 인증
     if (!accessResult.identified) {
       return accessResult;
     }
     console.log(accessResult)
     const {id} = accessResult
 //accessResult는 user_id
-
+    
     Post.findAll({
       // attributes : ['id', 'title', 'image1'],
-      where : { user_id : id}, 
+      where: { user_id: id },
     })
-    .then(result => {
-      if(!result) {
-        res.sendStatus(204)
-      } else {          
-        //불러올 데이터는 배열화 되어 있기 때문에 map으로 처리           
-      const responseData = result.map(data => {       
-      const postData = data.dataValues
-       return postData
-      })         
-      if(!responseData) { 
-        res.status(400).send('가져올 데이터 없음')
-      }
-      responseData.sort((a, b) => {
-        return Number(new Date(b.createdAt) - Number(new Date(a.createdAt)))
+      .then(result => {
+        if (!result) {
+          res.sendStatus(204)
+        } else {
+          //불러올 데이터는 배열화 되어 있기 때문에 map으로 처리           
+          const responseData = result.map(data => {
+            const postData = data.dataValues
+            return postData
+          })
+          if (!responseData) {
+            res.status(400).send('가져올 데이터 없음')
+          }
+          responseData.sort((a, b) => {
+            return Number(new Date(b.createdAt) - Number(new Date(a.createdAt)))
+          })
+          return res.status(200).json(responseData)
+        }
       })
-      return res.status(200).json(responseData)
-    }})
-    .catch(err => {
-      console.log(err)
-      res.status(500).send('서버에 오류가 발생했습니다.')
-    })    
+      .catch(err => {
+        console.log(err)
+        res.status(500).send('서버에 오류가 발생했습니다.')
+      })
   },
   // GET auth/wish-list
   getWishLists: async (req, res) => {
-    // TODO
     // 0. 연결 테스트
     console.log(req.params.user_email);
     const userEmail = req.params.user_email;
@@ -243,7 +266,6 @@ module.exports = {
     const { id, email } = accessResult;
 
     // 2. 자료 조회
-    // TODO: wish post 구현 후 다시 작성
     Wish.findAll({
       where: { user_id: id },
       include: {
@@ -254,19 +276,23 @@ module.exports = {
       .then(result => {
         if (!result) { res.sendStatus(204) }
         const responseData = result.map(data => {
+          // TODO: 이미지 파일 처리
           const postData = data.dataValues.Post.dataValues;
           postData.wish = true;
           return postData;
         })
         console.log(responseData)
-        if ( !responseData ) {
+        if (!responseData) {
           res.status(500).send("서버에 에러가 발생했습니다")
         }
         // 날짜 순 정렬(작성 일 기준 최신 순)
         responseData.sort((a, b) => {
           return Number(new Date(b.createdAt)) - Number(new Date(a.createdAt));
         })
-        return res.status(200).json(responseData)
+        return res.status(200).json({
+          data: responseData,
+          message: "내가 찜한 게시글이 리스트업 되었습니다"
+        })
       })
       .catch(err => {
         console.log(err);
@@ -274,8 +300,8 @@ module.exports = {
       })
 
   },
-  // PATCH auth/mypage
-  patchMypage: async (req, res) => {
+  // PATCH auth/nickname
+  patchNickname: async (req, res) => {
     // 1. 권한 인증
     const result = accessFunc(req, res);
 
@@ -286,7 +312,8 @@ module.exports = {
 
     // 2. 입력 데이터 DB 반영
     const inputNickname = req.body.nickname;
-    const inputProfileImage = req.body.profile_image;
+    // const inputProfileImage = req.file;
+    // console.log(inputProfileImage);
 
     if (inputNickname === "") {
       // !! null과 ""의 차이가 뭘까??
@@ -300,12 +327,12 @@ module.exports = {
         };
         // 2-2. 회원정보 수정 반영
         User.update({
-          nickname: inputNickname,
-          profile_image: inputProfileImage
+          nickname: inputNickname
+          // profile_image: inputProfileImage
         }, { where: { email } })
           .then(result => {
             console.log(result);
-            res.status(201).send("회원정보가 수정되었습니다")
+            res.status(201).send("닉네임이 변경 되었습니다")
           })
           .catch(err => {
             console.log(err);
@@ -318,6 +345,45 @@ module.exports = {
       })
 
   },
+  // PATCH auth/profile-image
+  patchProfileImg: async (req, res) => {
+    // 1. 권한 인증
+    const accessResult = accessFunc(req, res);
+
+    if (!accessResult.identified) {
+      return accessResult;
+    }
+    const { email } = accessResult;
+
+    // 2. 입력 데이터 DB 반영
+    // !! 변경부분
+    const inputProfileImage = req.file;
+    const imgPath = inputProfileImage.path
+    console.log("req.file: ", inputProfileImage);
+    console.log("req.file.path: ", imgPath);
+    console.log("req.body: ", req.body);
+
+    // 3. 기존 프로필 사진 삭제
+    fs.unlink(imgPath, (err, data) => {
+      if(err) {
+        console.log(err);
+        res.status(500).send("서버에 오류가 발생했습니다")
+      }
+    })
+    // !! 끝
+    // 4. DB 업데이트
+    User.update({
+    profile_image: imgPath
+  }, { where: { email } })
+    .then(result => {
+      console.log("updateResult: ", result);
+      res.status(201).send("프로필 이미지가 업로드 되었습니다")
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).send("서버에 오류가 발생했습니다")
+    })
+},
   // PATCH auth/password
   patchPassword: async (req, res) => {
     // 1. 권한 인증
@@ -359,5 +425,11 @@ module.exports = {
         console.log(err);
         res.status(500).send("서버에 오류가 발생했습니다")
       })
+  },
+  googleLogin: async (req, res) => {
+
+  },
+  googleCallback: async (req, res) => {
+    
   }
 }

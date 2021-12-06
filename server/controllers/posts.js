@@ -1,4 +1,5 @@
 require('dotenv').config();
+const fs = require('fs');
 const { User, Post, Wish } = require('../models');
 const { Sequelize, Op } = require('sequelize');
 const accessFunc = require('./token');
@@ -15,29 +16,30 @@ module.exports = {
     const email = result.email;
 
     const inputTitle = req.body.title;
-    const inputImage = req.body.image;
-    console.log(inputImage)
+    const inputImage = req.files;
+    console.log("req.files: ", inputImage)
     // console.log(inputImage[0])
     const inputContent = req.body.content;
     const inputCategory = req.body.category;
     const inputSoldOut = req.body.soldOut;
+    // !! 변경 부분
     // inputImage 배열처리
-    // TODO: 디폴트 이미지 정해지면 타입 고려해서 반영
-    let image1 = null;
-    let image2 = null;
-    let image3 = null;
+    let image1 = '';
+    let image2 = '';
+    let image3 = '';
 
     if (inputImage !== undefined) {
       for (let i = 0; i < inputImage.length; i += 1) {
         if (i === 0) {
-          image1 = inputImage[i];
+          image1 = __dirname + '/../' + inputImage[i].path;
         } else if (i === 1) {
-          image2 = inputImage[i];
+          image2 = __dirname + '/../' + inputImage[i].path;
         } else if (i === 2) {
-          image3 = inputImage[i];
+          image3 = __dirname + '/../' + inputImage[i].path;
         }
       }
     }
+    // !! 끝
     // 2. 필수 입력요소 누락여부 검사
     if (!inputTitle || !inputCategory) {
       return res.status(400).send("필수 입력요소가 누락되었습니다")
@@ -50,7 +52,7 @@ module.exports = {
         if (!result) {
           return res.status(404).send("요청하신 회원정보와 일치하는 회원정보가 없습니다")
         }
-        // 4. 정상적인 요청 처리$
+        // 4. 정상적인 요청 처리
         const userInfo = result.dataValues;
         const { id } = userInfo;
 
@@ -83,94 +85,148 @@ module.exports = {
   },
   // PATCH /posts/:posts_id
   patch: async (req, res) => {
-    const postsId = req.params.posts_id; 
+    const postsId = req.params.posts_id;
     //유저 유효성 검사 
     const result = accessFunc(req, res);
     if (!result.identified) {
       return result;
     }
-    
-    const inputTitle = req.body.title;   
+
+    const inputTitle = req.body.title;
     const inputContent = req.body.content;
     const inputCategory = req.body.category;
     const inputSoldOut = req.body.soldOut;
-    const inputImage = req.body.image;
-    let image1, image2, image3 = null;
-    if( inputImage !== undefined){
+    const inputImage = req.files;
+    // !! 변경부분
+    // 이미지 배열 처리
+    // 게시글에서 디폴트 이미지 필요 없을 것 같음.
+    console.log(req.files);
+    // 기존 저장된 이미지파일 패스 초기화/ 왜냐하면, 기존 파일들을 삭제시키기 때문
+    let image1 = '';
+    let image2 = '';
+    let image3 = '';
+
+    if (inputImage !== undefined) {
       for (let i = 0; i < inputImage.length; i += 1) {
         if (i === 0) {
-          image1 = inputImage[i];
+          image1 = __dirname + '/../' + inputImage[i].path;
         } else if (i === 1) {
-          image2 = inputImage[i];
+          image2 = __dirname + '/../' + inputImage[i].path;
         } else if (i === 2) {
-          image3 = inputImage[i];
+          image3 = __dirname + '/../' + inputImage[i].path;
         }
       }
     }
-    
+    // !! 끝
     if (!inputTitle || !inputCategory) {
       return res.status(403).send("필수 입력요소가 누락되었습니다")
     }
-   
-    const postsData = await Post.findOne({where : { id : postsId}})  
+
+    const postsData = await Post.findOne({ where: { id: postsId } })
     console.log(postsData.user_id)
-    const userInfo = await User.findOne({where : {email : result.email}})
+
+    // !! 변경 부분
+    // 게시글 이미지 수정 시 기존에 업로드한 이미지파일이 있다면 삭제
+    const image1Path = postsData.image1;
+    const image2Path = postsData.image2;
+    const image3Path = postsData.image3;
+    const images = [image1Path, image2Path, image3Path];
+
+    for (let i = 0; i < images.length; i += 1) {
+      if (images[i]) {
+        fs.unlink(images[i], (err) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).send("서버에 오류가 발생했습니다")
+          }
+        })
+      }
+    }
+    // !! 끝
+    const userInfo = await User.findOne({ where: { email: result.email } })
     console.log(userInfo.dataValues.id)
 
-    if(userInfo.dataValues.id !== postsData.user_id) { 
-      return res.status(400).send('작성자가 아닙니다.')
+    if (userInfo.dataValues.id !== postsData.user_id) {
+      return res.status(401).send('권한이 아닙니다.')
       //잡아냈음
     } else {
-    try {
-       Post.update({
-         title : inputTitle,
-         content : inputContent, 
-         category : inputCategory,
-         soldout : inputSoldOut,
-         image1 ,
-         image2 ,
-         image3  
-       }, {where : {
-         id : postsId
-       }})
-       res.status(201).json({
-         user_id : postsData.user_id,
-         post_id : postsId,
-         message : "수정 되었습니다"
-       })
-    }catch(err) {
-      res.status(500).send('서버에 오류가 발생했습니다.')
+      try {
+        Post.update({
+          title: inputTitle,
+          content: inputContent,
+          category: inputCategory,
+          soldout: inputSoldOut,
+          image1,
+          image2,
+          image3
+        }, {
+          where: {
+            id: postsId
+          }
+        })
+          .then(result => {
+            res.status(201).json({
+              user_id: postsData.user_id,
+              post_id: postsId,
+              message: "수정 되었습니다"
+            })
+          })
+      } catch (err) {
+        res.status(500).send('서버에 오류가 발생했습니다.')
+      }
     }
-  }
 
   },
   // DELETE /posts/:posts_id
   delete: async (req, res) => {
     console.log(req.params.posts_id)
     const postsId = req.params.posts_id;
-
     //유저 권한 인증
     const result = accessFunc(req, res);
     if (!result.identified) {
       return result;
     }
-    
-    //권한이 있다면
-    if (result) {
-      try {
-        const postInfo = await Post.findOne({
-          where: { id: postsId }
-        })
-        await postInfo.destroy({});
-        return res.sendStatus(204)
-      } catch (err) {
-        return res.status(500).send('서버에 오류가 발생했습니다.')
-      }
-      //권한이 없다면
-    } else {
-      return res.status(401).send('유효하지 않은 토큰입니다.')
-    }
 
+    // 게시글을 삭제할 권한이 있는 지
+    try {
+      const userId = result.id
+      const postInfo = await Post.findOne({
+        where: {
+          id: postsId
+        }
+      })
+      console.log(postInfo.dataValues.user_id)
+      if (postInfo.dataValues.user_id !== userId) {
+        return res.status(401).send('권한이 없습니다.')
+      } else {
+        Post.destroy({
+          where: {
+            id: postsId
+          }
+        })
+        res.sendStatus(204)
+      }
+      // !! 변경부분
+      // 게시글에 이미지 업로드한 파일이 있다면 삭제
+      const image1Path = postInfo.image1;
+      const image2Path = postInfo.image2;
+      const image3Path = postInfo.image3;
+      const images = [image1Path, image2Path, image3Path];
+
+      for (let i = 0; i < images.length; i += 1) {
+        if (images[i]) {
+          fs.unlink(images[i], (err) => {
+            if (err) {
+              console.log(err);
+              return res.status(500).send("서버에 오류가 발생했습니다")
+            }
+          })
+        }
+      }
+      // !! 끝
+    } catch (err) {
+      return res.status(500).send('서버에 오류가 발생했습니다.')
+    }
   },
   // GET /posts
   get: async (req, res) => {
@@ -214,10 +270,43 @@ module.exports = {
     // 2. 데이터 조회
     Post.findAll()
       .then(async result => {
+        if (!result) {
+          res.status(204).send("현재 요청 목록에 해당하는 자료가 없습니다")
+        }
         // console.log(result);
         const responseData = await Promise.all(
           result.map(async post => {
             let postData = post.dataValues;
+            // !! 변경부분
+            // 게시글 이미지 파일 처리
+            const { image1, image2, image3 } = postData;
+            const images = [image1, image2, image3];
+
+            for (let i = 0; i < images.length; i += 1) {
+              // 이미지가 널값이 아니라면,
+              if (images[i]) {
+                console.log("images : ", images[i])
+                let convertData
+                try {
+                  convertData = fs.readFileSync(images[i], (err, data) => {
+                    // console.log(data);
+                    return Buffer.from(data).toString('base64');
+                  })
+                } catch (err) {
+                  console.log(err);
+                  return res.status(500).send("서버에 오류가 발생했습니다")
+                }
+
+                if (i === 0) {
+                  postData.image1 = convertData;
+                } else if (i === 1) {
+                  postData.image2 = convertData;
+                } else if (i === 2) {
+                  postData.image2 = convertData;
+                }
+              }
+            }
+            // !! 끝
             const writerId = postData.user_id;
 
             // Sequelize 쿼리는 스코프 밖의 변수에 영향을 줄 수 없다?? 노노
@@ -285,7 +374,7 @@ module.exports = {
         console.log(responseData);
 
         // 날짜 순 정렬(작성 일 기준 최신 순)
-        responseData.sort((a,b) => {
+        responseData.sort((a, b) => {
           return Number(new Date(b.createdAt)) - Number(new Date(a.createdAt));
         })
         res.status(200).json(responseData);
@@ -386,9 +475,37 @@ module.exports = {
         // 2-1. 요청 데이터 정리
         const postData = result.dataValues;
         const userInfo = result.User.dataValues;
-        const { id, title, content, category, soldOut, image1, image2, image3, createdAt, updatedAt } = postData;
+        const { id, title, content, category, soldOut, createdAt, updatedAt } = postData;
         const { email, nickname } = userInfo;
+        // !! 변경부분
+        // 2-2. 게시글 이미지 파일 처리
+        let { image1, image2, image3 } = postData;
+        const images = [image1, image2, image3];
 
+        for (let i = 0; i < images.length; i += 1) {
+          // 이미지가 널값이 아니라면,
+          if (images[i]) {
+            console.log("images : ", images[i])
+            let convertData
+            try {
+              convertData = fs.readFileSync(images[i], (err, data) => {
+                return Buffer.from(data).toString('base64');
+              })
+            } catch (err) {
+              console.log(err);
+              return res.status(500).send("서버에 오류가 발생했습니다")
+            }
+
+            if (i === 0) {
+              image1 = convertData;
+            } else if (i === 1) {
+              image2 = convertData;
+            } else if (i === 2) {
+              image2 = convertData;
+            }
+          }
+        }
+        // !! 끝
         res.status(201).json({
           data: {
             post_id: id,

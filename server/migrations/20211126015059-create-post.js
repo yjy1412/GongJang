@@ -35,13 +35,13 @@ module.exports = {
         defaultValue: false
       },
       image1: {
-        type: Sequelize.BLOB
+        type: Sequelize.STRING
       },
       image2: {
-        type: Sequelize.BLOB
+        type: Sequelize.STRING
       },
       image3: {
-        type: Sequelize.BLOB
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
