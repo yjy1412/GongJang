@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 
 const HiddenMenuBlock = styled.div`
   position: relative;
   width: 45px;
   height: 34px;
+  cursor: pointer;
   transition: .3s ease-in-out;
   display: none;
   span {
@@ -40,8 +41,23 @@ const HiddenMenuBlock = styled.div`
 `;
 
 const HiddenMenu = () => {
+  const [changeSate, setChangeState] = useState(false);
+  const menu = useRef(null);
+
+  const onChangeShape = () => {
+    if(!changeSate){
+      setChangeState(true);
+    } else {
+      setChangeState(false);
+    }
+  }
+
   return (
-    <HiddenMenuBlock>
+    <HiddenMenuBlock 
+    ref={menu} 
+    onClick={onChangeShape}
+    className={changeSate && 'active'}
+    >
       <span></span>
       <span></span>
       <span></span>
