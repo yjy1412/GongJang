@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { HiOutlineChevronLeft, HiOutlineChevronRight } from 'react-icons/hi';
 import SlideImgModal from '../modal/SlideImgModal';
@@ -66,6 +66,8 @@ const ItemImgSlide = () => {
   const onClickSlideImg = () => {
     setModal(!modal);
   }
+
+  //업로드한 이미지 없을 경우 기본 이미지 보여주기 
 
   return (
     <ItemImgSlideBlock>

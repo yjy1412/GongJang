@@ -4,7 +4,10 @@ import { RiImageAddLine } from 'react-icons/ri';
 import { FaTimes } from 'react-icons/fa';
 
 const ImgUploadBlock = styled.div`
-  margin: 1.5rem 0;
+  margin: 1.5rem 0 0;
+  p {
+    color: #bcbdc4;
+  }
 `;
 
 const ImgPreviewBox = styled.div`
@@ -49,16 +52,15 @@ const ImgPreviewBox = styled.div`
   }
 `;
 
-const ImgUpload = ({ setImageFiles, imageFiles, setImageURLs, imageURLs, onRemove }) => {
-
+const ImgUpload = ({ uploadImages, setUploadImages, imageURLs , setImageURLs, onRemove }) => {
   //이미지 미리보기
   const onFileChange = (e) => {
     let files = e.target.files;
     if(files.length < 1 ){
       return;
     }
-    setImageFiles([
-      ...imageFiles,
+    setUploadImages([
+      ...uploadImages,
       ...files]);
 
     for(let file of files){
@@ -75,7 +77,9 @@ const ImgUpload = ({ setImageFiles, imageFiles, setImageURLs, imageURLs, onRemov
       }
     }
   }
-  
+
+  //글 수정시 서버에서 불러온 이미지도 보여주고, 해당 이미지 삭제리듀서 작성
+
   return (
     <ImgUploadBlock>
       <ImgPreviewBox>
@@ -111,6 +115,7 @@ const ImgUpload = ({ setImageFiles, imageFiles, setImageURLs, imageURLs, onRemov
           </div>
         )}
       </ImgPreviewBox>
+      <p>(최대 3장 이미지 첨부 가능)</p>
     </ImgUploadBlock>
   );
 };
