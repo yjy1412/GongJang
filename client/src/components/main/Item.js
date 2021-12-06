@@ -6,7 +6,6 @@ import { useDispatch } from 'react-redux';
 import { fetchRemoveWish, fetchWish } from '../../feature/wishSlice';
 import AskModal from '../modal/AskModal';
 import { changeWish } from '../../feature/postsSlice';
-import TestImg from '../../style/images/testImg.jpg';
 
 const ItemBlock = styled.li`
   max-width: 250px;
@@ -78,7 +77,7 @@ const Item = ({ post, user }) => {
     <ItemBlock>
       <div className="item-img">
         <Link to={`/${post?.id}`}>
-          <img src={TestImg} alt="" />
+          <img src="" alt="" />
         </Link>
       </div>
       <div className="item-info">
