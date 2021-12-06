@@ -31,10 +31,35 @@ module.exports = {
       res.status(500).send("서버에 오류가 발생했습니다")
       }     
   },
-  //GET /comments/:comments_id
+  //GET /comments/:posts_id
   get: async (req, res) => {
-
-    res.send('get comments')
+    console.log(req.params)
+    const accessResult = accessFunc(req, res);  
+    if (!accessResult.identified) {
+      return accessResult;
+     }
+    const postsId = req.params.posts_id
+    try{
+    await Comment.findAll({
+      include : [{
+        model : User,
+        attributes : ['nickname'] 
+      }],
+      where : {
+        post_id : postsId
+      }
+    })
+    .then(data => {
+      console.log(data)
+      res.status(200).json({
+        data,
+        message : "댓글을 불러왔습니다."        
+      })
+    })
+    // console.log(comment)
+  } catch(err) {
+    return res.status(500).send('서버에 오류가 발생했습니다.')
+  }
   },
   // PATCH /comments/:comments_id
   patch: async (req, res) => {
