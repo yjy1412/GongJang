@@ -7,7 +7,6 @@ import ItemImgSlide from '../components/postDetail/ItemImgSlide';
 import { fetchGetPostDetail, unloadPost, fetchRemovePost } from '../feature/postSlice';
 import { setOriginalPost } from '../feature/writeSlice';
 import Loading from '../components/common/Loading';
-import { removePost } from '../feature/postsSlice';
 import AskModal from '../components/modal/AskModal';
 import checkTime from '../components/postDetail/Time';
 
@@ -100,10 +99,13 @@ const PostDetail = () => {
     setModal(!modal);
   }
 
-  const onConfirm = () => {
-    dispatch(fetchRemovePost(id));
-    dispatch(removePost(id));
-    history.push('/');
+  const onConfirm = async () => {
+    try {
+      await dispatch(fetchRemovePost(id));
+      await history.push('/');
+    } catch(e){
+      console.log(e)
+    }
   }
 
   const date = checkTime(post?.createdAt);
