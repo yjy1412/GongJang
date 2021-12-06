@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import ItemList from '../components/main/ItemList';
 import GameImg from '../components/main/GameImg';
 import Loading from '../components/common/Loading';
-import { fetchGetAllPosts, initialize } from '../feature/postsSlice';
+import { fetchGetAllPosts } from '../feature/postsSlice';
 
 const MainBlock = styled.div`
   width: 1130px;
@@ -33,12 +33,10 @@ const MainBlock = styled.div`
 
 const Main = () => {
   const dispatch = useDispatch();
-  const { posts, error, loading, user, wishError } = useSelector(({ posts, user, wish }) => ({
+  const { posts, loading, user } = useSelector(({ posts, user }) => ({
     posts: posts.posts,
-    error: posts.error,
     loading: posts.loading,
     user: user.user,
-    wishError: wish.wishError,
   }))
 
   useEffect(() => {
@@ -49,12 +47,6 @@ const Main = () => {
     }
   },[dispatch, user]);
   
-  // if(error){
-  //   if(error.response && error.response.status === 404){
-  //     return <MainBlock>나눔글이 존재하지 않습니다.</MainBlock>;
-  //   }
-  //   return <MainBlock>예상치 못한 오류가 발생했습니다.</MainBlock>;
-  // }
   if(loading || !posts){
     return <Loading/>;
   }
@@ -67,7 +59,6 @@ const Main = () => {
       <ItemList 
       posts={posts} 
       user={user} 
-      wishError={wishError}
       />
     </MainBlock>
   );
