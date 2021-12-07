@@ -14,9 +14,13 @@ module.exports = {
     const inputEmail = req.body.email;
     const inputNickname = req.body.nickname;
     const inputPassword = req.body.password;
+    const inputAdmin = req.body.admin;
 
     if (!inputEmail || !inputNickname || !inputPassword) {
       return res.status(400).send("필수 입력요소가 누락되었습니다");
+    }
+    if ( typeof inputAdmin !== 'boolean' ) {
+      return res.status(400).send("입력 데이터의 타입이 잘못되었습니다")
     }
     // 1. 이메일 중복여부 검사
     User.findOne({ where: { email: inputEmail } })
@@ -34,7 +38,8 @@ module.exports = {
             User.create({
               email: inputEmail,
               nickname: inputNickname,
-              password: inputPassword
+              password: inputPassword,
+              admin : inputAdmin
             })
               .then(result => {
                 res.status(201).send("회원가입 되었습니다")
@@ -82,12 +87,12 @@ module.exports = {
               console.log("DATA : ", data);
               const { id, email, nickname, profile_image, admin } = data.dataValues;
               const accessToken = jwt.sign(
-                { id, email },
+                { id, email, admin },
                 process.env.ACCESS_SECRET,
                 { expiresIn: "1d" }
               );
               const refreshToken = jwt.sign(
-                { id, email },
+                { id, email, admin },
                 process.env.REFRESH_SECRET,
                 { expiresIn: "30d" }
               )
@@ -97,7 +102,6 @@ module.exports = {
 
               // response
               res.cookie("refreshToken", refreshToken, { httpOnly: true, expiresIn: "30d" })
-              // !! 변경부분
               // 프로필 이미지 처리
               let convertImg;
               try {
@@ -114,7 +118,6 @@ module.exports = {
                 message: "로그인에 성공했습니다"
               })
             }
-            // !! 끝
           }
         })
         .catch(err => {
@@ -144,7 +147,6 @@ module.exports = {
   },
   // DELETE auth/sign-out
   signout: async (req, res) => {
-    // TODO: 이상 없는 지 확인해보기
     // console.log(req.headers)
     //1.유저검증(토큰여부)
     const result = accessFunc(req, res);
@@ -188,7 +190,6 @@ module.exports = {
         // 2-2. 정상적인 조회 요청이 이루어졌을 때
         const { email, nickname, admin, profile_image } = userInfo
         // 2-3. 프로필이미지 path를 통한 이미지 데이터 전송
-        // !! 변경부분
         // 프로필 이미지 처리
         let convertImg;
         try {
@@ -204,7 +205,6 @@ module.exports = {
           userInfo: { email, nickname, profile_image: convertImg, admin },
           message: "회원정보 요청에 성공했습니다"
         });
-        // !! 끝
       })
       .catch(err => {
         console.log(err);
@@ -214,6 +214,7 @@ module.exports = {
   },
   // GET auth/mypage/posts
   getMyPosts: async (req, res) => {
+    // TODO : 이미지 처리 구현하기
     const accessResult = accessFunc(req, res);
     //사용자 인증
     if (!accessResult.identified) {
@@ -252,6 +253,7 @@ module.exports = {
   },
   // GET auth/wish-list
   getWishLists: async (req, res) => {
+    // TODO : 이미지 처리 구현하기
     // 0. 연결 테스트
     console.log(req.params.user_email);
     const userEmail = req.params.user_email;
@@ -275,7 +277,7 @@ module.exports = {
       .then(result => {
         if (!result) { res.sendStatus(204) }
         const responseData = result.map(data => {
-          // TODO: 이미지 파일 처리
+
           const postData = data.dataValues.Post.dataValues;
           postData.wish = true;
           return postData;
@@ -414,7 +416,7 @@ module.exports = {
           console.log(err);
           return res.status(500).send("서버에 오류가 발생했습니다");
         })
-      // !! 끝
+        
       // 4. DB 업데이트
       User.update({
         profile_image: __dirname + '/../' + `${imgPath}`
