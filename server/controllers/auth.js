@@ -355,7 +355,6 @@ module.exports = {
     const { email } = accessResult;
 
     // 입력 데이터 DB 반영
-    // !! 변경부분
     // 변경 요청할 프로필 이미지가 없다면,
     if (!req.file) {
       // 디폴트 이미지 파일이 아니라면, 기존 유저의 프로필 이미지 파일 삭제
