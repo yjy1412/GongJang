@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import React, { useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import { fetchRemoveWish, fetchWish } from '../../feature/wishSlice';
-import AskModal from '../modal/AskModal';
 import { changeWish } from '../../feature/postsSlice';
 
 const ItemBlock = styled.li`
@@ -14,7 +13,7 @@ const ItemBlock = styled.li`
     2px 2px 5px rgba(94, 104, 121, 0.3);
   background: #ffdeb7;
   .item-img {
-    height: 150px;
+    height: 180px;
     a {
       display: block;
       width: 100%;
@@ -42,12 +41,10 @@ const ItemBlock = styled.li`
   }
 `;
 
-const Item = ({ post, user }) => {
-  const [modal, setModal] = useState(false);
+const Item = ({ post, user, setModal, modal }) => {
   const dispatch = useDispatch();
-  const history = useHistory();
 
-  const onClickWish = () => {
+  const onClickWish = useCallback(() => {
     if(!user){
       setModal(!modal);
     }
@@ -60,16 +57,10 @@ const Item = ({ post, user }) => {
         dispatch(changeWish(post?.id));
       }
     }
-  }
+  },[dispatch, modal, post?.id, post?.wish, setModal, user])
 
-  const onCancel = () => {
-    setModal(!modal);
-  }
-
-  const onConfirm = () => {
-    setModal(!modal);
-    history.push('/login');
-  }
+  const test = post?.image[0].data;
+  const base64String = btoa(String.fromCharCode(...new Uint8Array(test)));
 
   //이미지 없을 경우 기본 이미지 보여주기
 
@@ -77,7 +68,7 @@ const Item = ({ post, user }) => {
     <ItemBlock>
       <div className="item-img">
         <Link to={`/${post?.id}`}>
-          <img src="" alt="" />
+          <img src={`data:image/png;base64,${base64String}`} alt="" />
         </Link>
       </div>
       <div className="item-info">
@@ -93,16 +84,6 @@ const Item = ({ post, user }) => {
           )}
         </div>
       </div>
-      { modal && (
-        <AskModal 
-        visible={modal}
-        title='알림'
-        description='로그인이 필요한 서비스입니다.'
-        addDescription='로그인 하시겠습니까?'
-        onConfirm={onConfirm}
-        onCancel={onCancel}
-        />
-      )}
     </ItemBlock>
   );
 };
