@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -102,10 +102,10 @@ const PostDetail = () => {
     }
   },[dispatch, id])
 
-  const onEditPost = () => {
+  const onEditPost = useCallback(() => {
     dispatch(setOriginalPost(post));
     history.push('/write');
-  }
+  },[dispatch, history, post])
 
   const onCancel = () => {
     setModal(!modal);
@@ -114,15 +114,14 @@ const PostDetail = () => {
   const onConfirm = async () => {
     try {
       await dispatch(fetchRemovePost(id));
-      await history.push('/');
+      history.push('/');
     } catch(e){
       console.log(e)
     }
   }
 
   const date = checkTime(post?.createdAt);
-  
-  const ownPost = (user && user.nickname) === (post && post?.writer.writer_nickname);
+  const ownPost = ((user && user.nickname) === (post && post?.writer.writer_nickname));
   
   // if(error){
   //   if(error.response && error.response.status === 404){

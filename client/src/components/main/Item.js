@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
@@ -44,7 +44,7 @@ const ItemBlock = styled.li`
 const Item = ({ post, user, setModal, modal }) => {
   const dispatch = useDispatch();
 
-  const onClickWish = () => {
+  const onClickWish = useCallback(() => {
     if(!user){
       setModal(!modal);
     }
@@ -57,7 +57,7 @@ const Item = ({ post, user, setModal, modal }) => {
         dispatch(changeWish(post?.id));
       }
     }
-  }
+  },[dispatch, modal, post?.id, post?.wish, setModal, user])
 
   const test = post?.image[0].data;
   const base64String = btoa(String.fromCharCode(...new Uint8Array(test)));

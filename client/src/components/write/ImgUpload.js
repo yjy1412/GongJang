@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { RiImageAddLine } from 'react-icons/ri';
 import { FaTimes } from 'react-icons/fa';
@@ -62,7 +62,7 @@ const ImgUpload = ({
   onRemoveImage 
 }) => {
   //이미지 미리보기
-  const onFileChange = (e) => {
+  const onFileChange = useCallback(e => {
     let files = e.target.files;
     if(files.length < 1 ){
       return;
@@ -84,7 +84,7 @@ const ImgUpload = ({
         reader.readAsDataURL(file);
       }
     }
-  }
+  },[imageURLs, setImageURLs, setUploadImages, uploadImages])
 
   const dataFilter = images.filter(el => el !== undefined);
   const data = dataFilter.map(el => {
