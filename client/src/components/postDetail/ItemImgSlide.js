@@ -45,9 +45,10 @@ const ItemImgSlide = ({ images }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [modal, setModal] = useState(false);
 
-  const data = images.map(el => {
-    const ss = btoa(String.fromCharCode(...new Uint8Array(el)));
-    return `data:image/png;base64,${ss}`;
+  const dataFilter = images.filter(el => el !== undefined);
+  const data = dataFilter.map(el => {
+    const encodedImg = btoa(String.fromCharCode(...new Uint8Array(el)));
+    return `data:image/png;base64,${encodedImg}`;
   })
   const activeSlide = data[activeIndex];
 

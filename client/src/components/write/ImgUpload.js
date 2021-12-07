@@ -86,9 +86,10 @@ const ImgUpload = ({
     }
   }
 
-  const data = images.map(el => {
-    const ss = btoa(String.fromCharCode(...new Uint8Array(el)));
-    return `data:image/png;base64,${ss}`;
+  const dataFilter = images.filter(el => el !== undefined);
+  const data = dataFilter.map(el => {
+    const encodedImg = btoa(String.fromCharCode(...new Uint8Array(el)));
+    return `data:image/png;base64,${encodedImg}`;
   })
 
   //글 수정시 서버에서 불러온 이미지도 보여주고, 해당 이미지 삭제리듀서 작성
@@ -133,7 +134,7 @@ const ImgUpload = ({
             </label>
             <input 
             type="file"
-            accept="image/*" 
+            accept="image/jpg,impge/png,image/jpeg" 
             multiple
             id="file"
             style={{ display: 'none' }}
