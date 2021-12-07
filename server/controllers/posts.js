@@ -177,46 +177,44 @@ module.exports = {
     if (!result.identified) {
       return result;
     }
-
     // 게시글을 삭제할 권한이 있는 지
-    try {
-      const userId = result.id
-      const postInfo = await Post.findOne({
-        where: {
-          id: postsId
-        }
-      })
-      console.log(postInfo.dataValues.user_id)
-      if (postInfo.dataValues.user_id !== userId) {
-        return res.status(401).send('권한이 없습니다.')
-      } else {
-        Post.destroy({
-          where: {
-            id: postsId
-          }
-        })
-        res.sendStatus(204)
-      }
-      // !! 변경부분
-      // 게시글에 이미지 업로드한 파일이 있다면 삭제
-      const image1Path = postInfo.image1;
-      const image2Path = postInfo.image2;
-      const image3Path = postInfo.image3;
-      const images = [image1Path, image2Path, image3Path];
+    const userId = result.id
+    const postInfo = await Post.findOne({ where: { id: postsId } })
 
-      for (let i = 0; i < images.length; i += 1) {
-        if (images[i]) {
-          fs.unlink(images[i], (err) => {
-            if (err) {
-              console.log(err);
-              return res.status(500).send("서버에 오류가 발생했습니다")
+    if (!postInfo) {
+      console.log(err);
+      return res.status(500).send("서버에 오류가 발생했습니다")
+    }
+    console.log(postInfo.dataValues.user_id)
+
+    if (postInfo.dataValues.user_id !== userId) {
+      return res.status(401).send('권한이 없습니다.')
+    } else {
+      Post.destroy({ where: { id: postsId } })
+        .then(result => {
+          // 게시글에 이미지 업로드한 파일이 있다면 삭제
+          const image1Path = postInfo.image1;
+          const image2Path = postInfo.image2;
+          const image3Path = postInfo.image3;
+          const images = [image1Path, image2Path, image3Path];
+
+          for (let i = 0; i < images.length; i += 1) {
+            if (images[i]) {
+              fs.unlink(images[i], (err) => {
+                if (err) {
+                  console.log(err);
+                  return res.status(500).send("기존 게시글 이미지 파일을 삭제하는데 실패했습니다")
+                }
+              })
             }
-          })
-        }
-      }
-      // !! 끝
-    } catch (err) {
-      return res.status(500).send('서버에 오류가 발생했습니다.')
+          }
+
+          return res.sendStatus(204)
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(500).send("서버에 오류가 발생했습니다")
+        })
     }
   },
   // GET /posts
@@ -477,7 +475,7 @@ module.exports = {
         const userInfo = result.User.dataValues;
         const { id, title, content, category, soldOut, createdAt, updatedAt } = postData;
         const { email, nickname } = userInfo;
-        // !! 변경부분
+
         // 2-2. 게시글 이미지 파일 처리
         let { image1, image2, image3 } = postData;
         const images = [image1, image2, image3];
@@ -505,9 +503,7 @@ module.exports = {
             }
           }
         }
-        // !! 끝
-        res.status(201).json({
-          data: {
+        return res.status(201).json({
             post_id: id,
             writer: {
               writer_email: email,
@@ -523,8 +519,6 @@ module.exports = {
             createdAt,
             updatedAt,
             wish
-          },
-          message: "게시물이 업로드 되었습니다"
         })
       })
       .catch(err => {
