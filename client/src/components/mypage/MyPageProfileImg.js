@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { fetchUpdateProfileImage } from '../../feature/userSlice';
 import AskEditModal from '../modal/AskEditModal';
@@ -27,39 +27,45 @@ display: flex;
 const MyPageProfileImg = ({previewProfileImage, setPreviewProfileImage}) => {
 
   const dispatch = useDispatch();
+  const { user } = useSelector( state => state.user )
 
   const [visible, setVisible] = useState(false);
+  const [ profile_image, setProfile_image] = useState(null);
 
   const onFileChange = (e) => {
-    let files = e.target.files;
-    if(files.length < 1 ){
+    let file = e.target.files[0];
+    if(file.length < 1 ){
       return;
     }
+    setProfile_image(file);
     const reader = new FileReader();
     reader.onloadend = (finishedEvent) => {
       const { result } = finishedEvent.currentTarget;
       setPreviewProfileImage(result);
-      console.log(previewProfileImage);
     }
-    if(files[0]){
-      reader.readAsDataURL(files[0]);
+    if(file){
+      reader.readAsDataURL(file);
     }
   }
   
   useEffect(() => {
     if(previewProfileImage){
-        setVisible(true);
+      setVisible(true);
     }
   }, [previewProfileImage])
-
+  
   const onCancel = () => {
     setVisible(false);
   }
 
   const onConfirm = () => {
     setVisible(false);
-    console.log(previewProfileImage);
-    dispatch(fetchUpdateProfileImage(previewProfileImage));
+    const formData = new FormData();
+    formData.append('profile_image', profile_image);
+    dispatch(fetchUpdateProfileImage(formData));
+    if(user.profile_image){
+      setPreviewProfileImage(user.profile_image)
+    }
   }
 
   return (

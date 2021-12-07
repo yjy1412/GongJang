@@ -85,21 +85,31 @@ module.exports = {
   },
   // PATCH /posts/:posts_id
   patch: async (req, res) => {
-    const postsId = req.params.posts_id;
-    //유저 유효성 검사 
+    // 권한 인증
     const result = accessFunc(req, res);
     if (!result.identified) {
       return result;
     }
 
+    const postsId = req.params.posts_id;
     const inputTitle = req.body.title;
     const inputContent = req.body.content;
     const inputCategory = req.body.category;
     const inputSoldOut = req.body.soldOut;
     const inputImage = req.files;
-    // !! 변경부분
+
+    // 필수 입력요소 누락여부 검토
+    if (!inputTitle || !inputCategory || !postsId) {
+      return res.status(403).send("필수 입력요소가 누락되었습니다")
+    }
+    // 게시글 수정 권한 여부 검토
+    const postsData = await Post.findOne({ where: { id: postsId } });
+    const userInfo = await User.findOne({ where: { email: result.email } });
+
+    if (userInfo.dataValues.id !== postsData.user_id) {
+      return res.status(401).send('게시글의 작성자가 아닙니다')
+    }
     // 이미지 배열 처리
-    // 게시글에서 디폴트 이미지 필요 없을 것 같음.
     console.log(req.files);
     // 기존 저장된 이미지파일 패스 초기화/ 왜냐하면, 기존 파일들을 삭제시키기 때문
     let image1 = '';
@@ -117,15 +127,6 @@ module.exports = {
         }
       }
     }
-    // !! 끝
-    if (!inputTitle || !inputCategory) {
-      return res.status(403).send("필수 입력요소가 누락되었습니다")
-    }
-
-    const postsData = await Post.findOne({ where: { id: postsId } })
-    console.log(postsData.user_id)
-
-    // !! 변경 부분
     // 게시글 이미지 수정 시 기존에 업로드한 이미지파일이 있다면 삭제
     const image1Path = postsData.image1;
     const image2Path = postsData.image2;
@@ -134,48 +135,38 @@ module.exports = {
 
     for (let i = 0; i < images.length; i += 1) {
       if (images[i]) {
-        fs.unlink(images[i], (err) => {
+        fs.unlinkSync(images[i], (err) => {
           if (err) {
             console.log(err);
-            return res.status(500).send("서버에 오류가 발생했습니다")
+            return res.status(500).send("기존 이미지파일 삭제에 실패했습니다")
           }
         })
       }
     }
-    // !! 끝
-    const userInfo = await User.findOne({ where: { email: result.email } })
-    console.log(userInfo.dataValues.id)
-
-    if (userInfo.dataValues.id !== postsData.user_id) {
-      return res.status(401).send('권한이 아닙니다.')
-      //잡아냈음
-    } else {
-      try {
-        Post.update({
-          title: inputTitle,
-          content: inputContent,
-          category: inputCategory,
-          soldout: inputSoldOut,
-          image1,
-          image2,
-          image3
-        }, {
-          where: {
-            id: postsId
-          }
+    // DB 업데이트
+    Post.update({
+      title: inputTitle,
+      content: inputContent,
+      category: inputCategory,
+      soldout: inputSoldOut,
+      image1,
+      image2,
+      image3
+    }, {
+      where: {
+        id: postsId
+      }
+    })
+      .then(result => {
+        res.status(201).json({
+          user_id: postsData.user_id,
+          post_id: postsId,
+          message: "수정 되었습니다"
         })
-          .then(result => {
-            res.status(201).json({
-              user_id: postsData.user_id,
-              post_id: postsId,
-              message: "수정 되었습니다"
-            })
-          })
-      } catch (err) {
+      })
+      .catch(err => {
         res.status(500).send('서버에 오류가 발생했습니다.')
-      }
-    }
-
+      })
   },
   // DELETE /posts/:posts_id
   delete: async (req, res) => {
@@ -282,6 +273,7 @@ module.exports = {
             const { image1, image2, image3 } = postData;
             const images = [image1, image2, image3];
 
+            let bufferImg1, bufferImg2, bufferImg3;
             for (let i = 0; i < images.length; i += 1) {
               // 이미지가 널값이 아니라면,
               if (images[i]) {
@@ -298,12 +290,18 @@ module.exports = {
                 }
 
                 if (i === 0) {
-                  postData.image1 = convertData;
+                  bufferImg1 = convertData;
                 } else if (i === 1) {
-                  postData.image2 = convertData;
+                  bufferImg2 = convertData;
                 } else if (i === 2) {
-                  postData.image2 = convertData;
+                  bufferImg3 = convertData;
                 }
+                const bufferImg = [bufferImg1, bufferImg2, bufferImg3];
+                postData.image = bufferImg;
+                // 기존 DB의 image1,2,3 삭제
+                delete postData.image1;
+                delete postData.image2;
+                delete postData.image3;
               }
             }
             // !! 끝

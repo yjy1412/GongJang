@@ -3,8 +3,8 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// axios.defaults.baseURL = `${process.env.REACT_APP_API_URL}`;
-axios.defaults.baseURL = 'http://localhost:4000';
+axios.defaults.baseURL = `${process.env.REACT_APP_API_URL}`;
+// axios.defaults.baseURL = 'http://localhost:4000';
 axios.defaults.withCredentials = true;
 
 export const fetchSignUp = createAsyncThunk(
@@ -81,19 +81,24 @@ export const fetchUpdateUserInfo = createAsyncThunk(
 
 export const fetchUpdateProfileImage = createAsyncThunk(
   'mypage/fetchUpdateProfileImage',
-  async ( previewProfileImage, { rejectWithValue }) => {
+  async ( formData, { rejectWithValue }) => {
     try {
+      const config = {
+        headers: {
+          'Content-Type' : 'multipart/form-data'
+        }
+      }
       const response = await axios.patch(
-        '/auth/mypage',
-        { profile_image: previewProfileImage },
-        { Headers : {'content-type' : 'multipart/form-data'} }
+        '/auth/profile-image',
+        formData,
+        config
       )
       return response.data
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
   }
-)
+);
 
 export const fetchDeleteAccount = createAsyncThunk(
   'mypage/fetchDeleteAccount',
@@ -196,9 +201,8 @@ const userSlice = createSlice({
     [fetchUpdateProfileImage.pending]: (state) => {
       state.loading = true;
     },
-    [fetchUpdateProfileImage.fulfilled]: (state, { payload }) => {
+    [fetchUpdateProfileImage.fulfilled]: (state) => {
       state.loading = false;
-      state.profile_image = payload;
       state.isEdited = true;
     },
     [fetchUpdateProfileImage.rejected]: (state, { payload }) => {

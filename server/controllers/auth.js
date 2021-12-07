@@ -71,7 +71,6 @@ module.exports = {
           email: inputEmail
         }
       })
-
         .then(data => {
           console.log(data);
           if (!data) {
@@ -107,7 +106,7 @@ module.exports = {
                 })
               } catch {
                 console.log(convertImg);
-                return res.status(500).send("서버에 오류가 발생했습니다")
+                return res.status(500).send("유저의 프로필 이미지를 불러오는데 실패했습니다")
               }
               res.json({
                 accessToken: accessToken,
@@ -198,7 +197,7 @@ module.exports = {
           })
         } catch {
           console.log(convertImg);
-          res.status(500).send("서버에 오류가 발생했습니다")
+          res.status(500).send("프로필 이미지를 불러오는 데 실패했습니다")
         }
         console.log(convertImg);
         res.json({
@@ -347,7 +346,7 @@ module.exports = {
   },
   // PATCH auth/profile-image
   patchProfileImg: async (req, res) => {
-    // 1. 권한 인증
+    // 권한 인증
     const accessResult = accessFunc(req, res);
 
     if (!accessResult.identified) {
@@ -355,35 +354,82 @@ module.exports = {
     }
     const { email } = accessResult;
 
-    // 2. 입력 데이터 DB 반영
+    // 입력 데이터 DB 반영
     // !! 변경부분
-    const inputProfileImage = req.file;
-    const imgPath = inputProfileImage.path
-    console.log("req.file: ", inputProfileImage);
-    console.log("req.file.path: ", imgPath);
-    console.log("req.body: ", req.body);
+    // 변경 요청할 프로필 이미지가 없다면,
+    if (!req.file) {
+      // 디폴트 이미지 파일이 아니라면, 기존 유저의 프로필 이미지 파일 삭제
+      User.findOne({ where: { email } })
+        .then(result => {
+          const userInfo = result.dataValues;
+          const preProfileImgPath = userInfo.profile_image;
+          // 디폴트 이미지가 아니라면,
+          if (!/source/g.exec(preProfileImgPath)) {
+            fs.unlinkSync(preProfileImgPath, (err, data) => {
+              if (err) {
+                console.log(err);
+                return res.status(500).send("기존 프로필 사진 삭제에 실패했습니다")
+              }
+            })
+          }
+          // 4. DB 업데이트
+          User.update({
+            profile_image: __dirname + '/../source/profileImg.jpg'
+          }, { where: { email } })
+            .then(result => {
+              console.log("updateResult: ", result);
+              return res.status(201).send("프로필 이미지가 업로드 되었습니다")
+            })
+            .catch(err => {
+              console.log(err);
+              return res.status(500).send("DB 업데이트에 오류가 발생했습니다")
+            })
+        })
+        .catch(err => {
+          console.log(err);
+          return res.status(500).send("서버에 오류가 발생했습니다");
+        })
+    } else {
+      const inputProfileImage = req.file;
+      const imgPath = inputProfileImage.path
+      console.log("req.file: ", inputProfileImage);
+      console.log("req.file.path: ", imgPath);
+      console.log("req.body: ", req.body);
 
-    // 3. 기존 프로필 사진 삭제
-    fs.unlink(imgPath, (err, data) => {
-      if(err) {
-        console.log(err);
-        res.status(500).send("서버에 오류가 발생했습니다")
-      }
-    })
-    // !! 끝
-    // 4. DB 업데이트
-    User.update({
-    profile_image: imgPath
-  }, { where: { email } })
-    .then(result => {
-      console.log("updateResult: ", result);
-      res.status(201).send("프로필 이미지가 업로드 되었습니다")
-    })
-    .catch(err => {
-      console.log(err);
-      res.status(500).send("서버에 오류가 발생했습니다")
-    })
-},
+      // 3. 기존 프로필 이미지 삭제
+      User.findOne({ where: { email } })
+        .then(result => {
+          const userInfo = result.dataValues;
+          const preProfileImgPath = userInfo.profile_image;
+          // 3-1. 디폴트 이미지가 아니라면, 프로필 이미지 변경 시 기존 파일 삭제
+          if (!/source/g.exec(preProfileImgPath)) {
+            fs.unlinkSync(preProfileImgPath, (err, data) => {
+              if (err) {
+                console.log(err);
+                return res.status(500).send("기존 프로필 사진 삭제에 실패했습니다")
+              }
+            })
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          return res.status(500).send("서버에 오류가 발생했습니다");
+        })
+      // !! 끝
+      // 4. DB 업데이트
+      User.update({
+        profile_image: __dirname + '/../' + `${imgPath}`
+      }, { where: { email } })
+        .then(result => {
+          console.log("updateResult: ", result);
+          return res.status(201).send("프로필 이미지가 업로드 되었습니다")
+        })
+        .catch(err => {
+          console.log(err);
+          return res.status(500).send("DB 업데이트에 오류가 발생했습니다")
+        })
+    }
+  },
   // PATCH auth/password
   patchPassword: async (req, res) => {
     // 1. 권한 인증
@@ -427,9 +473,9 @@ module.exports = {
       })
   },
   googleLogin: async (req, res) => {
-
+    res.send('')
   },
   googleCallback: async (req, res) => {
-    
+    res.send('')
   }
 }
