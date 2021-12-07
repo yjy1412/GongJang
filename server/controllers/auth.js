@@ -427,9 +427,9 @@ module.exports = {
       })
   },
   googleLogin: async (req, res) => {
-
+    res.send('')
   },
   googleCallback: async (req, res) => {
-    
+    res.send('')
   }
 }
