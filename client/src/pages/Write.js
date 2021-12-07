@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -82,35 +82,35 @@ const Write = () => {
     images,
   } = useSelector((state) => state.write);
 
-  const onConfirm = () => {
+  const onConfirm = useCallback(() => {
     setModal(!modal);
-  }
+  },[modal])
 
   const onCancel = () => {
     history.push('/');
   }
 
-  const onChangeForm = (e) => {
+  const onChangeForm = useCallback((e) => {
     const { name, value } = e.target;
     dispatch(changeField({
       key: name,
       value,
     }))
-  }
+  },[dispatch])
 
-  const onRemove = (index) => {
+  const onRemove = useCallback((index) => {
     const newImageURLs = imageURLs.filter((url, idx) => idx !== index);
     const newImages = uploadImages.filter((image, idx) => idx !== index);
     setImageURLs(newImageURLs);
     setUploadImages(newImages);
-  }
+  },[imageURLs, uploadImages])
 
-  const onRemoveImage = (index) => {
+  const onRemoveImage = useCallback((index) => {
     dispatch(removeImage(index));
-  }
-  
+  },[dispatch])
+
   //글 폼 전송하기
-  const onSubmitForm = (e) => {
+  const onSubmitForm = useCallback(e => {
     e.preventDefault();
 
     if([title, content, category].includes('')){
@@ -126,7 +126,9 @@ const Write = () => {
     formData.append('category', category);
     formData.append('soldOut', soldOut);
     images.forEach((file) => {
-      formData.append('image', file);
+      if(file !== undefined){
+        formData.append('image', {type: "Buffer", data: file});
+      }
     })
     uploadImages.forEach((file) => {
       formData.append('image', file);
@@ -138,7 +140,7 @@ const Write = () => {
       return;
     } 
     dispatch(fetchWritePost(formData));
-  }
+  },[category, content, dispatch, images, onConfirm, originalPostId, soldOut, title, uploadImages])
 
   useEffect(() => {
     if(post){
