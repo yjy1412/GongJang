@@ -5,7 +5,7 @@ export const fetchGetPostDetail = createAsyncThunk(
   'post/fetchGetPost',
   async (id) => {
     const response = await axios.get(`/posts/${id}`);
-    return response.data.data;
+    return response.data;
   }
 )
 

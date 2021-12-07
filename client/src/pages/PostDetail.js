@@ -9,6 +9,7 @@ import { setOriginalPost } from '../feature/writeSlice';
 import Loading from '../components/common/Loading';
 import AskModal from '../components/modal/AskModal';
 import checkTime from '../components/postDetail/Time';
+import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
 
 const PostDetailBlock = styled.div`
   width: 1130px;
@@ -67,6 +68,16 @@ const PostDetailBlock = styled.div`
   .writer {
     margin-top: 0.5rem;
     span {
+    }
+  }
+  .interest {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    .heart {
+      display: flex;
+      padding: 0 0.5rem;
+      cursor: pointer;
     }
   }
 `;
@@ -151,6 +162,15 @@ const PostDetail = () => {
         <div className="writer">
           <span><b>{post?.writer.writer_nickname}&nbsp;</b></span>
           <span> {date}</span>
+        </div>
+        <div className="interest">
+          <div>
+            <span>댓글</span>
+            <span>1</span>
+          </div>
+          <div className="heart">
+            <RiHeartFill fill="red"/> 
+          </div>
         </div>
         <Comments/>
       </PostDetailBlock>
