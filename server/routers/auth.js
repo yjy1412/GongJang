@@ -5,6 +5,7 @@ const upload = multer({ dest: 'uploads/' })
 const router = express.Router();
 const authControllers = require('../controllers/auth')
 
+
 router.post('/sign-up', authControllers.signup);
 
 router.post('/log-in', authControllers.login);

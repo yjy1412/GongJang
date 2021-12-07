@@ -1,4 +1,5 @@
 require('dotenv').config();
+const axios = require('axios');
 const fs = require('fs');
 const { User, Post, Wish } = require('../models');
 const jwt = require('jsonwebtoken');
@@ -472,10 +473,49 @@ module.exports = {
         res.status(500).send("서버에 오류가 발생했습니다")
       })
   },
+  //GET auth/googleLogin
   googleLogin: async (req, res) => {
-    res.send('')
+  //로그인 페이지에서 구글로그인 버튼을 누름
+    const login_url =    
+    `https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/userinfo.profile&access_type=offline&response_type=code&state=state_parameter_passthrough_value&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&client_id=${process.env.GOOGLE_CLIENT_ID}`
+    console.log(login_url)
+    return res.redirect(login_url)
+    //연결이 되면 login_url을 뱉고 해당 주소로 리다이렉트 된다.
   },
+  //GET auth/googleCallback
   googleCallback: async (req, res) => {
-    res.send('')
+    //콜백이 
+    console.log(req.query.code)
+    const code = req.query.code
+   
+    try{
+      const getToken = await axios.post(
+        `https://oauth2.googleapis.com/token?code=${code}&client_id=${process.env.GOOGLE_CLIENT_ID}&client_secret=${process.env.GOOGLE_CLIENT_PASSOWRD}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&grant_type=authorization_code`        
+      );
+     
+      const userInfo = await axios.post(
+        `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${getToken.data.access_token}`,
+        {
+          headers : {
+            Authorization : `Bearer ${getToken.data.access_token}`
+          }
+        }        
+      );
+      console.log(userInfo)
+      const createUser = await User.findOrCreate({
+        where : {
+          email : userInfo.data.email
+        },
+        default : {
+          
+        }
+      })
+      
+      return res.send('callback')
+    } catch(err) {
+     
+      res.send('callback err')
+    }
+    
   }
 }
