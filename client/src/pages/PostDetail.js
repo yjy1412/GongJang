@@ -76,11 +76,12 @@ const PostDetail = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [modal, setModal] = useState(false);
-  const { post, loading, user } = useSelector(({ post , user }) => ({
+  const { post, loading, user, images } = useSelector(({ post , user }) => ({
     post: post.post,
     error: post.error,
     loading: post.loading,
     user: user.user,
+    images: post.images,
   }));
 
   useEffect(() => {
@@ -121,7 +122,6 @@ const PostDetail = () => {
   if(loading || !post){
     return <Loading/>;
   }
-
   return (
     <>
       <PostDetailBlock>
@@ -133,7 +133,7 @@ const PostDetail = () => {
             </div>
           )}
         </div>
-        <ItemImgSlide/>
+        <ItemImgSlide images={images}/>
         <div className="wrap">
           <div className="info">
             <p>ITEM INFO</p>

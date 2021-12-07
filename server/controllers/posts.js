@@ -435,15 +435,17 @@ module.exports = {
           const { id } = userInfo;
 
           // 1-2. wish 여부 데이터 조회
-          Wish.findOne({
+          return Wish.findOne({
             where: {
               user_id: id,
               post_id: postsId
             }
           })
-            .then(resut => {
+            .then(result => {
               if (result) {
                 return true;
+              } else {
+                return false;
               }
             })
             .catch(err => {

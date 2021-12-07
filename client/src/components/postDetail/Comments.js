@@ -84,7 +84,7 @@ const Comments = () => {
             <span>1</span>
           </div>
           <div className="heart">
-              <RiHeartFill fill="red"/>
+            <RiHeartFill fill="red"/> 
           </div>
         </div>
         <div className="comment-box">

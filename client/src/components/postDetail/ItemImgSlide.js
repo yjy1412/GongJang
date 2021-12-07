@@ -41,15 +41,15 @@ const ItemImgSlideBlock = styled.div`
   }
 `;
 
-const data = [
-  'https://i.picsum.photos/id/355/200/200.jpg?hmac=3rHDkz_9bWmvte4NNnIGZon7PIHrM6NQYzXtVY7M_UI',
-  'https://i.picsum.photos/id/501/200/200.jpg?hmac=tKXe69j4tHhkAA_Qc3XinkTuubEWwkFVhA9TR4TmCG8',
-  'https://i.picsum.photos/id/502/200/200.jpg?hmac=c6mcZ5mcmjadIeDKaJClpvPz9R9-X9q6c0Un-n73Kv4',
-]
-const ItemImgSlide = () => {
+const ItemImgSlide = ({ images }) => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const activeSlide = data[activeIndex];
   const [modal, setModal] = useState(false);
+
+  const data = images.map(el => {
+    const ss = btoa(String.fromCharCode(...new Uint8Array(el)));
+    return `data:image/png;base64,${ss}`;
+  })
+  const activeSlide = data[activeIndex];
 
   const prevHandler = () => {
     activeIndex <= 0 ? 

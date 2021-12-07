@@ -40,7 +40,7 @@ const initialState = {
   title: '',
   content: '',
   category: '',
-  image: [],
+  images: null,
   soldOut: false,
   originalPostId: null,
   post: null,
@@ -61,7 +61,7 @@ export const writeSlice = createSlice({
     setOriginalPost: (state, { payload: post }) => {
       state.title = post.title;
       state.content = post.content;
-      state.image = post.image;
+      state.images = [post.image1.data, post.image2.data, post.image];
       state.category = post.category;
       state.soldOut = post.soldOut;
       state.originalPostId = post.post_id;
@@ -71,7 +71,11 @@ export const writeSlice = createSlice({
     },
     changeState: (state, { payload }) => {
       state.soldOut = payload;
-    }
+    },
+    removeImage: (state, { payload: id }) => {
+      const newImages = state.images.filter((image, index) => index !== id);
+      state.images = newImages;
+    },
   },
   extraReducers: {
     [fetchWritePost.pending]: (state) => {
@@ -105,5 +109,6 @@ export const {
   setOriginalPost, 
   changeCategory, 
   changeState, 
+  removeImage,
 } = writeSlice.actions;
 export default writeSlice.reducer;

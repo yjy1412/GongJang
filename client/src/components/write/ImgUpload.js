@@ -52,7 +52,15 @@ const ImgPreviewBox = styled.div`
   }
 `;
 
-const ImgUpload = ({ uploadImages, setUploadImages, imageURLs , setImageURLs, onRemove }) => {
+const ImgUpload = ({ 
+  images, 
+  uploadImages, 
+  setUploadImages, 
+  imageURLs , 
+  setImageURLs, 
+  onRemove,
+  onRemoveImage 
+}) => {
   //이미지 미리보기
   const onFileChange = (e) => {
     let files = e.target.files;
@@ -78,11 +86,30 @@ const ImgUpload = ({ uploadImages, setUploadImages, imageURLs , setImageURLs, on
     }
   }
 
+  const data = images.map(el => {
+    const ss = btoa(String.fromCharCode(...new Uint8Array(el)));
+    return `data:image/png;base64,${ss}`;
+  })
+
   //글 수정시 서버에서 불러온 이미지도 보여주고, 해당 이미지 삭제리듀서 작성
 
   return (
     <ImgUploadBlock>
       <ImgPreviewBox>
+        { data && (
+          data.map((image, index) => (
+            <div className="img-box" key={index}>
+              <img 
+              src={image} 
+              alt=""
+              style={{ backgroundImage : image }} 
+              />
+              <div className="remove-btn" onClick={() => onRemoveImage(index)}>
+                <FaTimes/>
+              </div>
+            </div>
+          ))
+        )}
         { imageURLs && (
           imageURLs.map((imageURL, index) => (
             <div className="img-box" key={index}>
@@ -97,7 +124,7 @@ const ImgUpload = ({ uploadImages, setUploadImages, imageURLs , setImageURLs, on
             </div>
           ))
         )}
-        { imageURLs.length < 3 && (
+        { data.length + imageURLs.length < 3 && (
           <div className="input-box">
             <label htmlFor="file">
               <div className="img-plus">

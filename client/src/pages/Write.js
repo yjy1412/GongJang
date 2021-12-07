@@ -6,7 +6,7 @@ import ImgUpload from '../components/write/ImgUpload';
 import SelectCategory from '../components/write/SelectCategory';
 import Button from '../components/common/Button';
 import WhiteButton from '../components/common/WhiteButton';
-import { changeField, fetchUpdatePost, fetchWritePost, initialize } from '../feature/writeSlice';
+import { changeField, fetchUpdatePost, fetchWritePost, initialize, removeImage } from '../feature/writeSlice';
 import SalesStatus from '../components/write/SalesStatus';
 import AskModal from '../components/modal/AskModal';
 
@@ -79,6 +79,7 @@ const Write = () => {
     title, 
     content, 
     soldOut,
+    images,
   } = useSelector((state) => state.write);
 
   const onConfirm = () => {
@@ -103,6 +104,10 @@ const Write = () => {
     setImageURLs(newImageURLs);
     setUploadImages(newImages);
   }
+
+  const onRemoveImage = (index) => {
+    dispatch(removeImage(index));
+  }
   
   //글 폼 전송하기
   const onSubmitForm = (e) => {
@@ -120,6 +125,9 @@ const Write = () => {
     formData.append('content', content);
     formData.append('category', category);
     formData.append('soldOut', soldOut);
+    images.forEach((file) => {
+      formData.append('image', file);
+    })
     uploadImages.forEach((file) => {
       formData.append('image', file);
     });
@@ -156,11 +164,13 @@ const Write = () => {
         onChange={onChangeForm}
         />
         <ImgUpload
+        images={images}
         uploadImages={uploadImages}
         setUploadImages={setUploadImages}
         imageURLs={imageURLs}
         setImageURLs={setImageURLs}
         onRemove={onRemove}
+        onRemoveImage={onRemoveImage}
         />
         <div className="select-box">
           <SelectCategory category={category}/>
