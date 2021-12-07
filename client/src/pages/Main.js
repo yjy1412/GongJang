@@ -60,7 +60,7 @@ const Main = () => {
     }
   },[dispatch, user]);
   
-  if(loading || !posts){
+  if(loading || posts.length === 0){
     return <Loading/>;
   }
   return (

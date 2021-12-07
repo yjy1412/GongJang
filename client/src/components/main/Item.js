@@ -59,7 +59,7 @@ const Item = ({ post, user, setModal, modal }) => {
     }
   }
 
-  const test = post?.image1?.data;
+  const test = post?.image[0].data;
   const base64String = btoa(String.fromCharCode(...new Uint8Array(test)));
 
   //이미지 없을 경우 기본 이미지 보여주기
