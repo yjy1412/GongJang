@@ -19,7 +19,7 @@ module.exports = {
     if (!inputEmail || !inputNickname || !inputPassword) {
       return res.status(400).send("필수 입력요소가 누락되었습니다");
     }
-    if ( typeof inputAdmin !== 'boolean' ) {
+    if ( inputAdmin && typeof inputAdmin !== 'boolean' ) {
       return res.status(400).send("입력 데이터의 타입이 잘못되었습니다")
     }
     // 1. 이메일 중복여부 검사
