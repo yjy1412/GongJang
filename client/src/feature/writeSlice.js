@@ -40,7 +40,7 @@ const initialState = {
   title: '',
   content: '',
   category: '',
-  images: null,
+  images: [],
   soldOut: false,
   originalPostId: null,
   post: null,
