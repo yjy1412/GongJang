@@ -134,7 +134,7 @@ const ImgUpload = ({
             </label>
             <input 
             type="file"
-            accept="image/jpg,impge/png,image/jpeg" 
+            accept="image/jpg,impge/png" 
             multiple
             id="file"
             style={{ display: 'none' }}
