@@ -22,7 +22,7 @@ module.exports = {
     const inputContent = req.body.content;
     const inputCategory = req.body.category;
     const inputSoldOut = req.body.soldOut;
-    // !! 변경 부분
+
     // inputImage 배열처리
     let image1 = '';
     let image2 = '';
@@ -39,7 +39,7 @@ module.exports = {
         }
       }
     }
-    // !! 끝
+
     // 2. 필수 입력요소 누락여부 검사
     if (!inputTitle || !inputCategory) {
       return res.status(400).send("필수 입력요소가 누락되었습니다")
@@ -88,7 +88,7 @@ module.exports = {
     // 권한 인증
     const result = accessFunc(req, res);
     if (!result.identified) {
-      return result;
+      return;
     }
 
     const postsId = req.params.posts_id;
@@ -103,10 +103,16 @@ module.exports = {
       return res.status(403).send("필수 입력요소가 누락되었습니다")
     }
     // 게시글 수정 권한 여부 검토
-    const postsData = await Post.findOne({ where: { id: postsId } });
-    const userInfo = await User.findOne({ where: { email: result.email } });
-
-    if (userInfo.dataValues.id !== postsData.user_id) {
+    // TODO : 어떻게 처리할 지 생각해보자 / 1차 수정완료
+    const postsData = await Post.findOne({ where: { id: postsId } })
+      .catch(err => {
+        console.log(err);
+        return res.statue(500).send("서버에 오류가 발생했습니다")
+      })
+    if (!postsData) {
+      return res.status(400).send("포스트 아이디를 다시 확인해주세요")
+    }
+    if (result.id !== postsData.user_id) {
       return res.status(401).send('게시글의 작성자가 아닙니다')
     }
     // 이미지 배열 처리
@@ -177,46 +183,48 @@ module.exports = {
     if (!result.identified) {
       return result;
     }
-
     // 게시글을 삭제할 권한이 있는 지
-    try {
-      const userId = result.id
-      const postInfo = await Post.findOne({
-        where: {
-          id: postsId
-        }
+    const userId = result.id
+    const postInfo = await Post.findOne({ where: { id: postsId } })
+      .catch(err => {
+        console.log(err);
+        return res.status(500).send("서버에 오류가 발생했습니다")
       })
-      console.log(postInfo.dataValues.user_id)
-      if (postInfo.dataValues.user_id !== userId) {
-        return res.status(401).send('권한이 없습니다.')
-      } else {
-        Post.destroy({
-          where: {
-            id: postsId
-          }
-        })
-        res.sendStatus(204)
-      }
-      // !! 변경부분
-      // 게시글에 이미지 업로드한 파일이 있다면 삭제
-      const image1Path = postInfo.image1;
-      const image2Path = postInfo.image2;
-      const image3Path = postInfo.image3;
-      const images = [image1Path, image2Path, image3Path];
+      
+    if ( !postInfo ) {
+      return res.status(400).send("포스트 아이디를 다시 확인해주세요");
+    }
 
-      for (let i = 0; i < images.length; i += 1) {
-        if (images[i]) {
-          fs.unlink(images[i], (err) => {
-            if (err) {
-              console.log(err);
-              return res.status(500).send("서버에 오류가 발생했습니다")
+    console.log(postInfo)
+    // 관리자라면(result.admin === true), 또는 해당 게시글의 작성자라면 삭제 가능
+    // 관리자도 아니고, 해당 게시글의 작성자도 아니라면 삭제가 불가능하다.
+    if (!result.admin && postInfo.user_id !== userId) {
+      return res.status(401).send('해당 게시글의 작성자만이 삭제할 수 있습니다')
+    } else {
+      Post.destroy({ where: { id: postsId } })
+        .then(result => {
+          // 게시글에 이미지 업로드한 파일이 있다면 삭제
+          const image1Path = postInfo.image1;
+          const image2Path = postInfo.image2;
+          const image3Path = postInfo.image3;
+          const images = [image1Path, image2Path, image3Path];
+
+          for (let i = 0; i < images.length; i += 1) {
+            if (images[i]) {
+              fs.unlink(images[i], (err) => {
+                if (err) {
+                  console.log(err);
+                  return res.status(500).send("기존 게시글 이미지 파일을 삭제하는데 실패했습니다")
+                }
+              })
             }
-          })
-        }
-      }
-      // !! 끝
-    } catch (err) {
-      return res.status(500).send('서버에 오류가 발생했습니다.')
+          }
+          return res.sendStatus(204)
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(500).send("서버에 오류가 발생했습니다")
+        })
     }
   },
   // GET /posts
@@ -268,7 +276,7 @@ module.exports = {
         const responseData = await Promise.all(
           result.map(async post => {
             let postData = post.dataValues;
-            // !! 변경부분
+
             // 게시글 이미지 파일 처리
             const { image1, image2, image3 } = postData;
             const images = [image1, image2, image3];
@@ -304,7 +312,6 @@ module.exports = {
                 delete postData.image3;
               }
             }
-            // !! 끝
             const writerId = postData.user_id;
 
             // Sequelize 쿼리는 스코프 밖의 변수에 영향을 줄 수 없다?? 노노
@@ -385,7 +392,6 @@ module.exports = {
   },
   // GET /posts/:posts_id
   getDetail: async (req, res) => {
-    // TODO: 댓글 기능 구현 후 내용 추가하기
     console.log(req.params.posts_id);
     const postsId = req.params.posts_id;
     let wish = false;
@@ -477,7 +483,7 @@ module.exports = {
         const userInfo = result.User.dataValues;
         const { id, title, content, category, soldOut, createdAt, updatedAt } = postData;
         const { email, nickname } = userInfo;
-        // !! 변경부분
+
         // 2-2. 게시글 이미지 파일 처리
         let { image1, image2, image3 } = postData;
         const images = [image1, image2, image3];
@@ -505,26 +511,22 @@ module.exports = {
             }
           }
         }
-        // !! 끝
-        res.status(201).json({
-          data: {
-            post_id: id,
-            writer: {
-              writer_email: email,
-              writer_nickname: nickname
-            },
-            title,
-            content,
-            category,
-            soldOut,
-            image1,
-            image2,
-            image3,
-            createdAt,
-            updatedAt,
-            wish
+        return res.status(201).json({
+          post_id: id,
+          writer: {
+            writer_email: email,
+            writer_nickname: nickname
           },
-          message: "게시물이 업로드 되었습니다"
+          title,
+          content,
+          category,
+          soldOut,
+          image1,
+          image2,
+          image3,
+          createdAt,
+          updatedAt,
+          wish
         })
       })
       .catch(err => {
