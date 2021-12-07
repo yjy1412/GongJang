@@ -190,7 +190,6 @@ module.exports = {
         // 2-2. 정상적인 조회 요청이 이루어졌을 때
         const { email, nickname, admin, profile_image } = userInfo
         // 2-3. 프로필이미지 path를 통한 이미지 데이터 전송
-        // !! 변경부분
         // 프로필 이미지 처리
         let convertImg;
         try {
@@ -206,7 +205,6 @@ module.exports = {
           userInfo: { email, nickname, profile_image: convertImg, admin },
           message: "회원정보 요청에 성공했습니다"
         });
-        // !! 끝
       })
       .catch(err => {
         console.log(err);
