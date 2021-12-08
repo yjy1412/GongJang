@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { HiOutlineChevronLeft, HiOutlineChevronRight } from 'react-icons/hi';
 import SlideImgModal from '../modal/SlideImgModal';
@@ -41,15 +41,16 @@ const ItemImgSlideBlock = styled.div`
   }
 `;
 
-const data = [
-  'https://i.picsum.photos/id/355/200/200.jpg?hmac=3rHDkz_9bWmvte4NNnIGZon7PIHrM6NQYzXtVY7M_UI',
-  'https://i.picsum.photos/id/501/200/200.jpg?hmac=tKXe69j4tHhkAA_Qc3XinkTuubEWwkFVhA9TR4TmCG8',
-  'https://i.picsum.photos/id/502/200/200.jpg?hmac=c6mcZ5mcmjadIeDKaJClpvPz9R9-X9q6c0Un-n73Kv4',
-]
-const ItemImgSlide = () => {
+const ItemImgSlide = ({ images }) => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const activeSlide = data[activeIndex];
   const [modal, setModal] = useState(false);
+
+  const dataFilter = images.filter(el => el !== undefined);
+  const data = dataFilter.map(el => {
+    const encodedImg = btoa(String.fromCharCode(...new Uint8Array(el)));
+    return `data:image/png;base64,${encodedImg}`;
+  })
+  const activeSlide = data[activeIndex];
 
   const prevHandler = () => {
     activeIndex <= 0 ? 
@@ -66,6 +67,8 @@ const ItemImgSlide = () => {
   const onClickSlideImg = () => {
     setModal(!modal);
   }
+
+  //업로드한 이미지 없을 경우 기본 이미지 보여주기 
 
   return (
     <ItemImgSlideBlock>

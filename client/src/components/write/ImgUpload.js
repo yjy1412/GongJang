@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { RiImageAddLine } from 'react-icons/ri';
 import { FaTimes } from 'react-icons/fa';
 
 const ImgUploadBlock = styled.div`
-  margin: 1.5rem 0;
+  margin: 1.5rem 0 0;
+  p {
+    color: #bcbdc4;
+  }
 `;
 
 const ImgPreviewBox = styled.div`
@@ -49,16 +52,23 @@ const ImgPreviewBox = styled.div`
   }
 `;
 
-const ImgUpload = ({ setImageFiles, imageFiles, setImageURLs, imageURLs, onRemove }) => {
-
+const ImgUpload = ({ 
+  images, 
+  uploadImages, 
+  setUploadImages, 
+  imageURLs , 
+  setImageURLs, 
+  onRemove,
+  onRemoveImage 
+}) => {
   //이미지 미리보기
-  const onFileChange = (e) => {
+  const onFileChange = useCallback(e => {
     let files = e.target.files;
     if(files.length < 1 ){
       return;
     }
-    setImageFiles([
-      ...imageFiles,
+    setUploadImages([
+      ...uploadImages,
       ...files]);
 
     for(let file of files){
@@ -74,11 +84,33 @@ const ImgUpload = ({ setImageFiles, imageFiles, setImageURLs, imageURLs, onRemov
         reader.readAsDataURL(file);
       }
     }
-  }
-  
+  },[imageURLs, setImageURLs, setUploadImages, uploadImages])
+
+  const dataFilter = images.filter(el => el !== undefined);
+  const data = dataFilter.map(el => {
+    const encodedImg = btoa(String.fromCharCode(...new Uint8Array(el)));
+    return `data:image/png;base64,${encodedImg}`;
+  })
+
+  //글 수정시 서버에서 불러온 이미지도 보여주고, 해당 이미지 삭제리듀서 작성
+
   return (
     <ImgUploadBlock>
       <ImgPreviewBox>
+        { data && (
+          data.map((image, index) => (
+            <div className="img-box" key={index}>
+              <img 
+              src={image} 
+              alt=""
+              style={{ backgroundImage : image }} 
+              />
+              <div className="remove-btn" onClick={() => onRemoveImage(index)}>
+                <FaTimes/>
+              </div>
+            </div>
+          ))
+        )}
         { imageURLs && (
           imageURLs.map((imageURL, index) => (
             <div className="img-box" key={index}>
@@ -93,7 +125,7 @@ const ImgUpload = ({ setImageFiles, imageFiles, setImageURLs, imageURLs, onRemov
             </div>
           ))
         )}
-        { imageURLs.length < 3 && (
+        { data.length + imageURLs.length < 3 && (
           <div className="input-box">
             <label htmlFor="file">
               <div className="img-plus">
@@ -102,7 +134,7 @@ const ImgUpload = ({ setImageFiles, imageFiles, setImageURLs, imageURLs, onRemov
             </label>
             <input 
             type="file"
-            accept="image/*" 
+            accept="image/jpg,impge/png" 
             multiple
             id="file"
             style={{ display: 'none' }}
@@ -111,6 +143,7 @@ const ImgUpload = ({ setImageFiles, imageFiles, setImageURLs, imageURLs, onRemov
           </div>
         )}
       </ImgPreviewBox>
+      <p>(최대 3장 이미지 첨부 가능)</p>
     </ImgUploadBlock>
   );
 };

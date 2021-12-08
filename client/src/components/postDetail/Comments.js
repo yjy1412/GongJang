@@ -1,22 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
 import { AiOutlineMore } from 'react-icons/ai';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import { FiEdit } from 'react-icons/fi';
 import Button from '../common/Button';
 
 const CommentsBlock = styled.div`
-  padding: 1rem 0 3rem;
-  .interest {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.5rem;
-    .heart {
-      display: flex;
-      padding: 0 0.5rem;
-    }
-  }
+  padding-bottom: 3rem;
   .comment-box {
     display: flex;
     justify-content: space-between;
@@ -69,54 +59,77 @@ const CommentBtn = styled(Button)`
   padding: 0.8rem;
 `;
 
-const Comments = () => {
+const Comments = ({ commentList }) => {
+  const [comment, setComment] = useState('');
 
   const onChangeComment = (e) => {
-    console.log(e.target.value)
+    setComment(e.target.value)
+  }
+
+  const onSubmitComment = (e) => {
+    e.preventDefault();
+    if(comment === ''){
+      return;
+    }
+    //댓글 데이터 만들어 보내기
+    // const form = {
+    //   content: '',
+    //   writer: '',
+    //   post_id: ''
+    // };
+    setComment('');
   }
 
   return (
-    <CommentsBlock>
-      <div className="interest">
-        <div>
-          <span>댓글</span>
-          <span>1</span>
-        </div>
-        <div className="heart">
-          <RiHeartFill fill="red"/>
-        </div>
-      </div>
-      <div className="comment-box">
-        <textarea 
-        type="text" 
-        placeholder="나눔 아이템에 대해 궁금한 점 남겨주세요."
-        name=""
-        value=""
-        onChange={onChangeComment}
-        />
-        <CommentBtn>COMMENT</CommentBtn>
-      </div>
-      <ul>
-        <li>
-          <div>
+      <CommentsBlock>
+        {/* root comment */}
+        <form className="comment-box" onSubmit={onSubmitComment}>
+          <textarea 
+          type="text" 
+          placeholder="나눔 아이템에 대해 궁금한 점 남겨주세요."
+          value={comment}
+          onChange={onChangeComment}
+          />
+          <CommentBtn>COMMENT</CommentBtn>
+        </form>
+        {/* comments Lists */}
+        {/* { commentList && (
+          commentList.map((comment, index) => !comment.responseTo && (
+            <div key={index}>
+              <SingleComment
+              comment={comment}
+              post_id={post_id}
+              writerInfo={writerInfo}
+              />
+              <ReplayComment
+              commentList={commentList}
+              writerInfo={writerInfo}
+              parentCommentId={}
+              />
+            </div>
+          ))
+        )} */}
+        <ul>
+          <li>
             <div>
-              <span><b>nickname</b></span>
-              <span> 2021.11.24</span>
-            </div>
-            <div className="comment">
-              <div className="text">
-                <p>comment</p>
+              <div>
+                <span><b>nickname</b></span>
+                <span> 2021.11.24</span>
               </div>
-              <AiOutlineMore className="comment-edit"/>
-              <div className="comment-edit-icons">
-                <FiEdit/>
-                <RiDeleteBinLine/>
+              <div className="comment">
+                <div className="text">
+                  <p>comment</p>
+                </div>
+                <AiOutlineMore className="comment-edit"/>
+                <div className="comment-edit-icons">
+                  <FiEdit/>
+                  <RiDeleteBinLine/>
+                </div>
               </div>
             </div>
-          </div>
-        </li>
-      </ul>
-    </CommentsBlock>
+          </li>
+        </ul>
+      </CommentsBlock>
   );
 };
 

@@ -501,5 +501,11 @@ module.exports = {
         console.log(err);
         res.status(500).send("서버에 오류가 발생했습니다")
       })
+  },
+  googleLogin: async (req, res) => {
+    res.send('')
+  },
+  googleCallback: async (req, res) => {
+    res.send('')
   }
 }

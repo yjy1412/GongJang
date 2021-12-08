@@ -14,7 +14,7 @@ export const fetchGetAllPosts = createAsyncThunk(
 )
 
 const initialState = {
-  posts: null,
+  posts: [],
   error: null,
   loading: false,
 }
@@ -35,10 +35,6 @@ export const postsSlice = createSlice({
         return post;
       })
     },
-    removePost: (state, { payload: id }) => {
-      const newPosts = state.posts.filter(post => post.id !== id);
-      state.posts = newPosts;
-    }
   },
   extraReducers: {
     [fetchGetAllPosts.pending]: (state) => {
@@ -55,5 +51,5 @@ export const postsSlice = createSlice({
   }
 })
 
-export const { changeWish, removePost } = postsSlice.actions;
+export const { changeWish } = postsSlice.actions;
 export default postsSlice.reducer;
