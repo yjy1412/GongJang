@@ -8,8 +8,9 @@ import { fetchGetPostDetail, unloadPost, fetchRemovePost } from '../feature/post
 import { setOriginalPost } from '../feature/writeSlice';
 import Loading from '../components/common/Loading';
 import AskModal from '../components/modal/AskModal';
-import checkTime from '../components/postDetail/Time';
+import checkTime from '../lib/Time';
 import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
+import { changeImg } from '../lib/encodedImg';
 
 const PostDetailBlock = styled.div`
   width: 1130px;
@@ -67,7 +68,14 @@ const PostDetailBlock = styled.div`
   }
   .writer {
     margin-top: 0.5rem;
-    span {
+    .avatar {
+      display: inline-flex;
+      width: 30px;
+      height: 30px;
+      margin-right: 0.5rem;
+      img {
+        border-radius: 50%;
+      }
     }
   }
   .interest {
@@ -77,7 +85,6 @@ const PostDetailBlock = styled.div`
     .heart {
       display: flex;
       padding: 0 0.5rem;
-      cursor: pointer;
     }
   }
 `;
@@ -87,12 +94,13 @@ const PostDetail = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [modal, setModal] = useState(false);
-  const { post, loading, user, images } = useSelector(({ post , user }) => ({
+  const { post, loading, user, images, commentList } = useSelector(({ post , user, comment }) => ({
     post: post.post,
     error: post.error,
     loading: post.loading,
     user: user.user,
     images: post.images,
+    commentList: comment.commentList,
   }));
 
   useEffect(() => {
@@ -121,6 +129,7 @@ const PostDetail = () => {
   }
 
   const date = checkTime(post?.createdAt);
+  
   const ownPost = ((user && user.nickname) === (post && post?.writer.writer_nickname));
   
   // if(error){
@@ -159,6 +168,9 @@ const PostDetail = () => {
           <p>{post?.content}</p>
         </div>
         <div className="writer">
+          {/* <span className="avatar">
+            <img src={`data:image/png;base64,${changeImg(post.writer.profile_image.data)}`} alt="프로필 이미지" />
+          </span> */}
           <span><b>{post?.writer.writer_nickname}&nbsp;</b></span>
           <span> {date}</span>
         </div>
@@ -168,10 +180,18 @@ const PostDetail = () => {
             <span>1</span>
           </div>
           <div className="heart">
-            <RiHeartFill fill="#f9796d"/> 
+            { post?.wish ? (
+              <RiHeartFill fill="#f9796d"/>
+            ) : (
+              <RiHeartLine fill="#f9796d"/>
+            )}
+             
           </div>
         </div>
-        <Comments/>
+        <Comments
+        post={post}
+        commentList={commentList}
+        />
       </PostDetailBlock>
       { modal && (
         <AskModal
