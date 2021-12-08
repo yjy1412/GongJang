@@ -288,7 +288,7 @@ module.exports = {
                 console.log("images : ", images[i])
                 let convertData
                 try {
-                  convertData = fs.readFileSync(images[i], (err, data) => {
+                  convertData = fs.readFileSync(images[i], (data) => {
                     // console.log(data);
                     return Buffer.from(data).toString('base64');
                   })

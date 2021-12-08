@@ -19,7 +19,7 @@ module.exports = {
     if (!inputEmail || !inputNickname || !inputPassword) {
       return res.status(400).send("필수 입력요소가 누락되었습니다");
     }
-    if ( inputAdmin && typeof inputAdmin !== 'boolean' ) {
+    if (inputAdmin && typeof inputAdmin !== 'boolean') {
       return res.status(400).send("입력 데이터의 타입이 잘못되었습니다")
     }
     // 1. 이메일 중복여부 검사
@@ -39,7 +39,7 @@ module.exports = {
               email: inputEmail,
               nickname: inputNickname,
               password: inputPassword,
-              admin : inputAdmin
+              admin: inputAdmin
             })
               .then(result => {
                 res.status(201).send("회원가입 되었습니다")
@@ -156,30 +156,30 @@ module.exports = {
     }
     const email = result.email
 
+    // TODO : 시간 남는다면, 회원탈퇴 시 탈퇴 유저의 프로필 이미지 삭제하도록 구현
     //2.유저정보가 없다면 400, 있다면 204번에서 destory, 서버오류 500
-    try {
-      if (!result) {
-        return res.status(400).send("요청하신 회원정보와 일치하는 회원정보가 없습니다.")
-      } else {
-        User.destroy({
-          where: { email: email }
-        })
-        res.clearCookie('refreshToken')
-        res.status(204).send('회원탈퇴에 성공했습니다')
-      }
-    } catch (err) {
-      return res.status(500).send('서버에 오류가 발생했습니다.')
-    }
+    User.destroy({ where: { email: email } })
+      .then(result => {
+        if (!result) {
+          return res.status(400).send("요청하신 회원정보와 일치하는 유저가 없습니다")
+        } else {
+          res.clearCookie('refreshToken')
+          res.status(204).send('회원탈퇴에 성공했습니다')
+        }
+      })
+      .catch(err => {
+        return res.status(500).send('서버에 오류가 발생했습니다.')
+      })
   },
   // GET auth/mypage
   getMypage: async (req, res) => {
 
     const result = accessFunc(req, res);
-
     if (!result.identified) {
       return result;
     }
     const email = result.email;
+
     User.findOne({ where: { email } })
       .then(userInfo => {
         console.log(userInfo);
@@ -221,25 +221,53 @@ module.exports = {
       return accessResult;
     }
     console.log(accessResult)
-    const {id} = accessResult
-//accessResult는 user_id
-    
-    Post.findAll({
-      // attributes : ['id', 'title', 'image1'],
-      where: { user_id: id },
-    })
+    const { id } = accessResult
+    //accessResult는 user_id
+    Post.findAll({ where: { user_id: id } })
       .then(result => {
         if (!result) {
-          res.sendStatus(204)
+          return res.sendStatus(204)
         } else {
           //불러올 데이터는 배열화 되어 있기 때문에 map으로 처리           
           const responseData = result.map(data => {
             const postData = data.dataValues
+            // 게시글 이미지 파일 처리
+            const { image1, image2, image3 } = postData;
+            const images = [image1, image2, image3];
+
+            let bufferImg1, bufferImg2, bufferImg3;
+            for (let i = 0; i < images.length; i += 1) {
+              // 이미지가 널값이 아니라면,
+              if (images[i]) {
+                console.log("images : ", images[i])
+                let convertData
+                try {
+                  convertData = fs.readFileSync(images[i], (data) => {
+                    // console.log(data);
+                    return Buffer.from(data).toString('base64');
+                  })
+                } catch (err) {
+                  console.log(err);
+                  return res.status(500).send("서버에 오류가 발생했습니다")
+                }
+
+                if (i === 0) {
+                  bufferImg1 = convertData;
+                } else if (i === 1) {
+                  bufferImg2 = convertData;
+                } else if (i === 2) {
+                  bufferImg3 = convertData;
+                }
+                const bufferImg = [bufferImg1, bufferImg2, bufferImg3];
+                postData.image = bufferImg;
+                // 기존 DB의 image1,2,3 삭제
+                delete postData.image1;
+                delete postData.image2;
+                delete postData.image3;
+              }
+            }
             return postData
           })
-          if (!responseData) {
-            res.status(400).send('가져올 데이터 없음')
-          }
           responseData.sort((a, b) => {
             return Number(new Date(b.createdAt) - Number(new Date(a.createdAt)))
           })
@@ -416,7 +444,7 @@ module.exports = {
           console.log(err);
           return res.status(500).send("서버에 오류가 발생했습니다");
         })
-        
+
       // 4. DB 업데이트
       User.update({
         profile_image: __dirname + '/../' + `${imgPath}`
