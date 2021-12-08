@@ -485,7 +485,8 @@ module.exports = {
     const client_id =process.env.GOOGLE_CLIENT_ID
     const client_secret = process.env.GOOGLE_CLIENT_PASSOWRD      
     const grant_type = "authorization_code"
-
+    let googlrUserInfo = {}
+    //토큰을 받아오기 위해서 해당 url로 정보를 보냄
     await axios.post(tokenUrl, {
       code : code,
       client_id : client_id,
@@ -495,11 +496,12 @@ module.exports = {
     }, {
       "content-type": "application/x-www-form-urlencoded"
     })
+    //받아온 토큰에서 유저정보를 확인한다.
     .then(async result => {
       let accessToken = result.data.access_token
       let refreshToken = result.data.refreshToken
 
-      const resInfo = await axios.get(infoUrl, {
+      const googleEmail = await axios.get(infoUrl, {
         headers : {
           authorization: `Bearer ${accessToken}`
         }
@@ -508,10 +510,11 @@ module.exports = {
       .catch(err => {
         console.log(err)
       })
+      const userInfo = await User.findOne({
+        where : {
+          email : googleEmail
+        }
+      })
     })
-  },
-  //GET auth/google/callback
-  // googleCallback: async (req, res) => {
-  //   res.status(200).send('')
-  // }
+  }
 }

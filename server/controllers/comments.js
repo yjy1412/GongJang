@@ -8,7 +8,7 @@ module.exports = {
   // POST /comments
   post: async (req, res) => {
     console.log(req.body)
-    const postId = req.body.post_id; //postId
+    const postsId = req.body.post_id; //postId
     const accessResult = accessFunc(req, res); //유저인증(토큰확인)
 
     if (!accessResult.identified) {
@@ -21,12 +21,43 @@ module.exports = {
       if (!inputContent) {
         return res.status(400).send('내용을 입력해주세요')
       }
+      // const userInfo = await User.findOne({
+      //   where : {
+      //     id : id
+      //   },
+      //   attributes: [
+      //     'nickname'
+      //   ]
+      // })
+      // console.log(userInfo.dataValues)
       await Comment.create({
-        content: inputContent,
-        post_id: postId,
-        user_id: id
+        content : inputContent,
+        post_id : postsId,
+        user_id : id
       })
-      res.status(201).send("댓글이 등록되었습니다.")
+      .then(async result => {
+        await Comment.findAll({
+          include : [{
+            model : User,
+            attributes : ['nickname']
+          }],
+          where : {
+            post_id : postsId
+          }
+        })
+        .then(data => {
+          res.status(201).json({
+            data,
+            message : '댓글이 작성되었습니다.'
+          })
+        })
+
+        // res.status(201).json({
+        //   result,
+        //   nickname : userInfo.dataValues,
+        //   message : '댓글이 작성되었습니다.'
+        // })
+      })
     } catch (err) {
       res.status(500).send("서버에 오류가 발생했습니다")
     }
