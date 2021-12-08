@@ -3,7 +3,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Button from '../components/common/Button';
-import { fetchLogin } from '../feature/userSlice';
+import { fetchLogin, initialize } from '../feature/userSlice';
 
 const AuthBackground = styled.div`
   margin-top: 200px;
@@ -158,7 +158,8 @@ const Login = () => {
       setServerErrorMessage(loginError);
       setTimeout(() => setServerErrorMessage(''), 3000);
     }
-  },[history, accessToken, loginError])
+    return dispatch(initialize());
+  },[history, accessToken, loginError, dispatch])
 
 
   return (

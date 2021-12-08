@@ -137,7 +137,7 @@ const userSlice = createSlice({
       state.user.nickname = value; // 수정된 닉네임 user에 저장 
     },
     initialize: (state) => {
-      state.loginError = null;
+      state.loginError = '';
     }
   },
   extraReducers: {

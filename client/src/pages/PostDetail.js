@@ -168,7 +168,7 @@ const PostDetail = () => {
             <span>1</span>
           </div>
           <div className="heart">
-            <RiHeartFill fill="red"/> 
+            <RiHeartFill fill="#f9796d"/> 
           </div>
         </div>
         <Comments/>

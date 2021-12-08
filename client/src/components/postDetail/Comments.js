@@ -4,6 +4,8 @@ import { AiOutlineMore } from 'react-icons/ai';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import { FiEdit } from 'react-icons/fi';
 import Button from '../common/Button';
+import SingleComment from './SingleComment';
+import ReplyComment from './ReplyComment';
 
 const CommentsBlock = styled.div`
   padding-bottom: 3rem;
@@ -59,7 +61,7 @@ const CommentBtn = styled(Button)`
   padding: 0.8rem;
 `;
 
-const Comments = ({ commentList }) => {
+const Comments = () => {
   const [comment, setComment] = useState('');
 
   const onChangeComment = (e) => {
@@ -109,26 +111,8 @@ const Comments = ({ commentList }) => {
             </div>
           ))
         )} */}
-        <ul>
-          <li>
-            <div>
-              <div>
-                <span><b>nickname</b></span>
-                <span> 2021.11.24</span>
-              </div>
-              <div className="comment">
-                <div className="text">
-                  <p>comment</p>
-                </div>
-                <AiOutlineMore className="comment-edit"/>
-                <div className="comment-edit-icons">
-                  <FiEdit/>
-                  <RiDeleteBinLine/>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
+        <SingleComment/>
+        <ReplyComment/>
       </CommentsBlock>
   );
 };
