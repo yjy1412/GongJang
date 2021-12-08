@@ -10,11 +10,13 @@ import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist
 // Reducer-Persist
 import { persistReducer, persistStore } from "redux-persist";
 import storage from 'redux-persist/lib/storage'
+import { commentSlice } from '../feature/commentSlice';
 
 const persistConfig = {
   key: 'root',
   version: 1,
   storage,
+  whitelist: ['user'],
 };
 
 const rootReducer = combineReducers({
@@ -23,6 +25,7 @@ const rootReducer = combineReducers({
   post: postSlice,
   posts: postsSlice,
   wish: wishSlice,
+  comment: commentSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
