@@ -78,9 +78,9 @@ const Item = ({ post, user, setModal, modal }) => {
         onClick={onClickWish}
         >
           { post?.wish ? (
-            <RiHeartFill fill="red"/>
+            <RiHeartFill fill="#f9796d"/>
           ) : (
-            <RiHeartLine fill="red"/>
+            <RiHeartLine fill="#f9796d"/>
           )}
         </div>
       </div>

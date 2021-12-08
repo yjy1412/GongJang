@@ -40,7 +40,7 @@ const ImgPreviewBox = styled.div`
     position: relative;
     max-width: 200px;
     width: 100%;
-    background: salmon;
+    background: #fc988d;
     .img-plus {
       position: absolute;
       top: 50%;
