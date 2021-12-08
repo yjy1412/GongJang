@@ -474,49 +474,44 @@ module.exports = {
         res.status(500).send("서버에 오류가 발생했습니다")
       })
   },
-  //GET auth/googleLogin
+  //GET auth/google/login
   googleLogin: async (req, res) => {
-  //로그인 페이지에서 구글로그인 버튼을 누름
-    const login_url =    
-    `https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/userinfo.profile&access_type=offline&response_type=code&state=state_parameter_passthrough_value&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&client_id=${process.env.GOOGLE_CLIENT_ID}`
-    console.log(login_url)
-    return res.redirect(login_url)
-    //연결이 되면 login_url을 뱉고 해당 주소로 리다이렉트 된다.
-  },
-  //GET auth/googleCallback
-  googleCallback: async (req, res) => {
-    //콜백이 
-    console.log(req.query.code)
-    const code = req.query.code
-   
-    try{
-      const getToken = await axios.post(
-        `https://oauth2.googleapis.com/token?code=${code}&client_id=${process.env.GOOGLE_CLIENT_ID}&client_secret=${process.env.GOOGLE_CLIENT_PASSOWRD}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&grant_type=authorization_code`        
-      );
-     
-      const userInfo = await axios.post(
-        `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${getToken.data.access_token}`,
-        {
-          headers : {
-            Authorization : `Bearer ${getToken.data.access_token}`
-          }
-        }        
-      );
-      console.log(userInfo)
-      const createUser = await User.findOrCreate({
-        where : {
-          email : userInfo.data.email
-        },
-        default : {
-          
+    //서버에서는 authorization code(=code로 통칭)를 받아서 oauth에 code를 post해줘야 한다.
+    const { code } = req.body
+    const authUrl = "https://accounts.google.com/o/oauth2/auth";
+    const tokenUrl = 'https://oauth2.googleapis.com/token'
+    const infoUrl = 'https://www.googleapis.com/oauth2/v3/userinfo';
+    const reUri = process.env.GOOGLE_REDIRECT_URI    
+    const client_id =process.env.GOOGLE_CLIENT_ID
+    const client_secret = process.env.GOOGLE_CLIENT_PASSOWRD      
+    const grant_type = "authorization_code"
+
+    await axios.post(tokenUrl, {
+      code : code,
+      client_id : client_id,
+      client_secret : client_secret,
+      redirect_uri : reUri,
+      grant_type : grant_type
+    }, {
+      "content-type": "application/x-www-form-urlencoded"
+    })
+    .then(async result => {
+      let accessToken = result.data.access_token
+      let refreshToken = result.data.refreshToken
+
+      const resInfo = await axios.get(infoUrl, {
+        headers : {
+          authorization: `Bearer ${accessToken}`
         }
       })
-      
-      return res.send('callback')
-    } catch(err) {
-     
-      res.send('callback err')
-    }
-    
-  }
+      .then(result => result.data.email)
+      .catch(err => {
+        console.log(err)
+      })
+    })
+  },
+  //GET auth/google/callback
+  // googleCallback: async (req, res) => {
+  //   res.status(200).send('')
+  // }
 }
