@@ -136,6 +136,9 @@ const userSlice = createSlice({
     changeNickname: (state, { payload: value }) => {
       state.user.nickname = value; // 수정된 닉네임 user에 저장 
     },
+    initialize: (state) => {
+      state.loginError = null;
+    }
   },
   extraReducers: {
     hydrate:(state, { payload }) => {
@@ -230,5 +233,5 @@ const userSlice = createSlice({
     },
   }
 })
-export const { changeNickname } = userSlice.actions
+export const { changeNickname, initialize } = userSlice.actions
 export default userSlice.reducer;

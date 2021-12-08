@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -9,6 +9,7 @@ import { setOriginalPost } from '../feature/writeSlice';
 import Loading from '../components/common/Loading';
 import AskModal from '../components/modal/AskModal';
 import checkTime from '../components/postDetail/Time';
+import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
 
 const PostDetailBlock = styled.div`
   width: 1130px;
@@ -69,6 +70,16 @@ const PostDetailBlock = styled.div`
     span {
     }
   }
+  .interest {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    .heart {
+      display: flex;
+      padding: 0 0.5rem;
+      cursor: pointer;
+    }
+  }
 `;
 
 const PostDetail = () => {
@@ -76,11 +87,12 @@ const PostDetail = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [modal, setModal] = useState(false);
-  const { post, loading, user } = useSelector(({ post , user }) => ({
+  const { post, loading, user, images } = useSelector(({ post , user }) => ({
     post: post.post,
     error: post.error,
     loading: post.loading,
     user: user.user,
+    images: post.images,
   }));
 
   useEffect(() => {
@@ -90,10 +102,10 @@ const PostDetail = () => {
     }
   },[dispatch, id])
 
-  const onEditPost = () => {
+  const onEditPost = useCallback(() => {
     dispatch(setOriginalPost(post));
     history.push('/write');
-  }
+  },[dispatch, history, post])
 
   const onCancel = () => {
     setModal(!modal);
@@ -102,15 +114,14 @@ const PostDetail = () => {
   const onConfirm = async () => {
     try {
       await dispatch(fetchRemovePost(id));
-      await history.push('/');
+      history.push('/');
     } catch(e){
       console.log(e)
     }
   }
 
   const date = checkTime(post?.createdAt);
-  
-  const ownPost = (user && user.nickname) === (post && post?.writer.writer_nickname);
+  const ownPost = ((user && user.nickname) === (post && post?.writer.writer_nickname));
   
   // if(error){
   //   if(error.response && error.response.status === 404){
@@ -121,7 +132,6 @@ const PostDetail = () => {
   if(loading || !post){
     return <Loading/>;
   }
-
   return (
     <>
       <PostDetailBlock>
@@ -133,7 +143,7 @@ const PostDetail = () => {
             </div>
           )}
         </div>
-        <ItemImgSlide/>
+        <ItemImgSlide images={images}/>
         <div className="wrap">
           <div className="info">
             <p>ITEM INFO</p>
@@ -151,6 +161,15 @@ const PostDetail = () => {
         <div className="writer">
           <span><b>{post?.writer.writer_nickname}&nbsp;</b></span>
           <span> {date}</span>
+        </div>
+        <div className="interest">
+          <div>
+            <span>댓글</span>
+            <span>1</span>
+          </div>
+          <div className="heart">
+            <RiHeartFill fill="red"/> 
+          </div>
         </div>
         <Comments/>
       </PostDetailBlock>

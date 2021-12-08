@@ -6,6 +6,7 @@ import UpdateProfile from '../components/mypage/UpdateProfile';
 import AskAccountDeleteModal from '../components/modal/AskAccountDeleteModal'
 import { fetchDeleteAccount, fetchLogOut } from '../feature/userSlice';
 import MyPageProfileImg from '../components/mypage/MyPageProfileImg';
+import MyPosts from '../components/mypage/MyPosts'
 
 const MyPageBlock = styled.div`
   width: 1130px;
@@ -68,6 +69,7 @@ const MyPage = () => {
   const dispatch = useDispatch();
   
   const { user, isEdited, userInfoError } = useSelector( state => state.user );
+  const { posts } = useSelector( state => state.posts);
 
   const handleDeleteButton = () => {
     setVisible(true)
@@ -112,6 +114,10 @@ const MyPage = () => {
             <DeleteButton onClick={handleDeleteButton}>DELETE ACCOUNT</DeleteButton>
           </div>
         </div>
+        <MyPosts 
+        posts={posts}
+        user={user}
+        />
       </MyPageBlock>
       { 
         visible && (

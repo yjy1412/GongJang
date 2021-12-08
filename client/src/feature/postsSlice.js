@@ -14,7 +14,7 @@ export const fetchGetAllPosts = createAsyncThunk(
 )
 
 const initialState = {
-  posts: null,
+  posts: [],
   error: null,
   loading: false,
 }

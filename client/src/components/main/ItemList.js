@@ -10,7 +10,7 @@ const ItemListBlock = styled.ul`
   padding: 2rem 0 4rem;
 `;
 
-const ItemList = ({ posts, user }) => {
+const ItemList = ({ posts, user, modal, setModal }) => {
   
   return (
     <ItemListBlock>
@@ -19,6 +19,8 @@ const ItemList = ({ posts, user }) => {
         key={post?.id} 
         post={post} 
         user={user}
+        modal={modal}
+        setModal={setModal}
         />
       ))}
     </ItemListBlock>

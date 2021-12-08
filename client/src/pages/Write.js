@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,7 +6,7 @@ import ImgUpload from '../components/write/ImgUpload';
 import SelectCategory from '../components/write/SelectCategory';
 import Button from '../components/common/Button';
 import WhiteButton from '../components/common/WhiteButton';
-import { changeField, fetchUpdatePost, fetchWritePost, initialize } from '../feature/writeSlice';
+import { changeField, fetchUpdatePost, fetchWritePost, initialize, removeImage } from '../feature/writeSlice';
 import SalesStatus from '../components/write/SalesStatus';
 import AskModal from '../components/modal/AskModal';
 
@@ -79,33 +79,38 @@ const Write = () => {
     title, 
     content, 
     soldOut,
+    images,
   } = useSelector((state) => state.write);
 
-  const onConfirm = () => {
+  const onConfirm = useCallback(() => {
     setModal(!modal);
-  }
+  },[modal])
 
   const onCancel = () => {
     history.push('/');
   }
 
-  const onChangeForm = (e) => {
+  const onChangeForm = useCallback((e) => {
     const { name, value } = e.target;
     dispatch(changeField({
       key: name,
       value,
     }))
-  }
+  },[dispatch])
 
-  const onRemove = (index) => {
+  const onRemove = useCallback((index) => {
     const newImageURLs = imageURLs.filter((url, idx) => idx !== index);
     const newImages = uploadImages.filter((image, idx) => idx !== index);
     setImageURLs(newImageURLs);
     setUploadImages(newImages);
-  }
-  
+  },[imageURLs, uploadImages])
+
+  const onRemoveImage = useCallback((index) => {
+    dispatch(removeImage(index));
+  },[dispatch])
+
   //글 폼 전송하기
-  const onSubmitForm = (e) => {
+  const onSubmitForm = useCallback(e => {
     e.preventDefault();
 
     if([title, content, category].includes('')){
@@ -120,6 +125,11 @@ const Write = () => {
     formData.append('content', content);
     formData.append('category', category);
     formData.append('soldOut', soldOut);
+    images.forEach((file) => {
+      if(file !== undefined){
+        formData.append('image', {type: "Buffer", data: file});
+      }
+    })
     uploadImages.forEach((file) => {
       formData.append('image', file);
     });
@@ -130,7 +140,7 @@ const Write = () => {
       return;
     } 
     dispatch(fetchWritePost(formData));
-  }
+  },[category, content, dispatch, images, onConfirm, originalPostId, soldOut, title, uploadImages])
 
   useEffect(() => {
     if(post){
@@ -156,11 +166,13 @@ const Write = () => {
         onChange={onChangeForm}
         />
         <ImgUpload
+        images={images}
         uploadImages={uploadImages}
         setUploadImages={setUploadImages}
         imageURLs={imageURLs}
         setImageURLs={setImageURLs}
         onRemove={onRemove}
+        onRemoveImage={onRemoveImage}
         />
         <div className="select-box">
           <SelectCategory category={category}/>
