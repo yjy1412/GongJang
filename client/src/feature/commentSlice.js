@@ -11,8 +11,9 @@ export const fetchGetAllComments = createAsyncThunk(
 
 export const fetchCreateComment = createAsyncThunk(
   'comment/fetchCreateComment',
-  async () => {
-    const response = await axios.post('/comments');
+  async (form) => {
+    const { post_id, content } = form;
+    const response = await axios.post('/comments', { post_id, content });
     return response.data;
   }
 )

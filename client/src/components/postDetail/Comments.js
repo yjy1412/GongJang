@@ -6,6 +6,8 @@ import { FiEdit } from 'react-icons/fi';
 import Button from '../common/Button';
 import SingleComment from './SingleComment';
 import ReplyComment from './ReplyComment';
+import { useDispatch } from 'react-redux';
+import { fetchCreateComment } from '../../feature/commentSlice';
 
 const CommentsBlock = styled.div`
   padding-bottom: 3rem;
@@ -61,8 +63,9 @@ const CommentBtn = styled(Button)`
   padding: 0.8rem;
 `;
 
-const Comments = () => {
+const Comments = ({ post, commentList }) => {
   const [comment, setComment] = useState('');
+  const dispatch = useDispatch();
 
   const onChangeComment = (e) => {
     setComment(e.target.value)
@@ -74,11 +77,12 @@ const Comments = () => {
       return;
     }
     //댓글 데이터 만들어 보내기
-    // const form = {
-    //   content: '',
-    //   writer: '',
-    //   post_id: ''
-    // };
+    const form = {
+      content: comment,
+      post_id: post.post_id,
+      // writer: ''
+    };
+    dispatch(fetchCreateComment(form));
     setComment('');
   }
 
@@ -95,23 +99,22 @@ const Comments = () => {
           <CommentBtn>COMMENT</CommentBtn>
         </form>
         {/* comments Lists */}
-        {/* { commentList && (
+        { commentList && (
           commentList.map((comment, index) => !comment.responseTo && (
             <div key={index}>
               <SingleComment
               comment={comment}
-              post_id={post_id}
-              writerInfo={writerInfo}
+              // post_id={post_id}
+              // writerInfo={writerInfo}
               />
-              <ReplayComment
+              {/* <ReplayComment
               commentList={commentList}
               writerInfo={writerInfo}
               parentCommentId={}
-              />
+              /> */}
             </div>
           ))
-        )} */}
-        <SingleComment/>
+        )}
         <ReplyComment/>
       </CommentsBlock>
   );

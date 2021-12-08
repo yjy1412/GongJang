@@ -4,13 +4,13 @@ import postsSlice from '../feature/postsSlice';
 import userSlice from '../feature/userSlice';
 import wishSlice from '../feature/wishSlice';
 import writeSlice from '../feature/writeSlice';
+import commentSlice from '../feature/commentSlice';
 
 import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
 
 // Reducer-Persist
 import { persistReducer, persistStore } from "redux-persist";
 import storage from 'redux-persist/lib/storage'
-import { commentSlice } from '../feature/commentSlice';
 
 const persistConfig = {
   key: 'root',
