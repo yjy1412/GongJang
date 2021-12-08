@@ -190,8 +190,8 @@ module.exports = {
         console.log(err);
         return res.status(500).send("서버에 오류가 발생했습니다")
       })
-      
-    if ( !postInfo ) {
+
+    if (!postInfo) {
       return res.status(400).send("포스트 아이디를 다시 확인해주세요");
     }
 
@@ -281,37 +281,28 @@ module.exports = {
             const { image1, image2, image3 } = postData;
             const images = [image1, image2, image3];
 
-            let bufferImg1, bufferImg2, bufferImg3;
+            postData.image = []
             for (let i = 0; i < images.length; i += 1) {
               // 이미지가 널값이 아니라면,
               if (images[i]) {
                 console.log("images : ", images[i])
-                let convertData
-                try {
-                  convertData = fs.readFileSync(images[i], (data) => {
-                    // console.log(data);
-                    return Buffer.from(data).toString('base64');
-                  })
-                } catch (err) {
+                let buffer
+                // 비동기 처리는 try/catch로 잡아낼 수 없음
+                try { buffer = fs.readFileSync(images[i]) }
+                catch(err) {
                   console.log(err);
-                  return res.status(500).send("서버에 오류가 발생했습니다")
+                  return res.status(500).send("게시글 프로필이미지를 불러올 수 없습니다")
                 }
-
-                if (i === 0) {
-                  bufferImg1 = convertData;
-                } else if (i === 1) {
-                  bufferImg2 = convertData;
-                } else if (i === 2) {
-                  bufferImg3 = convertData;
-                }
-                const bufferImg = [bufferImg1, bufferImg2, bufferImg3];
-                postData.image = bufferImg;
-                // 기존 DB의 image1,2,3 삭제
-                delete postData.image1;
-                delete postData.image2;
-                delete postData.image3;
+                bufferTostring = Buffer.from(buffer).toString('base64');
+                postData.image.push(bufferTostring);
+              } else {
+                postData.image.push(images[i]);
               }
             }
+            delete postData.image1;
+            delete postData.image2;
+            delete postData.image3;
+
             const writerId = postData.user_id;
 
             // Sequelize 쿼리는 스코프 밖의 변수에 영향을 줄 수 없다?? 노노
@@ -485,32 +476,29 @@ module.exports = {
         const { email, nickname } = userInfo;
 
         // 2-2. 게시글 이미지 파일 처리
-        let { image1, image2, image3 } = postData;
+        // 게시글 이미지 파일 처리
+        const { image1, image2, image3 } = postData;
         const images = [image1, image2, image3];
 
+        let image = [];
         for (let i = 0; i < images.length; i += 1) {
           // 이미지가 널값이 아니라면,
           if (images[i]) {
             console.log("images : ", images[i])
-            let convertData
-            try {
-              convertData = fs.readFileSync(images[i], (err, data) => {
-                return Buffer.from(data).toString('base64');
-              })
-            } catch (err) {
+            let buffer
+            // 비동기 처리는 try/catch로 잡아낼 수 없음
+            try { buffer = fs.readFileSync(images[i]) }
+            catch(err) {
               console.log(err);
-              return res.status(500).send("서버에 오류가 발생했습니다")
+              return res.status(500).send("게시글 프로필이미지를 불러올 수 없습니다")
             }
-
-            if (i === 0) {
-              image1 = convertData;
-            } else if (i === 1) {
-              image2 = convertData;
-            } else if (i === 2) {
-              image2 = convertData;
-            }
+            bufferTostring = Buffer.from(buffer).toString('base64');
+            image.push(bufferTostring);
+          } else {
+            image.push(images[i]);
           }
         }
+
         return res.status(201).json({
           post_id: id,
           writer: {
@@ -521,9 +509,7 @@ module.exports = {
           content,
           category,
           soldOut,
-          image1,
-          image2,
-          image3,
+          image,
           createdAt,
           updatedAt,
           wish

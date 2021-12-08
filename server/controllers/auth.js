@@ -105,9 +105,8 @@ module.exports = {
               // 프로필 이미지 처리
               let convertImg;
               try {
-                convertImg = fs.readFileSync(profile_image, (err, data) => {
-                  return Buffer.from(data).toString('base64');
-                })
+                buffer = fs.readFileSync(profile_image);
+                convertImg = Buffer.from(buffer).toString('base64');
               } catch {
                 console.log(convertImg);
                 return res.status(500).send("유저의 프로필 이미지를 불러오는데 실패했습니다")
@@ -191,14 +190,14 @@ module.exports = {
         const { email, nickname, admin, profile_image } = userInfo
         // 2-3. 프로필이미지 path를 통한 이미지 데이터 전송
         // 프로필 이미지 처리
+        // 프로필 이미지 처리
         let convertImg;
         try {
-          convertImg = fs.readFileSync(profile_image, (err, data) => {
-            return Buffer.from(data).toString('base64');
-          })
+          buffer = fs.readFileSync(profile_image);
+          convertImg = Buffer.from(buffer).toString('base64');
         } catch {
           console.log(convertImg);
-          res.status(500).send("프로필 이미지를 불러오는 데 실패했습니다")
+          return res.status(500).send("유저의 프로필 이미지를 불러오는데 실패했습니다")
         }
         console.log(convertImg);
         res.json({
@@ -223,6 +222,7 @@ module.exports = {
     console.log(accessResult)
     const { id } = accessResult
     //accessResult는 user_id
+
     Post.findAll({ where: { user_id: id } })
       .then(result => {
         if (!result) {
@@ -235,37 +235,28 @@ module.exports = {
             const { image1, image2, image3 } = postData;
             const images = [image1, image2, image3];
 
-            let bufferImg1, bufferImg2, bufferImg3;
+            postData.image = []
+
             for (let i = 0; i < images.length; i += 1) {
               // 이미지가 널값이 아니라면,
               if (images[i]) {
                 console.log("images : ", images[i])
-                let convertData
-                try {
-                  convertData = fs.readFileSync(images[i], (data) => {
-                    // console.log(data);
-                    return Buffer.from(data).toString('base64');
-                  })
-                } catch (err) {
+                let buffer
+                // 비동기 처리는 try/catch로 잡아낼 수 없음
+                try { buffer = fs.readFileSync(images[i]) }
+                catch (err) {
                   console.log(err);
-                  return res.status(500).send("서버에 오류가 발생했습니다")
+                  return res.status(500).send("게시글 프로필이미지를 불러올 수 없습니다")
                 }
-
-                if (i === 0) {
-                  bufferImg1 = convertData;
-                } else if (i === 1) {
-                  bufferImg2 = convertData;
-                } else if (i === 2) {
-                  bufferImg3 = convertData;
-                }
-                const bufferImg = [bufferImg1, bufferImg2, bufferImg3];
-                postData.image = bufferImg;
-                // 기존 DB의 image1,2,3 삭제
-                delete postData.image1;
-                delete postData.image2;
-                delete postData.image3;
+                bufferTostring = Buffer.from(buffer).toString('base64');
+                postData.image.push(bufferTostring);
+              } else {
+                postData.image.push(images[i]);
               }
             }
+            delete postData.image1;
+            delete postData.image2;
+            delete postData.image3;
             return postData
           })
           responseData.sort((a, b) => {
@@ -302,14 +293,31 @@ module.exports = {
         attributes: ['id', 'title', 'image1', 'category', 'soldOut', 'createdAt']
       }
     })
-      .then(result => {
+      .then(async result => {
         if (!result) { res.sendStatus(204) }
-        const responseData = result.map(data => {
+        const responseData = await Promise.all(
+          result.map(data => {
+            const postData = data.dataValues.Post.dataValues;
+            postData.wish = true;
+            // 게시글 이미지 파일 처리
+            const { image1 } = postData;
 
-          const postData = data.dataValues.Post.dataValues;
-          postData.wish = true;
-          return postData;
-        })
+            if ( image1 ) {
+              console.log("images : ", image1)
+              let buffer
+              // 비동기 처리는 try/catch로 잡아낼 수 없음
+              try { buffer = fs.readFileSync(image1) }
+              catch (err) {
+                console.log(err);
+                return res.status(500).send("게시글 프로필이미지를 불러올 수 없습니다")
+              }
+              bufferTostring = Buffer.from(buffer).toString('base64');
+              console.log('bufferTostring: ', bufferTostring);
+              postData.image1 = bufferTostring
+            } 
+            return postData;
+          })
+        )
         console.log(responseData)
         if (!responseData) {
           res.status(500).send("서버에 에러가 발생했습니다")
@@ -318,10 +326,7 @@ module.exports = {
         responseData.sort((a, b) => {
           return Number(new Date(b.createdAt)) - Number(new Date(a.createdAt));
         })
-        return res.status(200).json({
-          data: responseData,
-          message: "내가 찜한 게시글이 리스트업 되었습니다"
-        })
+        return res.status(200).json(responseData)
       })
       .catch(err => {
         console.log(err);
