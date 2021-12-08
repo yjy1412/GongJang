@@ -223,7 +223,6 @@ module.exports = {
     console.log(accessResult)
     const { id } = accessResult
     //accessResult는 user_id
-
     Post.findAll({ where: { user_id: id } })
       .then(result => {
         if (!result) {
@@ -501,5 +500,11 @@ module.exports = {
         console.log(err);
         res.status(500).send("서버에 오류가 발생했습니다")
       })
+  },
+  googleLogin: async (req, res) => {
+    res.send('')
+  },
+  googleCallback: async (req, res) => {
+    res.send('')
   }
 }

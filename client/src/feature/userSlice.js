@@ -81,18 +81,24 @@ export const fetchUpdateUserInfo = createAsyncThunk(
 
 export const fetchUpdateProfileImage = createAsyncThunk(
   'mypage/fetchUpdateProfileImage',
-  async ( newProfileImage, { rejectWithValue }) => {
+  async ( formData, { rejectWithValue }) => {
     try {
+      const config = {
+        headers: {
+          'Content-Type' : 'multipart/form-data'
+        }
+      }
       const response = await axios.patch(
-        '/auth/mypage',
-        { profile_image: newProfileImage },
+        '/auth/profile-image',
+        formData,
+        config
       )
       return response.data
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
   }
-)
+);
 
 export const fetchDeleteAccount = createAsyncThunk(
   'mypage/fetchDeleteAccount',
@@ -115,6 +121,7 @@ export const initialState = {
   passwordUpdated: false,
   loading: false,
   isEdited: false,
+  message: "",
   loginError: null,
   signUpError: null,
   userInfoError: null,
@@ -129,6 +136,9 @@ const userSlice = createSlice({
     changeNickname: (state, { payload: value }) => {
       state.user.nickname = value; // 수정된 닉네임 user에 저장 
     },
+    initialize: (state) => {
+      state.loginError = null;
+    }
   },
   extraReducers: {
     hydrate:(state, { payload }) => {
@@ -170,12 +180,12 @@ const userSlice = createSlice({
     },
     [fetchLogOut.pending]: (state) => {
       state.loading = true;
-      state.accessToken = "";
     },
     [fetchLogOut.fulfilled]: (state) => {
       state.loading = false;
       state.isLogin = false;
       state.user = null;
+      state.accessToken = "";
     },
     [fetchUpdateUserInfo.pending]: (state) => {
       state.loading = true;
@@ -223,5 +233,5 @@ const userSlice = createSlice({
     },
   }
 })
-export const { changeNickname } = userSlice.actions
+export const { changeNickname, initialize } = userSlice.actions
 export default userSlice.reducer;

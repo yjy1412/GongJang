@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,9 +6,9 @@ import ImgUpload from '../components/write/ImgUpload';
 import SelectCategory from '../components/write/SelectCategory';
 import Button from '../components/common/Button';
 import WhiteButton from '../components/common/WhiteButton';
-import { changeField, fetchUpdatePost, fetchWritePost, initialize } from '../feature/writeSlice';
+import { changeField, fetchUpdatePost, fetchWritePost, initialize, removeImage } from '../feature/writeSlice';
 import SalesStatus from '../components/write/SalesStatus';
-import AskRequiredInputModal from '../components/modal/AskRequiredInputModal';
+import AskModal from '../components/modal/AskModal';
 
 const WriteBlock = styled.div`
   width: 1130px;
@@ -65,74 +65,82 @@ const WriteButton = styled(Button)`
 `;
 
 const Write = () => {
-  const [image, setImage] = useState([]);
+  const [uploadImages, setUploadImages] = useState([]);
   const [imageURLs, setImageURLs] = useState([]);
   const [modal, setModal] = useState(false);
   
   const history = useHistory();
   const dispatch = useDispatch();
-  const { post, postError, originalPostId, category, title, content, soldOut } = useSelector((state) => state.write);
+  const { 
+    post, 
+    postError, 
+    originalPostId, 
+    category, 
+    title, 
+    content, 
+    soldOut,
+    images,
+  } = useSelector((state) => state.write);
 
-
-  const onConfirm = () => {
+  const onConfirm = useCallback(() => {
     setModal(!modal);
+  },[modal])
+
+  const onCancel = () => {
+    history.push('/');
   }
 
-  const onChangeForm = (e) => {
+  const onChangeForm = useCallback((e) => {
     const { name, value } = e.target;
     dispatch(changeField({
       key: name,
       value,
     }))
-  }
+  },[dispatch])
 
-  const onRemove = (index) => {
-    const newImageURLs = imageURLs.filter((image, idx) => idx !== index);
-    const newImageFiles = image.filter((image, idx) => idx !== index);
+  const onRemove = useCallback((index) => {
+    const newImageURLs = imageURLs.filter((url, idx) => idx !== index);
+    const newImages = uploadImages.filter((image, idx) => idx !== index);
     setImageURLs(newImageURLs);
-    setImage(newImageFiles);
-  }
+    setUploadImages(newImages);
+  },[imageURLs, uploadImages])
 
-  
+  const onRemoveImage = useCallback((index) => {
+    dispatch(removeImage(index));
+  },[dispatch])
+
   //글 폼 전송하기
-  const onSubmitForm = (e) => {
+  const onSubmitForm = useCallback(e => {
     e.preventDefault();
 
-    if([title, content].includes('')){
+    if([title, content, category].includes('')){
       onConfirm();
     }
 
+    //formData 전송
+    //이미지 변경시 파일로 첨부된 변경 이미지만 보내는게 좋을 듯
+    const formData = new FormData();
+
+    formData.append('title', title);
+    formData.append('content', content);
+    formData.append('category', category);
+    formData.append('soldOut', soldOut);
+    images.forEach((file) => {
+      if(file !== undefined){
+        formData.append('image', {type: "Buffer", data: file});
+      }
+    })
+    uploadImages.forEach((file) => {
+      formData.append('image', file);
+    });
+    
     //글 수정 후 업데이트
     if(originalPostId){
-      const form = { id: originalPostId, title, content, category, soldOut, image };
-      dispatch(fetchUpdatePost(form));
+      dispatch(fetchUpdatePost({formData, id: originalPostId}));
       return;
     } 
-
-    // let formData = new FormData();
-
-    // imageFiles.forEach((file) => {
-    //   formData.append('image[]', file);
-    // });
-
-    // formData.append('title', title);
-    // formData.append('content', content);
-    // formData.append('category', category);
-    // formData.append('soldOut', soldOut);
-
-    // for (let data of formData) {
-    //   console.log(data);
-    // }
-
-    const formData = {
-      title,
-      content,
-      category,
-      soldOut,
-      image
-    }
     dispatch(fetchWritePost(formData));
-  }
+  },[category, content, dispatch, images, onConfirm, originalPostId, soldOut, title, uploadImages])
 
   useEffect(() => {
     if(post){
@@ -158,15 +166,17 @@ const Write = () => {
         onChange={onChangeForm}
         />
         <ImgUpload
-        imageFiles={image}
-        setImageFiles={setImage}
+        images={images}
+        uploadImages={uploadImages}
+        setUploadImages={setUploadImages}
         imageURLs={imageURLs}
         setImageURLs={setImageURLs}
         onRemove={onRemove}
+        onRemoveImage={onRemoveImage}
         />
         <div className="select-box">
-          <SelectCategory />
-          <SalesStatus/>
+          <SelectCategory category={category}/>
+          <SalesStatus soldOut={soldOut}/>
         </div>
         <div className="info-title">
           <p>ITEM INFO</p>
@@ -179,15 +189,18 @@ const Write = () => {
         />
       </form>
       <div className="btn-box">
-          <WhiteButton>CANCEL</WhiteButton>
+          <WhiteButton onClick={onCancel}>CANCEL</WhiteButton>
           <WriteButton 
           onClick={onSubmitForm}
           >PUBLISH</WriteButton>
       </div>
       { modal && (
-      <AskRequiredInputModal 
+      <AskModal 
       visible={modal} 
+      title='알림'
+      description='필수 입력란을 작성해주세요.'
       onConfirm={onConfirm}
+      type='required'
       />
       )}
     </WriteBlock>

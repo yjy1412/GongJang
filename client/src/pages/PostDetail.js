@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -7,7 +7,9 @@ import ItemImgSlide from '../components/postDetail/ItemImgSlide';
 import { fetchGetPostDetail, unloadPost, fetchRemovePost } from '../feature/postSlice';
 import { setOriginalPost } from '../feature/writeSlice';
 import Loading from '../components/common/Loading';
-import { removePost } from '../feature/postsSlice';
+import AskModal from '../components/modal/AskModal';
+import checkTime from '../components/postDetail/Time';
+import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
 
 const PostDetailBlock = styled.div`
   width: 1130px;
@@ -26,10 +28,9 @@ const PostDetailBlock = styled.div`
       right: 0;
       bottom: 0;
       font-size: 1.2rem;
-      color: #575F95;
+      color: #fff;
       background: #fa8072;
       padding: 0.5rem;
-      border: 2px solid  #575F95;
       border-radius: 4px;
     }
   }
@@ -69,17 +70,29 @@ const PostDetailBlock = styled.div`
     span {
     }
   }
+  .interest {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    .heart {
+      display: flex;
+      padding: 0 0.5rem;
+      cursor: pointer;
+    }
+  }
 `;
 
 const PostDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const history = useHistory();
-  const { post, loading, user } = useSelector(({ post , user }) => ({
+  const [modal, setModal] = useState(false);
+  const { post, loading, user, images } = useSelector(({ post , user }) => ({
     post: post.post,
     error: post.error,
     loading: post.loading,
     user: user.user,
+    images: post.images,
   }));
 
   useEffect(() => {
@@ -89,18 +102,26 @@ const PostDetail = () => {
     }
   },[dispatch, id])
 
-  const onEditPost = () => {
+  const onEditPost = useCallback(() => {
     dispatch(setOriginalPost(post));
     history.push('/write');
+  },[dispatch, history, post])
+
+  const onCancel = () => {
+    setModal(!modal);
   }
 
-  const onRemovePost = () => {
-    dispatch(fetchRemovePost(id));
-    dispatch(removePost(id));
-    history.push('/');
+  const onConfirm = async () => {
+    try {
+      await dispatch(fetchRemovePost(id));
+      history.push('/');
+    } catch(e){
+      console.log(e)
+    }
   }
-  
-  const ownPost = (user && user.nickname) === (post && post?.writer.writer_nickname);
+
+  const date = checkTime(post?.createdAt);
+  const ownPost = ((user && user.nickname) === (post && post?.writer.writer_nickname));
   
   // if(error){
   //   if(error.response && error.response.status === 404){
@@ -111,38 +132,57 @@ const PostDetail = () => {
   if(loading || !post){
     return <Loading/>;
   }
-
   return (
-    <PostDetailBlock>
-      <div className="title">
-        <h3>{post?.title}</h3>
-        { post?.soldOut && (
-           <div className="share-status">
-            <b>나눔완료</b>
-          </div>
-        )}
-      </div>
-      <ItemImgSlide/>
-      <div className="wrap">
-        <div className="info">
-          <p>ITEM INFO</p>
+    <>
+      <PostDetailBlock>
+        <div className="title">
+          <h3>{post?.title}</h3>
+          { post?.soldOut && (
+            <div className="share-status">
+              <b>나눔완료</b>
+            </div>
+          )}
         </div>
-        { ownPost && (
-          <div className="btn-box">
-            <button onClick={onEditPost}>EDIT</button>
-            <button onClick={onRemovePost}>DELETE</button>
+        <ItemImgSlide images={images}/>
+        <div className="wrap">
+          <div className="info">
+            <p>ITEM INFO</p>
           </div>
-        )}
-      </div>
-      <div className="desc">
-        <p>{post?.content}</p>
-      </div>
-      <div className="writer">
-        <span><b>{}&nbsp;</b></span>
-        <span> {}</span>
-      </div>
-      <Comments/>
-    </PostDetailBlock>
+          { ownPost && (
+            <div className="btn-box">
+              <button onClick={onEditPost}>EDIT</button>
+              <button onClick={() => setModal(!modal)}>DELETE</button>
+            </div>
+          )}
+        </div>
+        <div className="desc">
+          <p>{post?.content}</p>
+        </div>
+        <div className="writer">
+          <span><b>{post?.writer.writer_nickname}&nbsp;</b></span>
+          <span> {date}</span>
+        </div>
+        <div className="interest">
+          <div>
+            <span>댓글</span>
+            <span>1</span>
+          </div>
+          <div className="heart">
+            <RiHeartFill fill="red"/> 
+          </div>
+        </div>
+        <Comments/>
+      </PostDetailBlock>
+      { modal && (
+        <AskModal
+        visible={modal}
+        title='나눔 글 삭제'
+        description='나눔 글을 정말 삭제하시겠습니까?'
+        onConfirm={onConfirm}
+        onCancel={onCancel}
+        />
+      )}
+    </>
   );
 };
 

@@ -1,10 +1,12 @@
 import React,{ useState } from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch} from 'react-redux';
 import UpdateProfile from '../components/mypage/UpdateProfile';
 import AskAccountDeleteModal from '../components/modal/AskAccountDeleteModal'
 import { fetchDeleteAccount, fetchLogOut } from '../feature/userSlice';
+import MyPageProfileImg from '../components/mypage/MyPageProfileImg';
+import MyPosts from '../components/mypage/MyPosts'
 
 const MyPageBlock = styled.div`
   width: 1130px;
@@ -47,7 +49,7 @@ const MyPageBlock = styled.div`
 
 const DeleteButton = styled.button`
   font-size: 1.2rem;
-  font-weight: 500;
+  font-weight: 600;
   /* text-decoration-line: underline; */
   color: #575F95;
   padding: 0.5rem 0.5rem 0;
@@ -55,37 +57,19 @@ const DeleteButton = styled.button`
   margin-bottom: 0.5rem;
 `;
 
-const MyPageProfileImg = styled.div`
-  display: flex;
-  flex-direction: column;
 
-  img {
-    width: 200px;
-    height: 200px;
-    border-radius: 100px;
-  }
-
-  span {
-    margin-top: 5px;
-    text-align: center;
-    cursor: pointer;
-  }
-`;
 
 const MyPage = () => {
 
   const [ newNickname, setNewNickname ] = useState('');
-  const [ newProfileImage, setNewProfileImage ] = useState(null);
+  const [ previewProfileImage, setPreviewProfileImage ] = useState(null);
   const [visible, setVisible] = useState(false);
 
   const history = useHistory();
   const dispatch = useDispatch();
   
   const { user, isEdited, userInfoError } = useSelector( state => state.user );
-
-  const handleProfileImage = () => {
-    alert("하이")
-  }
+  const { posts } = useSelector( state => state.posts);
 
   const handleDeleteButton = () => {
     setVisible(true)
@@ -106,15 +90,13 @@ const MyPage = () => {
     <>
       <MyPageBlock>
         <div className="profile-wrap">
-          <MyPageProfileImg>
-            <div>
-              <img 
-                src="https://us.123rf.com/450wm/thesomeday123/thesomeday1231712/thesomeday123171200008/91087328-%EC%97%AC%EC%84%B1%EC%9A%A9-%EA%B8%B0%EB%B3%B8-%EC%95%84%EB%B0%94%ED%83%80-%ED%94%84%EB%A1%9C%ED%95%84-%EC%95%84%EC%9D%B4%EC%BD%98-%ED%9A%8C%EC%83%89-%EC%82%AC%EC%A7%84-%EC%9E%90%EB%A6%AC-%ED%91%9C%EC%8B%9C-%EC%9E%90-%EC%9D%BC%EB%9F%AC%EC%8A%A4%ED%8A%B8-%EB%B2%A1%ED%84%B0.jpg?ver=6" 
-                alt="profile" 
-              />
-            </div>
-            <span>사진 업데이트하기</span>
-          </MyPageProfileImg>
+          <MyPageProfileImg 
+            user={user}
+            isEdited={isEdited}
+            userInfoError={userInfoError}
+            previewProfileImage={previewProfileImage}
+            setPreviewProfileImage={setPreviewProfileImage}
+          />
           <UpdateProfile 
           user={user}
           isEdited={isEdited}
@@ -132,6 +114,10 @@ const MyPage = () => {
             <DeleteButton onClick={handleDeleteButton}>DELETE ACCOUNT</DeleteButton>
           </div>
         </div>
+        <MyPosts 
+        posts={posts}
+        user={user}
+        />
       </MyPageBlock>
       { 
         visible && (
