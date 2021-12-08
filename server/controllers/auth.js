@@ -236,6 +236,7 @@ module.exports = {
             const images = [image1, image2, image3];
 
             postData.image = []
+
             for (let i = 0; i < images.length; i += 1) {
               // 이미지가 널값이 아니라면,
               if (images[i]) {
