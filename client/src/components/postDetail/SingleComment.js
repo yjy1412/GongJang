@@ -2,7 +2,35 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const SingleCommentBlock = styled.div`
-
+  .open-reply {
+    cursor: pointer;
+    font-size: 1.1rem;
+  }
+  .reply-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 0.5rem;
+    textarea {
+      width: 100%;
+      height: 45px;
+      resize: none;
+      font-size: 1.2rem;
+      margin-right: 1rem;
+      padding: 0.5rem 0; 
+      border: none;
+      border-bottom: 2px solid #575F95;
+      &::placeholder {
+        color: #bcbdc4;
+        font-size: 1rem;
+      }
+    }
+    button {
+      cursor: pointer;
+      color: inherit;
+      font-size: 1rem;
+    }
+  }
 `;
 
 const SingleComment = () => {
@@ -30,16 +58,19 @@ const SingleComment = () => {
             <p>comment</p>
           </div>
         </div>
-        <span onClick={openReply}>답글</span>
+        <span 
+        onClick={() => setOpenReply(!openReply)} 
+        className="open-reply"
+        >답글 보기</span>
       </div>
       { openReply && (
-        <form onSubmit={onSubmitReoly}>
+        <form className="reply-box" onSubmit={onSubmitReoly}>
           <textarea 
-          placeholder=""
+          placeholder="답글을 입력하세요."
           value={replyContent}
           onChange={onChangeReply}
           />
-          <button>COMMENT</button>
+          <button><b>REPLY</b></button>
         </form>
       )}
     </SingleCommentBlock>
