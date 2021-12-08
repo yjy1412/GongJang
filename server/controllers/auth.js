@@ -507,13 +507,13 @@ module.exports = {
         res.status(500).send("서버에 오류가 발생했습니다")
       })
   },
-  //GET auth/google/login
+  //Post auth/google/login
   googleLogin: async (req, res) => {
     //서버에서는 authorization code(=code로 통칭)를 받아서 oauth에 code를 post해줘야 한다.
     const { code } = req.body
     const authUrl = "https://accounts.google.com/o/oauth2/auth";
     const tokenUrl = 'https://oauth2.googleapis.com/token'
-    const infoUrl = 'https://www.googleapis.com/oauth2/v3/userinfo';
+    const infoUrl = 'https://www.googleapis.com/oauth2/v2/userinfo';
     const reUri = process.env.GOOGLE_REDIRECT_URI    
     const client_id =process.env.GOOGLE_CLIENT_ID
     const client_secret = process.env.GOOGLE_CLIENT_PASSOWRD      

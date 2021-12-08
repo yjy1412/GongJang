@@ -51,12 +51,6 @@ module.exports = {
             message : '댓글이 작성되었습니다.'
           })
         })
-
-        // res.status(201).json({
-        //   result,
-        //   nickname : userInfo.dataValues,
-        //   message : '댓글이 작성되었습니다.'
-        // })
       })
     } catch (err) {
       res.status(500).send("서버에 오류가 발생했습니다")
@@ -101,7 +95,7 @@ module.exports = {
     const inputContent = req.body.content
     const userId = accessResult.id
     const commentsId = req.params.comments_id
-    const postId = req.body.post_id
+    const postsId = req.body.post_id
     //댓글 수정 - 빈칸
     if (!inputContent) {
       res.status(400).send('내용을 입력해주세요.')
@@ -111,11 +105,11 @@ module.exports = {
         where: {
           id: commentsId
         }
-      }) //수정하고 싶은 댓글 찾기 
+      }) 
       console.log(comment.dataValues.user_id)
       console.log(userId)
 
-      if (comment.dataValues.user_id !== userId || comment.dataValues.post_id !== postId) {
+      if (comment.dataValues.user_id !== userId || comment.dataValues.post_id !== postsId) {
         return res.status(401).send('권한이 없습니다.')
       } else {
         await Comment.update({
@@ -124,11 +118,27 @@ module.exports = {
           where: {
             id: commentsId
           }
+        }).then(result => {
+          Comment.findAll({
+          include: [{
+            model: User,
+            attributes: ['nickname']
+          }],
+          where: {
+            post_id: postsId
+          }
         })
-        res.status(201).send('댓글이 수정되었습니다.')
+          .then(data => {
+            console.log(data)
+            res.status(201).json({
+              data,
+              message: `${commentsId} 댓글이 수정되었습니다.`
+            })
+          })
+        })
       }
     } catch (err) {
-      res.status(500).send('서버에 오류가 발생했습니다.')
+      return res.status(500).send('서버에 오류가 발생했습니다.')
     }
 
   },
@@ -136,6 +146,7 @@ module.exports = {
   delete: async (req, res) => {
     console.log(req.params.comments_id);
     console.log(req.body.post_id)
+    const postsId = req.body.post_id
     const accessResult = accessFunc(req, res);
     if (!accessResult.identified) {
       return accessResult;
@@ -152,15 +163,32 @@ module.exports = {
       if ( !accessResult.admin && comment.dataValues.user_id !== userId ) {
         return res.status(401).send('권한이 없습니다.');
       } else {
-        Comment.destroy({
+        Comment.update({
+          isDelete : true
+        },{
           where: {
             id: commentsId
-          }
+          }}
+        ).then(async result => {
+          await Comment.findAll({
+            include : [{
+              model : User,
+              attributes : ['nickname']
+            }],
+            where : {
+              post_id : postsId
+            }
+          })
+          .then(data => {
+            res.status(201).json({
+              data,
+              message : `${commentsId} 댓글이 삭제되었습니다.`
+            })
+          })
         })
-        res.sendStatus(204);
       }
-    } catch (err) {
-      return res.status(500).send('서버에서 오류가 발생했습니다.')
-    }
+      } catch (err) {
+        res.status(500).send("서버에 오류가 발생했습니다")
+      }
   }
-}
+  }
