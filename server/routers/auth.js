@@ -5,6 +5,7 @@ const upload = multer({ dest: 'uploads/' })
 const router = express.Router();
 const authControllers = require('../controllers/auth')
 
+
 router.post('/sign-up', authControllers.signup);
 
 router.post('/log-in', authControllers.login);
@@ -25,8 +26,6 @@ router.get('/mypage/posts', authControllers.getMyPosts);
 
 router.get('/wish-list', authControllers.getWishLists);
 
-router.get('/google/login', authControllers.googleLogin);
-
-router.get('/google/callback', authControllers.googleCallback);
+router.post('/google/login', authControllers.googleLogin);
 
 module.exports = router;
