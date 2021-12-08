@@ -94,12 +94,11 @@ const PostDetail = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [modal, setModal] = useState(false);
-  const { post, loading, user, images, commentList } = useSelector(({ post , user, comment }) => ({
+  const { post, loading, user, commentList } = useSelector(({ post , user, comment }) => ({
     post: post.post,
     error: post.error,
     loading: post.loading,
     user: user.user,
-    images: post.images,
     commentList: comment.commentList,
   }));
 
@@ -131,7 +130,7 @@ const PostDetail = () => {
   const date = checkTime(post?.createdAt);
   
   const ownPost = ((user && user.nickname) === (post && post?.writer.writer_nickname));
-  
+
   // if(error){
   //   if(error.response && error.response.status === 404){
   //     return <PostDetailBlock>나눔글이 존재하지 않습니다.</PostDetailBlock>;
@@ -152,7 +151,7 @@ const PostDetail = () => {
             </div>
           )}
         </div>
-        <ItemImgSlide images={images}/>
+        <ItemImgSlide post={post}/>
         <div className="wrap">
           <div className="info">
             <p>ITEM INFO</p>
