@@ -86,10 +86,9 @@ const ImgUpload = ({
     }
   },[imageURLs, setImageURLs, setUploadImages, uploadImages])
 
-  const dataFilter = images.filter(el => el !== undefined);
+  const dataFilter = images.filter(el => el !== "");
   const data = dataFilter.map(el => {
-    const encodedImg = btoa(String.fromCharCode(...new Uint8Array(el)));
-    return `data:image/png;base64,${encodedImg}`;
+    return `data:image/png;base64,${el}`;
   })
 
   //글 수정시 서버에서 불러온 이미지도 보여주고, 해당 이미지 삭제리듀서 작성
