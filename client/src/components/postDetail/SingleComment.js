@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { fetchCreateComment, fetchRemoveComment, removeComment } from '../../feature/commentSlice';
@@ -68,18 +68,11 @@ const SingleCommentBlock = styled.div`
   }
 `;
 
-const SingleComment = ({ post, comment, user }) => {
+const SingleComment = ({ post, comment }) => {
   const [openReply, setOpenReply] = useState(false);
   const [replyContent, setReplyContent] = useState('');
   // const [editComment, setEditComment] = useState(comment.content);
-  const [permisson, setPermisson] = useState(false);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if(user.nickname === comment.User.nickname){
-      setPermisson(true);
-    }
-  },[comment.User.nickname, user.nickname])
 
   const onChangeReply = (e) => {
     setReplyContent(e.target.value);
@@ -139,8 +132,8 @@ const SingleComment = ({ post, comment, user }) => {
           <span 
           onClick={() => setOpenReply(!openReply)} 
           className="open-reply"
-          ><RiArrowDownSFill fill="#fa8072"/>비밀 답글</span>
-          { permisson && (
+          ><RiArrowDownSFill fill="#fa8072"/>답변 보기</span>
+          { !comment.isDelete && (
             <div className="edit-btn">
               <span>수정</span>
               <span onClick={onRemoveComment}>삭제</span>
