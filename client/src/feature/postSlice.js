@@ -29,6 +29,9 @@ export const postSlice = createSlice({
     unloadPost: () => {
       return initialState;
     },
+    changeWishPost: (state, { payload: wish }) => {
+      state.post.wish = !wish;
+    }
   },
   extraReducers: {
     [fetchGetPostDetail.pending]: (state) => {
@@ -48,5 +51,5 @@ export const postSlice = createSlice({
   }
 })
 
-export const { unloadPost } = postSlice.actions;
+export const { unloadPost, changeWishPost } = postSlice.actions;
 export default postSlice.reducer;

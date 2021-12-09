@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { AiOutlineMore } from 'react-icons/ai';
-import { RiDeleteBinLine } from 'react-icons/ri';
-import { FiEdit } from 'react-icons/fi';
+// import { AiOutlineMore } from 'react-icons/ai';
+// import { RiDeleteBinLine } from 'react-icons/ri';
+// import { FiEdit } from 'react-icons/fi';
 import Button from '../common/Button';
 import SingleComment from './SingleComment';
 import ReplyComment from './ReplyComment';
@@ -31,39 +31,13 @@ const CommentsBlock = styled.div`
       }
     }
   }
-  .comment {
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    .text {
-      width: 100%;
-      font-size: 1.2rem;
-      margin-top: 0.5rem;
-      border-bottom: 2px solid #575F95;
-    }
-    .comment-edit {
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-    .comment-edit-icons {
-      position: absolute;
-      right: -2rem;
-      display: none;
-      flex-direction: column;
-      gap: 0.5rem;
-      border: 1px solid #575F95;
-      padding: 0.5rem;
-      cursor: pointer;
-    }
-  }
 `;
 
 const CommentBtn = styled(Button)`
   padding: 0.8rem;
 `;
 
-const Comments = ({ post, commentList }) => {
+const Comments = ({ post, commentList, onClickInput, user }) => {
   const [comment, setComment] = useState('');
   const dispatch = useDispatch();
 
@@ -80,7 +54,6 @@ const Comments = ({ post, commentList }) => {
     const form = {
       content: comment,
       post_id: post.post_id,
-      // writer: ''
     };
     dispatch(fetchCreateComment(form));
     setComment('');
@@ -95,6 +68,7 @@ const Comments = ({ post, commentList }) => {
           placeholder="나눔 아이템에 대해 궁금한 점 남겨주세요."
           value={comment}
           onChange={onChangeComment}
+          onClick={onClickInput}
           />
           <CommentBtn>COMMENT</CommentBtn>
         </form>
@@ -104,7 +78,8 @@ const Comments = ({ post, commentList }) => {
             <div key={index}>
               <SingleComment
               comment={comment}
-              // post_id={post_id}
+              post={post}
+              user={user}
               // writerInfo={writerInfo}
               />
               {/* <ReplayComment
