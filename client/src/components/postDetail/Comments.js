@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-// import { AiOutlineMore } from 'react-icons/ai';
-// import { RiDeleteBinLine } from 'react-icons/ri';
-// import { FiEdit } from 'react-icons/fi';
 import Button from '../common/Button';
 import SingleComment from './SingleComment';
 import ReplyComment from './ReplyComment';
@@ -45,7 +42,7 @@ const Comments = ({ post, commentList, onClickInput }) => {
     setComment(e.target.value)
   }
 
-  const onSubmitComment = (e) => {
+  const onSubmitComment = async (e) => {
     e.preventDefault();
     if(comment === ''){
       return;
@@ -55,7 +52,7 @@ const Comments = ({ post, commentList, onClickInput }) => {
       content: comment,
       post_id: post.post_id,
     };
-    dispatch(fetchCreateComment(form));
+    await dispatch(fetchCreateComment(form));
     setComment('');
   }
 
