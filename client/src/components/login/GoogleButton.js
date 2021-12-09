@@ -16,7 +16,7 @@ const GoogleLoginBlock = styled.div`
   }
   `;
 
-const clientId = `357973628595-ps5jq69d9mep96ap2pj82aqba61kal58.apps.googleusercontent.com`;
+const clientId = `195265989228-sbukvdnc6d7fnskcodaehrbn5u2fiprt.apps.googleusercontent.com`;
 
 export default function GoogleButton(){
 

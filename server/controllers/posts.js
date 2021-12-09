@@ -461,7 +461,7 @@ module.exports = {
       Post.findAll()
         .then(async result => {
           if (result.length === 0) {
-            res.status(204).send("현재 요청 목록에 해당하는 자료가 없습니다")
+            return res.status(204).send("현재 요청 목록에 해당하는 자료가 없습니다")
           }
           // console.log(result);
           const responseData = await Promise.all(
