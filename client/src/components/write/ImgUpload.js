@@ -88,7 +88,7 @@ const ImgUpload = ({
 
   const dataFilter = images.filter(el => el !== "");
   const data = dataFilter.map(el => {
-    return `data:image/png;base64,${el}`;
+    return `data:image/*;base64,${el}`;
   })
 
   //글 수정시 서버에서 불러온 이미지도 보여주고, 해당 이미지 삭제리듀서 작성
@@ -133,7 +133,7 @@ const ImgUpload = ({
             </label>
             <input 
             type="file"
-            accept="image/jpg,impge/png" 
+            accept="image/*" 
             multiple
             id="file"
             style={{ display: 'none' }}
