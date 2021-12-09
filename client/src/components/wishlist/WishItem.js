@@ -2,7 +2,6 @@ import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
-import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { fetchRemoveWish, fetchWish } from '../../feature/wishSlice';
 import { changeWish } from '../../feature/postsSlice';
@@ -61,12 +60,11 @@ const WishItem = ({ wish, post, posts, user, key, setModal, modal }) => {
   
   const test = post?.image[0].data;
   const base64String = btoa(String.fromCharCode(...new Uint8Array(test)));
-
   return (
     <ItemBlock>
     <div className="item-img">
       <Link to={`/${post?.id}`}>
-        <img src={`data:image/png;base64,${base64String}`} alt="" />
+      <img src={`data:image/png;base64,${base64String}`} alt="" />
       </Link>
     </div>
     <div className="item-info">
