@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Button from '../components/common/Button';
 import { fetchLogin } from '../feature/userSlice';
+import GoogleButton from '../components/login/GoogleButton';
 
 const AuthBackground = styled.div`
   margin-top: 200px;
@@ -81,7 +82,7 @@ const ErrorMessage = styled.div`
 `;
 
 const Buttons = styled.div`
-  margin-top: 50px;
+  margin-top: 25px;
 `;
 
 const LoginButton = styled(Button)`
@@ -203,6 +204,7 @@ const Login = () => {
             <JoinButton className="cancel" >JOIN</JoinButton>
           </Link>
         </Buttons>
+          <GoogleButton />
       </AuthLoginBlock>
     </AuthBackground>
   );
