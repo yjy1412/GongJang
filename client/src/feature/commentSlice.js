@@ -14,7 +14,6 @@ export const fetchCreateComment = createAsyncThunk(
   async (form) => {
     const { post_id, content } = form;
     const response = await axios.post('/comments', { post_id, content });
-    console.log(response.data.data)
     return response.data.data;
   }
 )
@@ -52,6 +51,17 @@ export const commentSlice = createSlice({
         }
         return comment;
       })
+    },
+    editComment: (state, { payload: { id, content } }) => {
+      state.commentList.map(comment => {
+        if(comment.id === id){
+          comment.content = content;
+        }
+        return comment;
+      })
+    },
+    addComment: (state, { payload: form }) => {
+      state.commentList.push(form);
     }
   },
   extraReducers: {
@@ -66,8 +76,11 @@ export const commentSlice = createSlice({
       state.loading = false;
       state.commentList = payload;
     },
+    [fetchCreateComment.fulfilled]: (state, { payload }) => {
+      state.commentList = payload;
+    },
   }
 })
 
-export const { removeComment } = commentSlice.actions;
+export const { removeComment, editComment } = commentSlice.actions;
 export default commentSlice.reducer;

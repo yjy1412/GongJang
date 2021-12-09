@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { fetchCreateComment, fetchRemoveComment, removeComment } from '../../feature/commentSlice';
+import { editComment, fetchCreateComment, fetchRemoveComment, fetchUpdateComment, removeComment } from '../../feature/commentSlice';
 import checkTime from '../../lib/Time';
 import { RiArrowDownSFill } from 'react-icons/ri';
 
@@ -34,10 +34,14 @@ const SingleCommentBlock = styled.div`
         align-items: center;
       }
       .edit-btn {
-        span {
+        button {
+          color: inherit;
           margin-left: 1rem;
           cursor: pointer;
         }
+      }
+      .edit-btn.hide {
+        display: none;
       }
     }
   }
@@ -71,7 +75,8 @@ const SingleCommentBlock = styled.div`
 const SingleComment = ({ post, comment }) => {
   const [openReply, setOpenReply] = useState(false);
   const [replyContent, setReplyContent] = useState('');
-  // const [editComment, setEditComment] = useState(comment.content);
+  const [edit, setEdit] = useState(false);
+  const [editContent, setEditContent] = useState(comment.content);
   const dispatch = useDispatch();
 
   const onChangeReply = (e) => {
@@ -79,9 +84,27 @@ const SingleComment = ({ post, comment }) => {
   }
 
   // 코멘트 수정
-  // const onEditComment = (e) => {
-  //   setEditComment(e.target.value);
-  // }
+  const onEditComment = (e) => {
+    setEditContent(e.target.value);
+  }
+
+  const onEditCommentSubmit = async (e) => {
+    e.preventDefault();
+    if(editContent === ''){
+      return;
+    }
+    const form = {
+      comments_id: comment.id,
+      post_id: post?.post_id,
+      content: editContent,
+    }
+    await dispatch(fetchUpdateComment(form));
+    await dispatch(editComment({
+      id: comment.id,
+      content: editContent
+    }));
+    setEdit(!edit);
+  }
 
   const onRemoveComment = async () => {
     const form = { 
@@ -119,13 +142,16 @@ const SingleComment = ({ post, comment }) => {
             { comment.isDelete ? (
               <p style={{color: "#bcbdc4"}}>삭제된 글입니다.</p>
             ) : (
-              <p>{comment.content}</p>
+               edit ? (
+                <input
+                type="text"
+                value={editContent}
+                onChange={onEditComment}
+                />    
+              ) : (
+                <p>{comment.content}</p>
+              )
             )}
-            {/* <input
-            type="text"
-            value={editComment}
-            onChange={onEditComment}
-            /> */}
           </div>
         </div>
         <div className="btn-box">
@@ -134,10 +160,16 @@ const SingleComment = ({ post, comment }) => {
           className="open-reply"
           ><RiArrowDownSFill fill="#fa8072"/>답변 보기</span>
           { !comment.isDelete && (
-            <div className="edit-btn">
-              <span>수정</span>
-              <span onClick={onRemoveComment}>삭제</span>
-            </div>
+            <>
+              <div className={edit ? "edit-btn hide" : "edit-btn"}>
+                <button onClick={() => setEdit(!edit)}>수정</button>
+                <button onClick={onRemoveComment}>삭제</button>
+              </div>
+              <div className={!edit ? "edit-btn hide" : "edit-btn"}>
+                <button type="submit" onClick={onEditCommentSubmit}>수정</button>
+                <button onClick={() => setEdit(!edit)}>취소</button>
+              </div>
+            </>
           )}
         </div>
       </div>
