@@ -507,47 +507,65 @@ module.exports = {
         res.status(500).send("서버에 오류가 발생했습니다")
       })
   },
-  //Post auth/google/login
+  //POST auth/google/login
   googleLogin: async (req, res) => {
     //서버에서는 authorization code(=code로 통칭)를 받아서 oauth에 code를 post해줘야 한다.
-    const { code } = req.body
+    const {code} = req.body
+
     const authUrl = "https://accounts.google.com/o/oauth2/auth";
     const tokenUrl = 'https://oauth2.googleapis.com/token'
     const infoUrl = 'https://www.googleapis.com/oauth2/v2/userinfo';
     const reUri = process.env.GOOGLE_REDIRECT_URI    
     const client_id =process.env.GOOGLE_CLIENT_ID
-    const client_secret = process.env.GOOGLE_CLIENT_PASSOWRD      
+    const client_secret = process.env.GOOGLE_CLIENT_PASSOWRD     
+    const client_uri = process.env.GOOGLE_CLIENT_URI
     const grant_type = "authorization_code"
     let googlrUserInfo = {}
-    //토큰을 받아오기 위해서 해당 url로 정보를 보냄
+
+    if(!code) {
+      return res.send('not autho')
+    }
+ 
     await axios.post(tokenUrl, {
       code : code,
       client_id : client_id,
       client_secret : client_secret,
-      redirect_uri : reUri,
+      redirect_uri : client_uri, //얘는 또 왜 3000번으로 받아야 정상작동 될까. CODE는 4000번으로 받았고 리디렉은 3000번으로 가는게 맞나? 
       grant_type : grant_type
-    }, {
-      "content-type": "application/x-www-form-urlencoded"
     })
-    //받아온 토큰에서 유저정보를 확인한다.
-    .then(async result => {
-      let accessToken = result.data.access_token
-      let refreshToken = result.data.refreshToken
+    .then(async data => {
+      let accesstoken = data.data.access_token
+      let refreshToken = data.data.refresh_token
+    })
+    // //토큰을 받아오기 위해서 해당 url로 정보를 보냄
+    // await axios.post(tokenUrl, {
+    //   code : code,
+    //   client_id : client_id,
+    //   client_secret : client_secret,
+    //   redirect_uri : reUri,
+    //   grant_type : grant_type
+    // }, {
+    //   "content-type": "application/x-www-form-urlencoded"
+    // })
+    // //받아온 토큰에서 유저정보를 확인한다.
+    // .then(async result => {
+    //   let accessToken = result.data.access_token
+    //   let refreshToken = result.data.refreshToken
 
-      const googleEmail = await axios.get(infoUrl, {
-        headers : {
-          authorization: `Bearer ${accessToken}`
-        }
-      })
-      .then(result => result.data.email)
-      .catch(err => {
-        console.log(err)
-      })
-      const userInfo = await User.findOne({
-        where : {
-          email : googleEmail
-        }
-      })
-    })
+    //   const googleEmail = await axios.get(infoUrl, {
+    //     headers : {
+    //       authorization: `Bearer ${accessToken}`
+    //     }
+    //   })
+    //   .then(result => result.data.email)
+    //   .catch(err => {
+    //     console.log(err)
+    //   })
+    //   const userInfo = await User.findOne({
+    //     where : {
+    //       email : googleEmail
+    //     }
+    //   })
+    // })
   }
 }
