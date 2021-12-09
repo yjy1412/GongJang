@@ -265,121 +265,312 @@ module.exports = {
       userEmail = accessData.email;
       userId = accessData.id;
     }
+    // TODO : 검색 기능
+    // GET 조회 필터링 기능 추가
+    // 전체 검색 ( 검색 범위 : title, content ) // 추가고려사항 : SoldOut
+    if (req.query.search) {
+      // 1. 연결 테스트
+      const querySearch = req.query.search;
+      console.log(querySearch);
 
-    // 2. 데이터 조회
-    Post.findAll()
-      .then(async result => {
-        if (!result) {
-          res.status(204).send("현재 요청 목록에 해당하는 자료가 없습니다")
+      // 2. DB 조회
+      let condition = "%" + querySearch + "%"
+      console.log("condition: ", condition);
+      // User 테이블 조회해서 작성자 정보 확인
+      // Wish 테이블 조회해서 좋아요 등록 여부 확인
+      // 2-1. Post 테이블 조회 ( User 조인 -> 작성자 정보 포함 )
+      Post.findAll({
+        where: {
+          [Op.or]: {
+            title: { [Op.like]: condition },
+            content: { [Op.like]: condition }
+          }
+        },
+        include: {
+          model: User,
+          attributes: ['email', 'nickname']
         }
-        // console.log(result);
-        const responseData = await Promise.all(
-          result.map(async post => {
-            let postData = post.dataValues;
+      })
+        .then(async result => {
+          // 검색 결과가 존재하지 않는다면 종료
+          if (result.length === 0) {
+            return res.status(200).send("검색결과에 해당하는 게시글이 존재하지 않습니다");
+          }
+          const responseData = await Promise.all(
+            result.map(async post => {
+              const postData = post.dataValues;
+              // 게시글 이미지 파일 처리
+              const { image1, image2, image3 } = postData;
+              const images = [image1, image2, image3];
 
-            // 게시글 이미지 파일 처리
-            const { image1, image2, image3 } = postData;
-            const images = [image1, image2, image3];
-
-            postData.image = []
-            for (let i = 0; i < images.length; i += 1) {
-              // 이미지가 널값이 아니라면,
-              if (images[i]) {
-                console.log("images : ", images[i])
-                let buffer
-                // 비동기 처리는 try/catch로 잡아낼 수 없음
-                try { buffer = fs.readFileSync(images[i]) }
-                catch(err) {
-                  console.log(err);
-                  return res.status(500).send("게시글 프로필이미지를 불러올 수 없습니다")
+              postData.image = []
+              for (let i = 0; i < images.length; i += 1) {
+                // 이미지가 널값이 아니라면,
+                if (images[i]) {
+                  // console.log("images : ", images[i])
+                  let buffer
+                  // 비동기 처리는 try/catch로 잡아낼 수 없음
+                  try { buffer = fs.readFileSync(images[i]) }
+                  catch (err) {
+                    console.log(err);
+                    return res.status(500).send("게시글 프로필이미지를 불러올 수 없습니다")
+                  }
+                  bufferTostring = Buffer.from(buffer).toString('base64');
+                  postData.image.push(bufferTostring);
+                } else {
+                  postData.image.push(images[i]);
                 }
-                bufferTostring = Buffer.from(buffer).toString('base64');
-                postData.image.push(bufferTostring);
-              } else {
-                postData.image.push(images[i]);
               }
-            }
-            delete postData.image1;
-            delete postData.image2;
-            delete postData.image3;
+              delete postData.image1;
+              delete postData.image2;
+              delete postData.image3;
 
-            const writerId = postData.user_id;
-
-            // Sequelize 쿼리는 스코프 밖의 변수에 영향을 줄 수 없다?? 노노
-            // 아아!! 비동기 처리기 때문에 undefined 상태에서 처리가 될 수 있구나
-            return await User.findOne({ where: { id: writerId } })
-              .then(async result => {
-                const userInfo = result.dataValues;
-                writerEmail = userInfo.email;
-                writerNickname = userInfo.nickname;
-
-                if (userId) {
-                  // 2-1. 회원인 경우.
-                  return await Wish.findOne({
-                    where: {
-                      user_id: userId,
-                      post_id: postData.id
-                    }
+              // 로그인 유저라면, wish 데이터 조회
+              postData.wish = false;
+              if ( userId ) {
+                const wish = await Wish.findOne({ where: {
+                  user_id: userId,
+                  post_id: postData.id
+                }})
+                  .catch(err => {
+                    console.log(err);
+                    return res.status(500).send("서버에 오류가 발생했습니다")
                   })
-                    .then(result => {
-                      // 2-1-1. 회원이면서 좋아요를 누른 경우.
-                      if (result) {
-                        postData.writer = {
-                          writer_email: writerEmail,
-                          writer_nickname: writerNickname
-                        };
-                        postData.wish = true;
-                        delete postData.user_id;
-                        // console.log(postData);
-                        return postData;
-                      } else {
-                        // 2-1-2. 회원이지만, 좋아요를 누르지 않은 경우.
-                        postData.writer = {
-                          writer_email: writerEmail,
-                          writer_nickname: writerNickname
-                        };
-                        postData.wish = false;
-                        delete postData.user_id;
-                        // console.log(postData);
-                        return postData;
+                if ( wish ) {
+                  postData.wish = true;
+                }
+              }
+
+              // 작성자 속성값 변경
+              const writerInfo = postData.User;
+              postData.writer = {
+                writer_email: writerInfo.email,
+                writer_nickname: writerInfo.nickname
+              }
+              delete postData.User;
+              return postData
+            })
+          )
+            .catch(err => {
+              console.log(err);
+              return res.status(500).send("서버에 오류가 발생했습니다")
+            })
+          return res.status(200).send(responseData);
+        })
+        .catch(err => {
+          console.log(err);
+          return res.status(500).send("서버에 오류가 발생했습니다 - 필터링 구현 부분")
+        })
+      // TODO : 카테고리 필터링
+    } else if (req.query.category) {
+      // 1. 연결 테스트
+      const queryCategory = req.query.category;
+
+      // 2. 검색 범위 설정 : title, content, category, soldOut
+      // category = ["보드게임", "퍼즐", "레고", "프라모델", "카드", "기타"]
+      const category = ["보드게임", "퍼즐", "레고", "프라모델", "카드", "기타"];
+
+      // 3. input 데이터 유효성 검증
+      if (queryCategory && !category.includes(queryCategory)) {
+        return res.status(400).send("Category 데이터가 유효하지 않습니다")
+      }
+
+      // 4. DB 조회
+      Post.findAll({
+        where: { category: queryCategory },
+        include: {
+          model: User,
+          attributes: ['email', 'nickname']
+        }
+      })
+        .then(async result => {
+          // 검색 결과가 존재하지 않는다면 종료
+          if (result.length === 0) {
+            return res.status(200).send("검색결과에 해당하는 게시글이 존재하지 않습니다");
+          }
+          const responseData = await Promise.all(
+            result.map(async post => {
+              const postData = post.dataValues;
+
+              // 게시글 이미지 파일 처리
+              const { image1, image2, image3 } = postData;
+              const images = [image1, image2, image3];
+
+              postData.image = []
+              for (let i = 0; i < images.length; i += 1) {
+                // 이미지가 널값이 아니라면,
+                if (images[i]) {
+                  // console.log("images : ", images[i])
+                  let buffer
+                  // 비동기 처리는 try/catch로 잡아낼 수 없음
+                  try { buffer = fs.readFileSync(images[i]) }
+                  catch (err) {
+                    console.log(err);
+                    return res.status(500).send("게시글 프로필이미지를 불러올 수 없습니다")
+                  }
+                  bufferTostring = Buffer.from(buffer).toString('base64');
+                  postData.image.push(bufferTostring);
+                } else {
+                  postData.image.push(images[i]);
+                }
+              }
+              delete postData.image1;
+              delete postData.image2;
+              delete postData.image3;
+
+              // 로그인 유저라면, wish 데이터 조회
+              postData.wish = false;
+              if ( userId ) {
+                const wish = await Wish.findOne({ where: {
+                  user_id: userId,
+                  post_id: postData.id
+                }})
+                  .catch(err => {
+                    console.log(err);
+                    return res.status(500).send("서버에 오류가 발생했습니다")
+                  })
+                if ( wish ) {
+                  postData.wish = true;
+                }
+              }
+
+              // 작성자 속성값 변경
+              const writerInfo = postData.User;
+              postData.writer = {
+                writer_email: writerInfo.email,
+                writer_nickname: writerInfo.nickname
+              }
+              delete postData.User;
+
+              return postData
+            })
+          )
+            .catch(err => {
+              console.log(err);
+              return res.status(500).send("서버에 오류가 발생했습니다")
+            })
+          return res.status(200).send(responseData);
+        })
+        .catch(err => {
+          console.log(err);
+          return res.status(500).send("서버에 오류가 발생했습니다 - 필터링 구현 부분")
+        })
+    } else {
+      // 필터링 없이 조회
+      // 2. 데이터 조회
+      Post.findAll()
+        .then(async result => {
+          if (result.length === 0) {
+            res.status(204).send("현재 요청 목록에 해당하는 자료가 없습니다")
+          }
+          // console.log(result);
+          const responseData = await Promise.all(
+            result.map(async post => {
+              let postData = post.dataValues;
+
+              // 게시글 이미지 파일 처리
+              const { image1, image2, image3 } = postData;
+              const images = [image1, image2, image3];
+
+              postData.image = []
+              for (let i = 0; i < images.length; i += 1) {
+                // 이미지가 널값이 아니라면,
+                if (images[i]) {
+                  // console.log("images : ", images[i])
+                  let buffer
+                  // 비동기 처리는 try/catch로 잡아낼 수 없음
+                  try { buffer = fs.readFileSync(images[i]) }
+                  catch (err) {
+                    console.log(err);
+                    return res.status(500).send("게시글 프로필이미지를 불러올 수 없습니다")
+                  }
+                  bufferTostring = Buffer.from(buffer).toString('base64');
+                  postData.image.push(bufferTostring);
+                } else {
+                  postData.image.push(images[i]);
+                }
+              }
+              delete postData.image1;
+              delete postData.image2;
+              delete postData.image3;
+
+              const writerId = postData.user_id;
+
+              // Sequelize 쿼리는 스코프 밖의 변수에 영향을 줄 수 없다?? 노노
+              // 아아!! 비동기 처리기 때문에 undefined 상태에서 처리가 될 수 있구나
+              return await User.findOne({ where: { id: writerId } })
+                .then(async result => {
+                  const userInfo = result.dataValues;
+                  writerEmail = userInfo.email;
+                  writerNickname = userInfo.nickname;
+
+                  if (userId) {
+                    // 2-1. 회원인 경우.
+                    return await Wish.findOne({
+                      where: {
+                        user_id: userId,
+                        post_id: postData.id
                       }
                     })
-                    .catch(err => {
-                      console.log(err);
-                      res.status(500).send("서버에 오류가 발생했습니다")
-                    })
+                      .then(result => {
+                        // 2-1-1. 회원이면서 좋아요를 누른 경우.
+                        if (result) {
+                          postData.writer = {
+                            writer_email: writerEmail,
+                            writer_nickname: writerNickname
+                          };
+                          postData.wish = true;
+                          delete postData.user_id;
+                          // console.log(postData);
+                          return postData;
+                        } else {
+                          // 2-1-2. 회원이지만, 좋아요를 누르지 않은 경우.
+                          postData.writer = {
+                            writer_email: writerEmail,
+                            writer_nickname: writerNickname
+                          };
+                          postData.wish = false;
+                          delete postData.user_id;
+                          // console.log(postData);
+                          return postData;
+                        }
+                      })
+                      .catch(err => {
+                        console.log(err);
+                        res.status(500).send("서버에 오류가 발생했습니다")
+                      })
 
-                } else {
-                  // 2-2. 비회원인 경우.
-                  postData.writer = {
-                    writer_email: writerEmail,
-                    writer_nickname: writerNickname
-                  };
-                  postData.wish = false;
-                  delete postData.user_id;
+                  } else {
+                    // 2-2. 비회원인 경우.
+                    postData.writer = {
+                      writer_email: writerEmail,
+                      writer_nickname: writerNickname
+                    };
+                    postData.wish = false;
+                    delete postData.user_id;
 
-                  return postData;
-                }
-              })
-              .catch(err => {
-                console.log(err);
-                res.status(500).send("서버에 오류가 발생했습니다")
-              })
+                    return postData;
+                  }
+                })
+                .catch(err => {
+                  console.log(err);
+                  res.status(500).send("서버에 오류가 발생했습니다")
+                })
+            })
+          )
+          // console.log(responseData);
+
+          // 날짜 순 정렬(작성 일 기준 최신 순)
+          responseData.sort((a, b) => {
+            return Number(new Date(b.createdAt)) - Number(new Date(a.createdAt));
           })
-        )
-        console.log(responseData);
-
-        // 날짜 순 정렬(작성 일 기준 최신 순)
-        responseData.sort((a, b) => {
-          return Number(new Date(b.createdAt)) - Number(new Date(a.createdAt));
+          res.status(200).json(responseData);
         })
-        res.status(200).json(responseData);
-      })
-      .catch(err => {
-        console.log(err);
-        res.status(500).send("서버에 오류가 발생했습니다")
-      })
-
+        .catch(err => {
+          console.log(err);
+          res.status(500).send("서버에 오류가 발생했습니다")
+        })
+    }
   },
   // GET /posts/:posts_id
   getDetail: async (req, res) => {
@@ -488,7 +679,7 @@ module.exports = {
             let buffer
             // 비동기 처리는 try/catch로 잡아낼 수 없음
             try { buffer = fs.readFileSync(images[i]) }
-            catch(err) {
+            catch (err) {
               console.log(err);
               return res.status(500).send("게시글 프로필이미지를 불러올 수 없습니다")
             }
