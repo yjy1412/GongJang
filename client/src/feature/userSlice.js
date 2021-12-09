@@ -174,8 +174,10 @@ const userSlice = createSlice({
     [fetchSocialLogin.pending]: (state) => {
       state.loading = true;
     },
-    [fetchSocialLogin.fulfilled]: (state) => {
+    [fetchSocialLogin.fulfilled]: (state, { payload }) => {
       state.loading = false;
+      state.accessToken = payload.accessToken;
+      state.user = payload.userInfo;
       state.isLogin = true;
     },
     [fetchSocialLogin.rejected]: (state, { payload }) => {
