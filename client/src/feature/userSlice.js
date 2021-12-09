@@ -41,6 +41,20 @@ export const fetchLogin = createAsyncThunk(
   }
 );
 
+
+export const fetchSocialLogin = createAsyncThunk(
+  'login/fetchSocialLogin',
+  async (response, { rejectWithValue }) => {
+    const { code } = response;
+    try {
+      const response = await axios.post('/auth/google/login', { code })
+      return response.data
+    } catch(err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
 export const fetchUpdatePassword = createAsyncThunk(
   'password/fetchUpdatePassword',
   async (form, { rejectWithValue }) => {
@@ -137,8 +151,8 @@ const userSlice = createSlice({
       state.user.nickname = value; // 수정된 닉네임 user에 저장 
     },
     initialize: (state) => {
-      state.loginError = '';
-    }
+      state.loginError = null;
+    },
   },
   extraReducers: {
     hydrate:(state, { payload }) => {
@@ -154,6 +168,17 @@ const userSlice = createSlice({
       state.isLogin = true;
     },
     [fetchLogin.rejected]: (state, { payload }) => {
+      state.loading = false;
+      state.loginError = payload;
+    },
+    [fetchSocialLogin.pending]: (state) => {
+      state.loading = true;
+    },
+    [fetchSocialLogin.fulfilled]: (state) => {
+      state.loading = false;
+      state.isLogin = true;
+    },
+    [fetchSocialLogin.rejected]: (state, { payload }) => {
       state.loading = false;
       state.loginError = payload;
     },
