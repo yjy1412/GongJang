@@ -86,7 +86,7 @@ const Header = () => {const dispatch = useDispatch();
     const [show, setShow] = useState(false);
     const [visible, setVisible] = useState(false);
     const history = useHistory();
-    const { isLogin, accessToken } = useSelector((state) => state.user);
+    const { isLogin, accessToken, user } = useSelector((state) => state.user);
     
     const onClick = () => {
         setShow(!show)
@@ -148,7 +148,9 @@ const Header = () => {const dispatch = useDispatch();
                                 )}
                             </li>
                             <li>
-                                <Link to="/join">JOIN</Link>
+                                { !isLogin &&                                 
+                                    <Link to="/join">JOIN</Link>
+                                }
                             </li>
                         </ul>
                         <MenuIcons
