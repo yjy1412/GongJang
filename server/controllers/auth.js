@@ -520,52 +520,72 @@ module.exports = {
     const client_secret = process.env.GOOGLE_CLIENT_PASSOWRD     
     const client_uri = process.env.GOOGLE_CLIENT_URI
     const grant_type = "authorization_code"
-    let googlrUserInfo = {}
+    
 
     if(!code) {
-      return res.send('not autho')
+      return res.status(401).send('권한이 없습니다.')
     }
- 
-    await axios.post(tokenUrl, {
+   await axios.post(tokenUrl, { //1.구글 오쓰 서버에 요청해서 토큰을 받아옴
       code : code,
       client_id : client_id,
       client_secret : client_secret,
       redirect_uri : client_uri, //얘는 또 왜 3000번으로 받아야 정상작동 될까. CODE는 4000번으로 받았고 리디렉은 3000번으로 가는게 맞나? 
       grant_type : grant_type
     })
-    .then(async data => {
-      let accesstoken = data.data.access_token
-      let refreshToken = data.data.refresh_token
-    })
-    // //토큰을 받아오기 위해서 해당 url로 정보를 보냄
-    // await axios.post(tokenUrl, {
-    //   code : code,
-    //   client_id : client_id,
-    //   client_secret : client_secret,
-    //   redirect_uri : reUri,
-    //   grant_type : grant_type
-    // }, {
-    //   "content-type": "application/x-www-form-urlencoded"
-    // })
-    // //받아온 토큰에서 유저정보를 확인한다.
-    // .then(async result => {
-    //   let accessToken = result.data.access_token
-    //   let refreshToken = result.data.refreshToken
+    .then(async data => { //2. 토큰을 받아왔음
+      const {access_token} = data.data
+      // console.log(data.data) //토큰 정확하게 받아와짐
+      //이제 이 토큰으로 유저인포를 받아올 거임
+      await axios
+        .get(infoUrl, { 
+          headers : {
+            authorization : `Bearer ${access_token}`
+          }
+        })
+        .then(async data => { //3. 토큰으로 유저 정보를 보고 있음. data는 userInfo를 담고 있음 
+          const googleEmail = data.data.email
+          const googleName = data.data.name
+          console.log(data)
 
-    //   const googleEmail = await axios.get(infoUrl, {
-    //     headers : {
-    //       authorization: `Bearer ${accessToken}`
-    //     }
-    //   })
-    //   .then(result => result.data.email)
-    //   .catch(err => {
-    //     console.log(err)
-    //   })
-    //   const userInfo = await User.findOne({
-    //     where : {
-    //       email : googleEmail
-    //     }
-    //   })
-    // })
-  }
+          const isUser = await User.findOrCreate({
+            where : {
+              email : googleEmail
+            },
+            defaults : {
+              email : googleEmail,
+              nickname : googleName,
+            }
+          }).then(data => { //여기서 data는 find에 성공하면 find 된 값을 보내준다. find가 안되면 create해주고 그 data이다.
+            console.log(data)
+            const { id, email, nickname, profile_image, admin} = data[0].dataValues          
+
+            const accessToken = jwt.sign(
+              {id, email, admin},
+              process.env.ACCESS_SECRET,
+              {expiresIn : "1d"}
+            );
+            const refreshToken = jwt.sign(
+              {id, email, admin},
+              process.env.REFRESH_SECRET,
+              {expiresIn : "30d"}
+            );
+             let convertImg;
+             try {
+               buffer = fs.readFileSync(profile_image); //절대 경로가 들어가있는 데이터
+               convertImg = Buffer.from(buffer).toString('base64');
+             } catch {
+               console.log(convertImg);
+               return res.status(500).send("유저의 프로필 이미지를 불러오는데 실패했습니다")
+             }
+              res.cookie("refreshToken", refreshToken, {httpOnly : true, expiresIn : "30d"})
+              res.status(200).json({
+                accessToken: accessToken,
+                userInfo: { id, email, nickname, profile_image: convertImg, admin },
+                message: "로그인에 성공했습니다"
+              })
+           })          
+        })             
+    })  
+ 
+}
 }
