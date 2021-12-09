@@ -4,13 +4,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Comments from '../components/postDetail/Comments';
 import ItemImgSlide from '../components/postDetail/ItemImgSlide';
-import { fetchGetPostDetail, unloadPost, fetchRemovePost } from '../feature/postSlice';
+import { fetchGetPostDetail, unloadPost, fetchRemovePost, changeWishPost } from '../feature/postSlice';
 import { setOriginalPost } from '../feature/writeSlice';
 import Loading from '../components/common/Loading';
 import AskModal from '../components/modal/AskModal';
 import checkTime from '../lib/Time';
 import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
-import { changeImg } from '../lib/encodedImg';
+import { fetchGetAllComments } from '../feature/commentSlice';
+import { fetchRemoveWish, fetchWish } from '../feature/wishSlice';
 
 const PostDetailBlock = styled.div`
   width: 1130px;
@@ -85,6 +86,7 @@ const PostDetailBlock = styled.div`
     .heart {
       display: flex;
       padding: 0 0.5rem;
+      cursor: pointer;
     }
   }
 `;
@@ -94,6 +96,7 @@ const PostDetail = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [modal, setModal] = useState(false);
+  const [visible, setVisible] = useState(false);
   const { post, loading, user, commentList } = useSelector(({ post , user, comment }) => ({
     post: post.post,
     error: post.error,
@@ -103,11 +106,16 @@ const PostDetail = () => {
   }));
 
   useEffect(() => {
-    dispatch(fetchGetPostDetail(id));
+    if(!user){
+      dispatch(fetchGetPostDetail(id));
+    } else {
+      dispatch(fetchGetPostDetail(id));
+      dispatch(fetchGetAllComments(id));
+    }
     return () => {
       dispatch(unloadPost());
     }
-  },[dispatch, id])
+  },[dispatch, id, user])
 
   const onEditPost = useCallback(() => {
     dispatch(setOriginalPost(post));
@@ -124,6 +132,35 @@ const PostDetail = () => {
       history.push('/');
     } catch(e){
       console.log(e)
+    }
+  }
+
+  const onLoginCancel = () => {
+    setVisible(!visible);
+  }
+
+  const onLoginConfirm = () => {
+    history.push('/login')
+  }
+
+  const onClickWish = useCallback(() => {
+    if(!user){
+      setVisible(!visible);
+    }
+    if(user){
+      if(post?.wish){
+        dispatch(fetchRemoveWish(post?.post_id));
+        dispatch(changeWishPost(post?.wish));
+      } else {
+        dispatch(fetchWish(post?.post_id));
+        dispatch(changeWishPost(post?.wish));
+      }
+    }
+  },[dispatch, post?.post_id, post?.wish, user, visible])
+
+  const onClickInput = () => {
+    if(!user){
+      setVisible(!visible);
     }
   }
 
@@ -167,18 +204,15 @@ const PostDetail = () => {
           <p>{post?.content}</p>
         </div>
         <div className="writer">
-          {/* <span className="avatar">
-            <img src={`data:image/png;base64,${changeImg(post.writer.profile_image.data)}`} alt="프로필 이미지" />
-          </span> */}
           <span><b>{post?.writer.writer_nickname}&nbsp;</b></span>
           <span> {date}</span>
         </div>
         <div className="interest">
           <div>
             <span>댓글</span>
-            <span>1</span>
+            <span> {commentList.length}</span>
           </div>
-          <div className="heart">
+          <div className="heart" onClick={onClickWish}>
             { post?.wish ? (
               <RiHeartFill fill="#f9796d"/>
             ) : (
@@ -189,7 +223,9 @@ const PostDetail = () => {
         </div>
         <Comments
         post={post}
+        user={user}
         commentList={commentList}
+        onClickInput={onClickInput}
         />
       </PostDetailBlock>
       { modal && (
@@ -200,6 +236,16 @@ const PostDetail = () => {
         onConfirm={onConfirm}
         onCancel={onCancel}
         />
+      )}
+      { visible && (
+        <AskModal 
+        visible={visible}
+        title='알림'
+        description='로그인이 필요한 서비스입니다.'
+        addDescription='로그인 하시겠습니까?'
+        onConfirm={onLoginConfirm}
+        onCancel={onLoginCancel} 
+        /> 
       )}
     </>
   );
