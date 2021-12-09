@@ -268,14 +268,24 @@ module.exports = {
     // TODO : 검색 기능
     // GET 조회 필터링 기능 추가
     // 전체 검색 ( 검색 범위 : title, content ) // 추가고려사항 : SoldOut
-    if (req.query.search) {
+    if ( req.query.search || req.query.category ) {
       // 1. 연결 테스트
-      const querySearch = req.query.search;
-      console.log(querySearch);
+      let querySearch = req.query.search;
+      let queryCategory = req.query.category;
 
+      // 1-2 검색 범위 설정 : title, content, category
+      const category = ["장난감", "보드게임", "퍼즐", "프라모델", "인형", "기타"];
+
+      // 1-3 input 데이터 유효성 검증
+      if ( queryCategory && !category.includes(queryCategory) ) {
+        return res.status(400).send("Category 데이터가 유효하지 않습니다")
+      }
       // 2. DB 조회
       let condition = "%" + querySearch + "%"
       console.log("condition: ", condition);
+      if ( !queryCategory ) {
+        queryCategory = null
+      }
       // User 테이블 조회해서 작성자 정보 확인
       // Wish 테이블 조회해서 좋아요 등록 여부 확인
       // 2-1. Post 테이블 조회 ( User 조인 -> 작성자 정보 포함 )
@@ -283,7 +293,8 @@ module.exports = {
         where: {
           [Op.or]: {
             title: { [Op.like]: condition },
-            content: { [Op.like]: condition }
+            content: { [Op.like]: condition },
+            category: queryCategory
           }
         },
         include: {
@@ -361,100 +372,100 @@ module.exports = {
           console.log(err);
           return res.status(500).send("서버에 오류가 발생했습니다 - 필터링 구현 부분")
         })
-      // TODO : 카테고리 필터링
-    } else if (req.query.category) {
-      // 1. 연결 테스트
-      const queryCategory = req.query.category;
+    //   // TODO : 카테고리 필터링
+    // } else if (req.query.category) {
+    //   // 1. 연결 테스트
+    //   const queryCategory = req.query.category;
 
-      // 2. 검색 범위 설정 : title, content, category, soldOut
-      // category = ["보드게임", "퍼즐", "레고", "프라모델", "카드", "기타"]
-      const category = ["보드게임", "퍼즐", "레고", "프라모델", "카드", "기타"];
+    //   // 2. 검색 범위 설정 : title, content, category, soldOut
+    //   // category = ["보드게임", "퍼즐", "레고", "프라모델", "카드", "기타"]
+    //   const category = ["보드게임", "퍼즐", "레고", "프라모델", "카드", "기타"];
 
-      // 3. input 데이터 유효성 검증
-      if (queryCategory && !category.includes(queryCategory)) {
-        return res.status(400).send("Category 데이터가 유효하지 않습니다")
-      }
+    //   // 3. input 데이터 유효성 검증
+    //   if (queryCategory && !category.includes(queryCategory)) {
+    //     return res.status(400).send("Category 데이터가 유효하지 않습니다")
+    //   }
 
-      // 4. DB 조회
-      Post.findAll({
-        where: { category: queryCategory },
-        include: {
-          model: User,
-          attributes: ['email', 'nickname']
-        }
-      })
-        .then(async result => {
-          // 검색 결과가 존재하지 않는다면 종료
-          if (result.length === 0) {
-            return res.status(200).send("검색결과에 해당하는 게시글이 존재하지 않습니다");
-          }
-          const responseData = await Promise.all(
-            result.map(async post => {
-              const postData = post.dataValues;
+    //   // 4. DB 조회
+    //   Post.findAll({
+    //     where: { category: queryCategory },
+    //     include: {
+    //       model: User,
+    //       attributes: ['email', 'nickname']
+    //     }
+    //   })
+    //     .then(async result => {
+    //       // 검색 결과가 존재하지 않는다면 종료
+    //       if (result.length === 0) {
+    //         return res.status(200).send("검색결과에 해당하는 게시글이 존재하지 않습니다");
+    //       }
+    //       const responseData = await Promise.all(
+    //         result.map(async post => {
+    //           const postData = post.dataValues;
 
-              // 게시글 이미지 파일 처리
-              const { image1, image2, image3 } = postData;
-              const images = [image1, image2, image3];
+    //           // 게시글 이미지 파일 처리
+    //           const { image1, image2, image3 } = postData;
+    //           const images = [image1, image2, image3];
 
-              postData.image = []
-              for (let i = 0; i < images.length; i += 1) {
-                // 이미지가 널값이 아니라면,
-                if (images[i]) {
-                  // console.log("images : ", images[i])
-                  let buffer
-                  // 비동기 처리는 try/catch로 잡아낼 수 없음
-                  try { buffer = fs.readFileSync(images[i]) }
-                  catch (err) {
-                    console.log(err);
-                    return res.status(500).send("게시글 프로필이미지를 불러올 수 없습니다")
-                  }
-                  bufferTostring = Buffer.from(buffer).toString('base64');
-                  postData.image.push(bufferTostring);
-                } else {
-                  postData.image.push(images[i]);
-                }
-              }
-              delete postData.image1;
-              delete postData.image2;
-              delete postData.image3;
+    //           postData.image = []
+    //           for (let i = 0; i < images.length; i += 1) {
+    //             // 이미지가 널값이 아니라면,
+    //             if (images[i]) {
+    //               // console.log("images : ", images[i])
+    //               let buffer
+    //               // 비동기 처리는 try/catch로 잡아낼 수 없음
+    //               try { buffer = fs.readFileSync(images[i]) }
+    //               catch (err) {
+    //                 console.log(err);
+    //                 return res.status(500).send("게시글 프로필이미지를 불러올 수 없습니다")
+    //               }
+    //               bufferTostring = Buffer.from(buffer).toString('base64');
+    //               postData.image.push(bufferTostring);
+    //             } else {
+    //               postData.image.push(images[i]);
+    //             }
+    //           }
+    //           delete postData.image1;
+    //           delete postData.image2;
+    //           delete postData.image3;
 
-              // 로그인 유저라면, wish 데이터 조회
-              postData.wish = false;
-              if ( userId ) {
-                const wish = await Wish.findOne({ where: {
-                  user_id: userId,
-                  post_id: postData.id
-                }})
-                  .catch(err => {
-                    console.log(err);
-                    return res.status(500).send("서버에 오류가 발생했습니다")
-                  })
-                if ( wish ) {
-                  postData.wish = true;
-                }
-              }
+    //           // 로그인 유저라면, wish 데이터 조회
+    //           postData.wish = false;
+    //           if ( userId ) {
+    //             const wish = await Wish.findOne({ where: {
+    //               user_id: userId,
+    //               post_id: postData.id
+    //             }})
+    //               .catch(err => {
+    //                 console.log(err);
+    //                 return res.status(500).send("서버에 오류가 발생했습니다")
+    //               })
+    //             if ( wish ) {
+    //               postData.wish = true;
+    //             }
+    //           }
 
-              // 작성자 속성값 변경
-              const writerInfo = postData.User;
-              postData.writer = {
-                writer_email: writerInfo.email,
-                writer_nickname: writerInfo.nickname
-              }
-              delete postData.User;
+    //           // 작성자 속성값 변경
+    //           const writerInfo = postData.User;
+    //           postData.writer = {
+    //             writer_email: writerInfo.email,
+    //             writer_nickname: writerInfo.nickname
+    //           }
+    //           delete postData.User;
 
-              return postData
-            })
-          )
-            .catch(err => {
-              console.log(err);
-              return res.status(500).send("서버에 오류가 발생했습니다")
-            })
-          return res.status(200).send(responseData);
-        })
-        .catch(err => {
-          console.log(err);
-          return res.status(500).send("서버에 오류가 발생했습니다 - 필터링 구현 부분")
-        })
+    //           return postData
+    //         })
+    //       )
+    //         .catch(err => {
+    //           console.log(err);
+    //           return res.status(500).send("서버에 오류가 발생했습니다")
+    //         })
+    //       return res.status(200).send(responseData);
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //       return res.status(500).send("서버에 오류가 발생했습니다 - 필터링 구현 부분")
+    //     })
     } else {
       // 필터링 없이 조회
       // 2. 데이터 조회
