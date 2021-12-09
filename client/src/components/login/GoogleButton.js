@@ -4,6 +4,7 @@ import GoogleLogin from 'react-google-login';
 import google from '../../style/images/google.png'
 import { useDispatch } from 'react-redux';
 import { fetchSocialLogin } from '../../feature/userSlice';
+require('dotenv').config();
 
 const GoogleLoginBlock = styled.div`
   display: flex;
@@ -16,7 +17,7 @@ const GoogleLoginBlock = styled.div`
   }
   `;
 
-const clientId = `195265989228-sbukvdnc6d7fnskcodaehrbn5u2fiprt.apps.googleusercontent.com`;
+const clientId = `${process.env.GOOGLE_CLIENT_ID}`;
 
 export default function GoogleButton(){
 
