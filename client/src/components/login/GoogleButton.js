@@ -8,11 +8,11 @@ import { fetchSocialLogin } from '../../feature/userSlice';
 const GoogleLoginBlock = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 8px;
+  margin-top: 6px;
   cursor: pointer;
   img {
-    width: 25px;
-    height: 25px;
+    width: 20px;
+    height: 20px;
   }
   `;
 
