@@ -69,7 +69,7 @@ const Message = styled.div`
 
 const ErrorMessage = styled.div`
   position: absolute;
-  top: 50px;
+  top: 32px;
   display: flex;
   justify-content: center;
   align-items: end;
@@ -82,7 +82,7 @@ const ErrorMessage = styled.div`
 `;
 
 const Buttons = styled.div`
-  margin-top: 25px;
+  margin-top: 35px;
 `;
 
 const LoginButton = styled(Button)`
