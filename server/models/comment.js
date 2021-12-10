@@ -29,6 +29,9 @@ module.exports = (sequelize, DataTypes) => {
     isDelete: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
+    },
+    ref_comment: {
+      type : DataTypes.INTEGER
     }
   }, {
     sequelize,
