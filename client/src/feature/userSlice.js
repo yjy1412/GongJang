@@ -83,7 +83,7 @@ export const fetchUpdateUserInfo = createAsyncThunk(
   async ( newNickname, { rejectWithValue }) => {
     try {
       const response = await axios.patch(
-        '/auth/mypage', 
+        '/auth/nickname', 
         { nickname: newNickname },
       )
       return response.data;
@@ -135,7 +135,6 @@ export const initialState = {
   passwordUpdated: false,
   loading: false,
   isEdited: false,
-  message: "",
   loginError: null,
   signUpError: null,
   userInfoError: null,
@@ -152,7 +151,13 @@ const userSlice = createSlice({
     },
     initialize: (state) => {
       state.loginError = null;
+      state.signUpError = null;
+      state.userInfoError = null;
+      state.passwordError = null;
     },
+    changeProfileImage: (state, { payload: value}) => {
+      state.user.profile_image = value; // 수정된 프로필 이미지 user에 저장
+    }
   },
   extraReducers: {
     hydrate:(state, { payload }) => {
@@ -200,6 +205,8 @@ const userSlice = createSlice({
     },
     [fetchUpdatePassword.fulfilled]: (state) => {
       state.loading = false;
+      state.passwordError = null;
+      state.passwordUpdated = true;
     },
     [fetchUpdatePassword.rejected]: (state, { payload }) => {
       state.loading = false;
@@ -223,6 +230,7 @@ const userSlice = createSlice({
     },
     [fetchUpdateUserInfo.rejected]: (state, { payload }) => {
       state.loading = false;
+      state.isEdited = false;
       state.userInfoError = payload;
     },
     [fetchUpdateProfileImage.pending]: (state) => {
@@ -260,5 +268,5 @@ const userSlice = createSlice({
     },
   }
 })
-export const { changeNickname, initialize } = userSlice.actions
+export const { changeNickname, initialize, changeProfileImage } = userSlice.actions
 export default userSlice.reducer;
