@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { editComment, fetchCreateComment, fetchRemoveComment, fetchUpdateComment, removeComment } from '../../feature/commentSlice';
@@ -79,6 +79,7 @@ const SingleComment = ({ post, comment, user }) => {
   const [replyContent, setReplyContent] = useState('');
   const [edit, setEdit] = useState(false);
   const [editContent, setEditContent] = useState(comment.content);
+  const [permission, setPermission] = useState(false);
   const dispatch = useDispatch();
 
   const onChangeReply = (e) => {
@@ -132,7 +133,15 @@ const SingleComment = ({ post, comment, user }) => {
     setReplyContent('');
   }
 
-  const permisson = !comment.isDelete && (user.nickname === comment.User.nickname);
+  useEffect(() => {
+    if(comment){
+      if(user?.nickname === comment?.User.nickname){
+        setPermission(true);
+      } else {
+        setPermission(false);
+      }
+    }
+  },[comment, user])
 
   return (
     <SingleCommentBlock>
@@ -163,7 +172,8 @@ const SingleComment = ({ post, comment, user }) => {
           onClick={() => setOpenReply(!openReply)} 
           className="open-reply"
           ><RiArrowDownSFill fill="#fa8072"/>답변 보기</span>
-          { permisson && (
+          { !comment.isDelete && (
+            permission && (
             <>
               <div className={edit ? "edit-btn hide" : "edit-btn"}>
                 <button onClick={() => setEdit(!edit)}>수정</button>
@@ -174,7 +184,7 @@ const SingleComment = ({ post, comment, user }) => {
                 <button onClick={() => setEdit(!edit)}>취소</button>
               </div>
             </>
-          )}
+          ))}
         </div>
       </div>
       { openReply && (

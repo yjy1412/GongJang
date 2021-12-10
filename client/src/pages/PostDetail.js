@@ -10,7 +10,7 @@ import Loading from '../components/common/Loading';
 import AskModal from '../components/modal/AskModal';
 import checkTime from '../lib/Time';
 import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
-import { fetchGetAllComments } from '../feature/commentSlice';
+import { fetchGetAllComments, unloadComment } from '../feature/commentSlice';
 import { fetchRemoveWish, fetchWish } from '../feature/wishSlice';
 
 const PostDetailBlock = styled.div`
@@ -114,6 +114,7 @@ const PostDetail = () => {
     }
     return () => {
       dispatch(unloadPost());
+      dispatch(unloadComment());
     }
   },[dispatch, id, user])
 

@@ -60,8 +60,8 @@ export const commentSlice = createSlice({
         return comment;
       })
     },
-    addComment: (state, { payload: form }) => {
-      state.commentList.push(form);
+    unloadComment: () => {
+      return initialState;
     }
   },
   extraReducers: {
@@ -82,5 +82,5 @@ export const commentSlice = createSlice({
   }
 })
 
-export const { removeComment, editComment } = commentSlice.actions;
+export const { removeComment, editComment, unloadComment } = commentSlice.actions;
 export default commentSlice.reducer;
