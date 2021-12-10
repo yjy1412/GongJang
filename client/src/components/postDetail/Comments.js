@@ -81,7 +81,7 @@ const Comments = ({ post, commentList, onClickInput, user }) => {
               {/* <ReplayComment
               commentList={commentList}
               writerInfo={writerInfo}
-              parentCommentId={}
+              parentCommentId={comment.id}
               /> */}
             </div>
           ))
