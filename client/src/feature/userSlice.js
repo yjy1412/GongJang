@@ -3,7 +3,7 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// axios.defaults.baseURL = `${process.env.REACT_APP_API_URL}`;
+// axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 axios.defaults.baseURL = 'http://localhost:4000';
 axios.defaults.withCredentials = true;
 
@@ -213,6 +213,7 @@ const userSlice = createSlice({
       state.isLogin = false;
       state.user = null;
       state.accessToken = "";
+      state.isSignUp = false;
     },
     [fetchUpdateUserInfo.pending]: (state) => {
       state.loading = true;

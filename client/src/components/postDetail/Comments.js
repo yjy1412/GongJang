@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { AiOutlineMore } from 'react-icons/ai';
-import { RiDeleteBinLine } from 'react-icons/ri';
-import { FiEdit } from 'react-icons/fi';
 import Button from '../common/Button';
+import SingleComment from './SingleComment';
+import ReplyComment from './ReplyComment';
+import { useDispatch } from 'react-redux';
+import { fetchCreateComment } from '../../feature/commentSlice';
 
 const CommentsBlock = styled.div`
   padding-bottom: 3rem;
@@ -27,56 +28,31 @@ const CommentsBlock = styled.div`
       }
     }
   }
-  .comment {
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    .text {
-      width: 100%;
-      font-size: 1.2rem;
-      margin-top: 0.5rem;
-      border-bottom: 2px solid #575F95;
-    }
-    .comment-edit {
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-    .comment-edit-icons {
-      position: absolute;
-      right: -2rem;
-      display: none;
-      flex-direction: column;
-      gap: 0.5rem;
-      border: 1px solid #575F95;
-      padding: 0.5rem;
-      cursor: pointer;
-    }
-  }
 `;
 
 const CommentBtn = styled(Button)`
   padding: 0.8rem;
 `;
 
-const Comments = ({ commentList }) => {
+const Comments = ({ post, commentList, onClickInput, user }) => {
   const [comment, setComment] = useState('');
+  const dispatch = useDispatch();
 
   const onChangeComment = (e) => {
     setComment(e.target.value)
   }
 
-  const onSubmitComment = (e) => {
+  const onSubmitComment = async (e) => {
     e.preventDefault();
     if(comment === ''){
       return;
     }
     //댓글 데이터 만들어 보내기
-    // const form = {
-    //   content: '',
-    //   writer: '',
-    //   post_id: ''
-    // };
+    const form = {
+      content: comment,
+      post_id: post.post_id,
+    };
+    await dispatch(fetchCreateComment(form));
     setComment('');
   }
 
@@ -89,46 +65,28 @@ const Comments = ({ commentList }) => {
           placeholder="나눔 아이템에 대해 궁금한 점 남겨주세요."
           value={comment}
           onChange={onChangeComment}
+          onClick={onClickInput}
           />
           <CommentBtn>COMMENT</CommentBtn>
         </form>
         {/* comments Lists */}
-        {/* { commentList && (
+        { commentList && (
           commentList.map((comment, index) => !comment.responseTo && (
             <div key={index}>
               <SingleComment
               comment={comment}
-              post_id={post_id}
-              writerInfo={writerInfo}
+              post={post}
+              user={user}
               />
-              <ReplayComment
+              {/* <ReplayComment
               commentList={commentList}
               writerInfo={writerInfo}
               parentCommentId={}
-              />
+              /> */}
             </div>
           ))
-        )} */}
-        <ul>
-          <li>
-            <div>
-              <div>
-                <span><b>nickname</b></span>
-                <span> 2021.11.24</span>
-              </div>
-              <div className="comment">
-                <div className="text">
-                  <p>comment</p>
-                </div>
-                <AiOutlineMore className="comment-edit"/>
-                <div className="comment-edit-icons">
-                  <FiEdit/>
-                  <RiDeleteBinLine/>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
+        )}
+        <ReplyComment/>
       </CommentsBlock>
   );
 };

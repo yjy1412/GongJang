@@ -4,12 +4,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Comments from '../components/postDetail/Comments';
 import ItemImgSlide from '../components/postDetail/ItemImgSlide';
-import { fetchGetPostDetail, unloadPost, fetchRemovePost } from '../feature/postSlice';
+import { fetchGetPostDetail, unloadPost, fetchRemovePost, changeWishPost } from '../feature/postSlice';
 import { setOriginalPost } from '../feature/writeSlice';
 import Loading from '../components/common/Loading';
 import AskModal from '../components/modal/AskModal';
-import checkTime from '../components/postDetail/Time';
+import checkTime from '../lib/Time';
 import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
+import { fetchGetAllComments, unloadComment } from '../feature/commentSlice';
+import { fetchRemoveWish, fetchWish } from '../feature/wishSlice';
 
 const PostDetailBlock = styled.div`
   width: 1130px;
@@ -67,7 +69,14 @@ const PostDetailBlock = styled.div`
   }
   .writer {
     margin-top: 0.5rem;
-    span {
+    .avatar {
+      display: inline-flex;
+      width: 30px;
+      height: 30px;
+      margin-right: 0.5rem;
+      img {
+        border-radius: 50%;
+      }
     }
   }
   .interest {
@@ -87,20 +96,27 @@ const PostDetail = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [modal, setModal] = useState(false);
-  const { post, loading, user, images } = useSelector(({ post , user }) => ({
+  const [visible, setVisible] = useState(false);
+  const { post, loading, user, commentList } = useSelector(({ post , user, comment }) => ({
     post: post.post,
     error: post.error,
     loading: post.loading,
     user: user.user,
-    images: post.images,
+    commentList: comment.commentList,
   }));
 
   useEffect(() => {
-    dispatch(fetchGetPostDetail(id));
+    if(!user){
+      dispatch(fetchGetPostDetail(id));
+    } else {
+      dispatch(fetchGetPostDetail(id));
+      dispatch(fetchGetAllComments(id));
+    }
     return () => {
       dispatch(unloadPost());
+      dispatch(unloadComment());
     }
-  },[dispatch, id])
+  },[dispatch, id, user])
 
   const onEditPost = useCallback(() => {
     dispatch(setOriginalPost(post));
@@ -120,9 +136,39 @@ const PostDetail = () => {
     }
   }
 
+  const onLoginCancel = () => {
+    setVisible(!visible);
+  }
+
+  const onLoginConfirm = () => {
+    history.push('/login')
+  }
+
+  const onClickWish = useCallback(() => {
+    if(!user){
+      setVisible(!visible);
+    }
+    if(user){
+      if(post?.wish){
+        dispatch(fetchRemoveWish(post?.post_id));
+        dispatch(changeWishPost(post?.wish));
+      } else {
+        dispatch(fetchWish(post?.post_id));
+        dispatch(changeWishPost(post?.wish));
+      }
+    }
+  },[dispatch, post?.post_id, post?.wish, user, visible])
+
+  const onClickInput = () => {
+    if(!user){
+      setVisible(!visible);
+    }
+  }
+
   const date = checkTime(post?.createdAt);
-  const ownPost = ((user && user.nickname) === (post && post?.writer.writer_nickname));
   
+  const ownPost = ((user && user.nickname) === (post && post?.writer.writer_nickname));
+
   // if(error){
   //   if(error.response && error.response.status === 404){
   //     return <PostDetailBlock>나눔글이 존재하지 않습니다.</PostDetailBlock>;
@@ -143,7 +189,7 @@ const PostDetail = () => {
             </div>
           )}
         </div>
-        <ItemImgSlide images={images}/>
+        <ItemImgSlide post={post}/>
         <div className="wrap">
           <div className="info">
             <p>ITEM INFO</p>
@@ -165,13 +211,23 @@ const PostDetail = () => {
         <div className="interest">
           <div>
             <span>댓글</span>
-            <span>1</span>
+            <span> {commentList.length}</span>
           </div>
-          <div className="heart">
-            <RiHeartFill fill="red"/> 
+          <div className="heart" onClick={onClickWish}>
+            { post?.wish ? (
+              <RiHeartFill fill="#f9796d"/>
+            ) : (
+              <RiHeartLine fill="#f9796d"/>
+            )}
+             
           </div>
         </div>
-        <Comments/>
+        <Comments
+        post={post}
+        user={user}
+        commentList={commentList}
+        onClickInput={onClickInput}
+        />
       </PostDetailBlock>
       { modal && (
         <AskModal
@@ -181,6 +237,16 @@ const PostDetail = () => {
         onConfirm={onConfirm}
         onCancel={onCancel}
         />
+      )}
+      { visible && (
+        <AskModal 
+        visible={visible}
+        title='알림'
+        description='로그인이 필요한 서비스입니다.'
+        addDescription='로그인 하시겠습니까?'
+        onConfirm={onLoginConfirm}
+        onCancel={onLoginCancel} 
+        /> 
       )}
     </>
   );

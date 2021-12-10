@@ -1,22 +1,21 @@
 import React from 'react';
 import styled from 'styled-components';
-import SingleComment from './SingleComment';
 
 const ReplyCommentBlock = styled.div`
 
 `;
 
-const ReplyComment = ({ commentList, parentCommentId }) => {
+const ReplyComment = () => {
   return (
     <ReplyCommentBlock>
-      { commentList.map((comment, index) => (
+      {/* { commentList.map((comment, index) => (
         comment.responseTo === parentCommentId && (
           <div>
             <SingleComment/>
             <ReplyComment/>
           </div>
         )
-      ))}
+      ))} */}
     </ReplyCommentBlock>
   );
 };
