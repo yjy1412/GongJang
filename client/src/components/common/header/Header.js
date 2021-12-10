@@ -6,7 +6,6 @@ import MenuIcons from './MenuIcons';
 import Search from './Search';
 import { fetchLogOut } from '../../../feature/userSlice';
 import AskModal from '../../modal/AskModal';
-import HiddenMenu from './HiddenMenu';
 
 const HeaderBlock = styled.header`
     width: 100%;
@@ -159,7 +158,6 @@ const Header = () => {const dispatch = useDispatch();
                         isLogin={isLogin}
                         />
                     </MenuBoxBlock>
-                    <HiddenMenu/>
                     <div id="search-wrap">
                         <Search
                         onClick={onClick}
