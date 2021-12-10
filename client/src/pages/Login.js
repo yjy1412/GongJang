@@ -163,7 +163,6 @@ const Login = () => {
     }
   },[dispatch, history, accessToken, loginError])
 
-
   return (
     <AuthBackground>
       <AuthLoginBlock>
