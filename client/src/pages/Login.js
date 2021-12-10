@@ -76,7 +76,7 @@ const ErrorMessage = styled.div`
   right: 50;
   height: 100%;
   width: 100%;
-  font-size: 14px;
+  font-size: 13px;
   margin-left: 2px;
   color: #fa8072;
 `;
@@ -157,11 +157,11 @@ const Login = () => {
     }
     if(loginError){
       setServerErrorMessage(loginError);
-      setTimeout(() => setServerErrorMessage(''), 3000);
     }
-    return dispatch(initialize());
-  },[history, accessToken, loginError, dispatch])
-
+    return () => { //언마운트될 때 초기화
+      dispatch(initialize());
+    }
+  },[dispatch, history, accessToken, loginError])
 
   return (
     <AuthBackground>

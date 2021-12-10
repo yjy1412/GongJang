@@ -58,13 +58,12 @@ const WishItem = ({ wish, post, posts, user, key, setModal, modal }) => {
     }
   },[dispatch, modal, post?.id, post?.wish, setModal, user])
   
-  const test = post?.image[0].data;
-  const base64String = btoa(String.fromCharCode(...new Uint8Array(test)));
+  
   return (
     <ItemBlock>
     <div className="item-img">
       <Link to={`/${post?.id}`}>
-      <img src={`data:image/png;base64,${base64String}`} alt="" />
+      <img src={`data:image/png;base64,${post?.image[0]}`} alt="" />
       </Link>
     </div>
     <div className="item-info">

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { changeNickname, fetchUpdateUserInfo } from '../../feature/userSlice';
+import { Link, useHistory } from 'react-router-dom';
+import { changeNickname, fetchUpdateUserInfo, initialize } from '../../feature/userSlice';
 import AskEditModal from '../modal/AskEditModal';
 
 const UpdateProfileBlock = styled.div`
@@ -42,14 +42,14 @@ const ErrorMessage = styled.div`
   justify-content: center;
   align-items: end;
   right: 297px;
-  font-size: 14px;
+  font-size: 13px;
   color: #fa8072;
 `;
 
 
 const UpdateProfile = ({ user, userInfoError, isEdited, setNewNickname, newNickname }) => {
   const dispatch = useDispatch();
-
+  const history = useHistory();
   const [visible, setVisible] = useState(false);
   
   const [serverErrorMessage, setServerErrorMessage] = useState("");
@@ -74,15 +74,18 @@ const UpdateProfile = ({ user, userInfoError, isEdited, setNewNickname, newNickn
     setNewNickname('');
   }
 
-  // useEffect(() => {
-  //   if(isEdited){
-  //     history.push('/mypage');
-  //   }
-  //   if(userInfoError){
-  //     setServerErrorMessage(userInfoError);
-  //     setTimeout(() => setServerErrorMessage(''), 3000)
-  //   }
-  // },[history, isEdited, userInfoError])
+  useEffect(() => {
+    if(isEdited){
+      history.push('/mypage');
+      setServerErrorMessage("");
+    }
+    if(userInfoError){
+      setServerErrorMessage(userInfoError);
+    }
+    return () => { //언마운트될 때 초기화
+      dispatch(initialize());
+    }
+  },[dispatch, history, isEdited, userInfoError])
 
   return (
     <>
