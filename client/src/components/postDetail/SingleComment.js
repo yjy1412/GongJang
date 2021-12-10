@@ -16,8 +16,10 @@ const SingleCommentBlock = styled.div`
       .text {
         width: 100%;
         border-bottom: 2px solid #575F95;
-        input {
+        textarea {
           width: 100%;
+          height: 35px;
+          resize: none;
           color: inherit;
           font-size: 1rem;
           padding: 0.3rem 0;
@@ -72,7 +74,7 @@ const SingleCommentBlock = styled.div`
   }
 `;
 
-const SingleComment = ({ post, comment }) => {
+const SingleComment = ({ post, comment, user }) => {
   const [openReply, setOpenReply] = useState(false);
   const [replyContent, setReplyContent] = useState('');
   const [edit, setEdit] = useState(false);
@@ -130,6 +132,8 @@ const SingleComment = ({ post, comment }) => {
     setReplyContent('');
   }
 
+  const permisson = !comment.isDelete && (user.nickname === comment.User.nickname);
+
   return (
     <SingleCommentBlock>
       <div className="single-comment-wrap">
@@ -143,7 +147,7 @@ const SingleComment = ({ post, comment }) => {
               <p style={{color: "#bcbdc4"}}>삭제된 글입니다.</p>
             ) : (
                edit ? (
-                <input
+                <textarea
                 type="text"
                 value={editContent}
                 onChange={onEditComment}
@@ -159,7 +163,7 @@ const SingleComment = ({ post, comment }) => {
           onClick={() => setOpenReply(!openReply)} 
           className="open-reply"
           ><RiArrowDownSFill fill="#fa8072"/>답변 보기</span>
-          { !comment.isDelete && (
+          { permisson && (
             <>
               <div className={edit ? "edit-btn hide" : "edit-btn"}>
                 <button onClick={() => setEdit(!edit)}>수정</button>

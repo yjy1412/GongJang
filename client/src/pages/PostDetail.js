@@ -223,6 +223,7 @@ const PostDetail = () => {
         </div>
         <Comments
         post={post}
+        user={user}
         commentList={commentList}
         onClickInput={onClickInput}
         />
