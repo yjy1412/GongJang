@@ -3,7 +3,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Button from '../components/common/Button';
-import { fetchSignUp } from '../feature/userSlice';
+import { fetchSignUp, initialize } from '../feature/userSlice';
 
 
 const AuthBackground = styled.div`
@@ -72,7 +72,7 @@ const ErrorMessage = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
-  font-size: 14px;
+  font-size: 13px;
   color:  #fa8072;
   margin-left: 2px;
 `;
@@ -177,11 +177,14 @@ const Join = () => {
   useEffect(() => {
     if(isSignUp){
       history.push('/login');
-    } else {
+    } 
+    if(signUpError) {
       setServerErrorMessage(signUpError);
-      setTimeout(() => setServerErrorMessage(''), 3000);
     }
-  },[history, isSignUp, signUpError])
+    return () => { //언마운트될 때 초기화
+      dispatch(initialize());
+    }
+  },[dispatch, history, isSignUp, signUpError])
 
   return (
     <AuthBackground>

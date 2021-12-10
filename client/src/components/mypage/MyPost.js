@@ -52,15 +52,12 @@ const MyPost = ({ posts, post, user, key}) => {
       console.log(e)
     }
   }
-
-  const test = post?.image[0].data;
-  const base64String = btoa(String.fromCharCode(...new Uint8Array(test)));
-
+  
   return (
     <MyPostBlock>
       <div className="item-img">
         <Link to={`/${post?.id}`}>
-          <img src={`data:image/png;base64,${base64String}`} alt="" />
+          <img src={`data:image/png;base64,${post?.image[0]}`} alt="" />
         </Link>
         <div className="close" onClick={onRemove}>
           <FaTimes/>

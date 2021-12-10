@@ -3,7 +3,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Button from '../components/common/Button';
-import { fetchLogin } from '../feature/userSlice';
+import { fetchLogin, initialize } from '../feature/userSlice';
 import GoogleButton from '../components/login/GoogleButton';
 
 const AuthBackground = styled.div`
@@ -69,20 +69,20 @@ const Message = styled.div`
 
 const ErrorMessage = styled.div`
   position: absolute;
-  top: 50px;
+  top: 32px;
   display: flex;
   justify-content: center;
   align-items: end;
   right: 50;
   height: 100%;
   width: 100%;
-  font-size: 14px;
+  font-size: 13px;
   margin-left: 2px;
   color: #fa8072;
 `;
 
 const Buttons = styled.div`
-  margin-top: 25px;
+  margin-top: 35px;
 `;
 
 const LoginButton = styled(Button)`
@@ -157,10 +157,11 @@ const Login = () => {
     }
     if(loginError){
       setServerErrorMessage(loginError);
-      setTimeout(() => setServerErrorMessage(''), 3000);
     }
-  },[history, accessToken, loginError])
-
+    return () => { //언마운트될 때 초기화
+      dispatch(initialize());
+    }
+  },[dispatch, history, accessToken, loginError])
 
   return (
     <AuthBackground>

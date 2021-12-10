@@ -148,7 +148,9 @@ const Header = () => {const dispatch = useDispatch();
                                 )}
                             </li>
                             <li>
-                                <Link to="/join">JOIN</Link>
+                                { !isLogin &&                                 
+                                    <Link to="/join">JOIN</Link>
+                                }
                             </li>
                         </ul>
                         <MenuIcons

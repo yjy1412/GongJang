@@ -4,6 +4,7 @@ import postsSlice from '../feature/postsSlice';
 import userSlice from '../feature/userSlice';
 import wishSlice from '../feature/wishSlice';
 import writeSlice from '../feature/writeSlice';
+import commentSlice from '../feature/commentSlice';
 
 import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
 
@@ -15,6 +16,7 @@ const persistConfig = {
   key: 'root',
   version: 1,
   storage,
+  whitelist: ['user'],
 };
 
 const rootReducer = combineReducers({
@@ -23,6 +25,7 @@ const rootReducer = combineReducers({
   post: postSlice,
   posts: postsSlice,
   wish: wishSlice,
+  comment: commentSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
