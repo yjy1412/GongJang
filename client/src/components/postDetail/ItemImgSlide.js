@@ -41,14 +41,13 @@ const ItemImgSlideBlock = styled.div`
   }
 `;
 
-const ItemImgSlide = ({ images }) => {
+const ItemImgSlide = ({ post }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [modal, setModal] = useState(false);
 
-  const dataFilter = images.filter(el => el !== undefined);
+  const dataFilter = post?.image.filter(el => el !== "");
   const data = dataFilter.map(el => {
-    const encodedImg = btoa(String.fromCharCode(...new Uint8Array(el)));
-    return `data:image/png;base64,${encodedImg}`;
+    return `data:image/*;base64,${el}`;
   })
   const activeSlide = data[activeIndex];
 

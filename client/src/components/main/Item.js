@@ -13,7 +13,7 @@ const ItemBlock = styled.li`
     2px 2px 5px rgba(94, 104, 121, 0.3);
   background: #ffdeb7;
   .item-img {
-    height: 180px;
+    height: 200px;
     a {
       display: block;
       width: 100%;
@@ -59,16 +59,13 @@ const Item = ({ post, user, setModal, modal }) => {
     }
   },[dispatch, modal, post?.id, post?.wish, setModal, user])
 
-  const test = post?.image[0].data;
-  const base64String = btoa(String.fromCharCode(...new Uint8Array(test)));
-
   //이미지 없을 경우 기본 이미지 보여주기
 
   return (
     <ItemBlock>
       <div className="item-img">
         <Link to={`/${post?.id}`}>
-          <img src={`data:image/png;base64,${base64String}`} alt="" />
+          <img src={`data:image/png;base64,${post?.image[0]}`} alt="" />
         </Link>
       </div>
       <div className="item-info">
@@ -78,9 +75,9 @@ const Item = ({ post, user, setModal, modal }) => {
         onClick={onClickWish}
         >
           { post?.wish ? (
-            <RiHeartFill fill="red"/>
+            <RiHeartFill fill="#f9796d"/>
           ) : (
-            <RiHeartLine fill="red"/>
+            <RiHeartLine fill="#f9796d"/>
           )}
         </div>
       </div>

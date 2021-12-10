@@ -40,7 +40,7 @@ const ImgPreviewBox = styled.div`
     position: relative;
     max-width: 200px;
     width: 100%;
-    background: salmon;
+    background: #fc988d;
     .img-plus {
       position: absolute;
       top: 50%;
@@ -86,10 +86,9 @@ const ImgUpload = ({
     }
   },[imageURLs, setImageURLs, setUploadImages, uploadImages])
 
-  const dataFilter = images.filter(el => el !== undefined);
+  const dataFilter = images.filter(el => el !== "");
   const data = dataFilter.map(el => {
-    const encodedImg = btoa(String.fromCharCode(...new Uint8Array(el)));
-    return `data:image/png;base64,${encodedImg}`;
+    return `data:image/*;base64,${el}`;
   })
 
   //글 수정시 서버에서 불러온 이미지도 보여주고, 해당 이미지 삭제리듀서 작성
@@ -134,7 +133,7 @@ const ImgUpload = ({
             </label>
             <input 
             type="file"
-            accept="image/jpg,impge/png" 
+            accept="image/*" 
             multiple
             id="file"
             style={{ display: 'none' }}

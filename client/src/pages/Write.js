@@ -126,8 +126,8 @@ const Write = () => {
     formData.append('category', category);
     formData.append('soldOut', soldOut);
     images.forEach((file) => {
-      if(file !== undefined){
-        formData.append('image', {type: "Buffer", data: file});
+      if(file !== ""){
+        formData.append('image', file);
       }
     })
     uploadImages.forEach((file) => {

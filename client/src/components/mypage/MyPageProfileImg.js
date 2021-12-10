@@ -56,6 +56,7 @@ const MyPageProfileImg = ({previewProfileImage, setPreviewProfileImage}) => {
   
   const onCancel = () => {
     setVisible(false);
+    setPreviewProfileImage(null);
   }
 
   const onConfirm = () => {
@@ -65,9 +66,6 @@ const MyPageProfileImg = ({previewProfileImage, setPreviewProfileImage}) => {
     dispatch(fetchUpdateProfileImage(formData));
   }
 
-  const test = user.profile_image.data;
-  const base64String = btoa(String.fromCharCode(...new Uint8Array(test)));
-
   return (
     <>
       <MyPageProfileImgBlock>
@@ -75,7 +73,7 @@ const MyPageProfileImg = ({previewProfileImage, setPreviewProfileImage}) => {
           <img 
             src={
               !previewProfileImage ?
-              `data:image/*;base64,${base64String}` :
+              `data:image/*;base64,${user.profile_image}` :
               previewProfileImage
             } 
             alt="profile"

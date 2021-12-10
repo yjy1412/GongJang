@@ -3,7 +3,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Button from '../components/common/Button';
-import { fetchUpdatePassword } from '../feature/userSlice';
+import { fetchUpdatePassword, initialize } from '../feature/userSlice';
 
 const AuthBackground = styled.div`
   margin-top: 200px;
@@ -34,6 +34,7 @@ const AuthUpdatePasswordBlock = styled.div`
 const AuthUpdatePasswordForm = styled.div`
   display: flex;
   flex-direction: column;
+  margin-bottom: 10px;
   .auth-input-box {
     position: relative;
     margin-top: 20px;
@@ -66,11 +67,12 @@ const Message = styled.div`
 `;
 
 const ErrorMessage = styled.div`
+  position: absolute;
+  right: 0;
   display: flex;
   justify-content: center;
   width: 100%;
-  font-size: 14px;
-  margin-left: 2px;
+  font-size: 13px;
   color: #fa8072;
 `;
 
@@ -151,11 +153,14 @@ const UpdatePassword = () => {
   useEffect(() => {
     if(passwordUpdated){
       history.push('/mypage');
-    } else {
+    } 
+    if(passwordError) {
       setServerErrorMessage(passwordError);
-      setTimeout(() => setServerErrorMessage(''), 3000)
     }
-  },[history, passwordUpdated, passwordError])
+    return () => { //언마운트될 때 초기화
+      dispatch(initialize());
+    }
+  },[dispatch, history, passwordUpdated, passwordError])
 
 
   return (
