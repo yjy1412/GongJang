@@ -545,7 +545,7 @@ module.exports = {
         .then(async data => { //3. 토큰으로 유저 정보를 보고 있음. data는 userInfo를 담고 있음 
           const googleEmail = data.data.email
           const googleName = data.data.name
-          console.log(data)
+          // console.log(data)
 
           const isUser = await User.findOrCreate({
             where : {
@@ -556,7 +556,7 @@ module.exports = {
               nickname : googleName,
             }
           }).then(data => { //여기서 data는 find에 성공하면 find 된 값을 보내준다. find가 안되면 create해주고 그 data이다.
-            console.log(data)
+            // console.log(data)
             const { id, email, nickname, profile_image, admin} = data[0].dataValues          
 
             const accessToken = jwt.sign(
@@ -574,7 +574,7 @@ module.exports = {
                buffer = fs.readFileSync(profile_image); //절대 경로가 들어가있는 데이터
                convertImg = Buffer.from(buffer).toString('base64');
              } catch {
-               console.log(convertImg);
+              //  console.log(convertImg);
                return res.status(500).send("유저의 프로필 이미지를 불러오는데 실패했습니다")
              }
               res.cookie("refreshToken", refreshToken, {httpOnly : true, expiresIn : "30d"})
