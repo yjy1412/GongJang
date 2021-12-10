@@ -213,6 +213,7 @@ const userSlice = createSlice({
       state.isLogin = false;
       state.user = null;
       state.accessToken = "";
+      state.isSignUp = false;
     },
     [fetchUpdateUserInfo.pending]: (state) => {
       state.loading = true;
