@@ -93,7 +93,7 @@ const DeleteButton = styled.button`
 const MyPage = () => {
 
   const [ newNickname, setNewNickname ] = useState('');
-  const [ previewProfileImage, setPreviewProfileImage ] = useState(null);
+  const [ previewProfileImage, setPreviewProfileImage ] = useState('');
   const [visible, setVisible] = useState(false);
 
   const history = useHistory();

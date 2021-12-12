@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { fetchUpdateProfileImage } from '../../feature/userSlice';
+import { changeWishPost } from '../../feature/postSlice';
+import { changeProfileImage, fetchUpdateProfileImage } from '../../feature/userSlice';
 import AskEditModal from '../modal/AskEditModal';
 
 const MyPageProfileImgBlock = styled.div`
@@ -47,11 +48,13 @@ const MyPageProfileImg = ({previewProfileImage, setPreviewProfileImage}) => {
     reader.onloadend = (finishedEvent) => {
       const { result } = finishedEvent.currentTarget;
       setPreviewProfileImage(result);
+      dispatch(changeProfileImage(result));
     }
     if(file){
       reader.readAsDataURL(file);
     }
   }
+  
   
   useEffect(() => {
     if(previewProfileImage){
@@ -82,7 +85,7 @@ const MyPageProfileImg = ({previewProfileImage, setPreviewProfileImage}) => {
               previewProfileImage
             } 
             alt="profile"
-            style={{ backgroundImage : previewProfileImage }}  
+            style={{ backgroundImage : profile_image }}  
           />
         </div>  
         <div className="input-box">
