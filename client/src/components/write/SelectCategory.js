@@ -28,7 +28,9 @@ const SelectCategoryBlock = styled.div`
   }
 `;
 
-const categories = ['--카테고리를 선택하세요.--', '보드게임', '퍼즐', '레고'];
+const categories = [
+  '--카테고리를 선택하세요.--', '장난감', '인형', '보드게임', '퍼즐', '프라모델', '기타'
+];
 const SelectCategory = ({ category }) => {
   const dispatch = useDispatch();
 
