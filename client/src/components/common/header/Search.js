@@ -42,6 +42,7 @@ const SearchBlock = styled.div`
           align-items: center;
           justify-content: flex-start;
           gap: 3rem;
+          flex-wrap: wrap;
           padding-top: 0.5rem;
           padding-bottom: 0.5rem;
           span {
@@ -77,7 +78,6 @@ const SearchBlock = styled.div`
         .category-box {
           .category-list {
             gap: 1rem;
-            flex-wrap: wrap;
           }
         }
       }
