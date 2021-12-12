@@ -144,7 +144,9 @@ const Header = () => {const dispatch = useDispatch();
     const handleLogOut = async () => {
         if(accessToken && isLogin){
             await dispatch(fetchLogOut());
-            setOpen(!open);
+            if(open){
+                setOpen(!open);
+            }
         }
         if(!isLogin){
             history.push('/');
