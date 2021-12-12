@@ -89,6 +89,40 @@ const PostDetailBlock = styled.div`
       cursor: pointer;
     }
   }
+  @media only screen and (max-width: 1024px){
+    width: 100%;
+    margin: 0;
+    padding: 0 2rem;
+  }
+  @media only screen and (max-width: 768px){
+    padding: 0 1rem;
+  }
+  @media only screen and (max-width: 425px){
+    font-size: 1rem;
+    .title {
+      h3 {
+        font-size: 1.4rem;
+      }
+      .share-status {
+        font-size: 1rem;
+      }
+    }
+    .wrap {
+      .info {
+        p {
+          font-size: 1rem;
+        }
+      }
+      button {
+        font-size: 1rem;
+      }
+    }
+    .desc {
+      p {
+        font-size: 1rem;
+      }
+    }
+  }
 `;
 
 const PostDetail = () => {
