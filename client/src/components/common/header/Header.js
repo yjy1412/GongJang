@@ -6,6 +6,10 @@ import MenuIcons from './MenuIcons';
 import Search from './Search';
 import { fetchLogOut } from '../../../feature/userSlice';
 import AskModal from '../../modal/AskModal';
+import { CgMenuCheese } from 'react-icons/cg';
+import { FiSearch } from 'react-icons/fi';
+import Sidebar from './Sidebar';
+import Logo from '../../../style/images/logo.png';
 
 const HeaderBlock = styled.header`
     width: 100%;
@@ -25,19 +29,11 @@ const HeaderLayoutStyle = styled.div`
     }
     .logo {
         flex: 1;
-        .logo-text {
+        height: 100%;
+        .logo-box {
+            height: 100%;
             display: flex;
             justify-content: center;
-            gap: 1.5rem;
-            p {
-                color: #c6c2c2;
-                font-weight: 600;
-            }
-            span {
-                color: #575F95;
-                font-size: 2.5rem;
-                font-weight: bold;
-            }
         }
     }
     .menu-box {
@@ -46,6 +42,14 @@ const HeaderLayoutStyle = styled.div`
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+    }
+    .hidden-menu {
+        display: none;
+        cursor: pointer;
+        flex: 1;
+        svg {
+            font-size: 2rem;
+        }
     }
     #search-wrap {
         position: absolute;
@@ -57,6 +61,29 @@ const HeaderLayoutStyle = styled.div`
         transform: translateY(-120%);
         transition: transform .4s;
         z-index: 10;
+    }
+    @media only screen and (max-width: 1200px){
+        width: 100%;
+        margin: 0;
+        padding: 1rem 2rem;
+        .space {
+            display: none;
+        }
+        .logo .logo-box {
+            justify-content: flex-start;
+        }
+    }
+    @media only screen and (max-width: 1024px){
+        .menu-box {
+            display: none;
+        }
+        .hidden-menu {
+            display: flex;
+            justify-content: flex-end;
+        }
+    }
+    @media only screen and (max-width: 768px){
+        padding: 1rem;
     }
 `;
 
@@ -84,6 +111,7 @@ const Header = () => {const dispatch = useDispatch();
 
     const [show, setShow] = useState(false);
     const [visible, setVisible] = useState(false);
+    const [open, setOpen] = useState(false);
     const history = useHistory();
     const { isLogin, accessToken } = useSelector((state) => state.user);
     
@@ -113,14 +141,19 @@ const Header = () => {const dispatch = useDispatch();
         history.push('/login')
     }
     
-    const handleLogOut = () => {
+    const handleLogOut = async () => {
         if(accessToken && isLogin){
-            dispatch(fetchLogOut())
+            await dispatch(fetchLogOut());
+            setOpen(!open);
         }
         if(!isLogin){
             history.push('/');
         }
-    }    
+    } 
+    
+    const onClickHiddenMenu = () => {
+        setOpen(!open);
+    }
 
     return (
         <>
@@ -128,13 +161,8 @@ const Header = () => {const dispatch = useDispatch();
                 <HeaderLayoutStyle>
                     <div className="space"></div>
                     <div className="logo">
-                        <Link to="/" className="logo-text">
-                            <div>
-                                <p><span>공</span> 유하는</p>
-                            </div>
-                            <div>
-                                <p><span>장</span> 난감</p>
-                            </div>
+                        <Link to="/" className="logo-box">
+                            <img src={Logo} alt="로고" />
                         </Link> 
                     </div>
                     <MenuBoxBlock className="menu-box">
@@ -158,12 +186,25 @@ const Header = () => {const dispatch = useDispatch();
                         isLogin={isLogin}
                         />
                     </MenuBoxBlock>
+                    <div className="hidden-menu">
+                        <FiSearch 
+                        style={{marginRight: '0.5rem'}}
+                        onClick={onClick}
+                        />
+                        <CgMenuCheese onClick={onClickHiddenMenu}/>
+                    </div>
                     <div id="search-wrap">
                         <Search
                         onClick={onClick}
                         />
                     </div>
                 </HeaderLayoutStyle>
+                <Sidebar 
+                open={open}
+                isLogin={isLogin}
+                onClickHiddenMenu={onClickHiddenMenu}
+                handleLogOut={handleLogOut}
+                />
             </HeaderBlock>
             { visible && (
                 <AskModal 
