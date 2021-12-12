@@ -5,16 +5,13 @@ import { fetchUpdateProfileImage } from '../../feature/userSlice';
 import AskEditModal from '../modal/AskEditModal';
 
 const MyPageProfileImgBlock = styled.div`
-
-display: flex;
+  display: flex;
   flex-direction: column;
-
   img {
     width: 200px;
     height: 200px;
     border-radius: 100px;
   }
-
   label {
     margin-top: 5px;
     display: flex;
@@ -22,7 +19,15 @@ display: flex;
     align-items: flex-end;
     cursor: pointer;
   }
-`
+  @media only screen and (max-width: 425px){
+    align-items: center;
+    margin-bottom: 1rem;
+    img {
+      width: 150px;
+      height: 150px;
+    }
+  }
+`;
 
 const MyPageProfileImg = ({previewProfileImage, setPreviewProfileImage}) => {
 

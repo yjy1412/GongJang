@@ -36,21 +36,52 @@ const MyPageBlock = styled.div`
         padding: 0.5rem 0.5rem 0;
         margin-bottom: 0.5rem;
         font-size: 1.2rem;
-        color: black;
       }
     }
   }
-
   .profile-wrap {
     padding: 10px 70px;
     display: flex;
+  }
+  @media only screen and (max-width: 1024px){
+    width: 100%;
+    margin: 0;
+    padding: 0 2rem;
+  }
+  @media only screen and (max-width: 768px){
+    padding: 0 1rem;
+    .profile-wrap {
+      padding: 0;
+    }
+  }
+  @media only screen and (max-width: 425px){
+    .wrap {
+      margin-top: 1rem;
+      .info {
+        p {
+          font-size: 1rem;
+        }
+      }
+      .btn-box {
+        align-items: flex-start;
+        span {
+          font-size: 0.8rem;
+          margin-bottom: 0;
+        }
+        button {
+          font-size: 1rem;
+        }
+      }
+    }
+    .profile-wrap {
+      flex-direction: column;
+    }
   }
 `;
 
 const DeleteButton = styled.button`
   font-size: 1.2rem;
   font-weight: 600;
-  /* text-decoration-line: underline; */
   color: #575F95;
   padding: 0.5rem 0.5rem 0;
   cursor: pointer;
