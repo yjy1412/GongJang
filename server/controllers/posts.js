@@ -86,6 +86,8 @@ module.exports = {
   // PATCH /posts/:posts_id
   patch: async (req, res) => {
     // 권한 인증
+    console.log(req.body);
+    console.log(req.files);
     const result = accessFunc(req, res);
     if (!result.identified) {
       return;
@@ -97,13 +99,16 @@ module.exports = {
     const inputCategory = req.body.category;
     const inputSoldOut = req.body.soldOut;
     const inputImage = req.files;
+    const imageState = req.body.image;
+    // 1. 기존 이미지1 존재, 이미지2 추가 업로드했을 때,
+    // 2. 기존 이미지1은 데이터 유지, 이미지2 DB 업데이트
+    const 
 
     // 필수 입력요소 누락여부 검토
     if (!inputTitle || !inputCategory || !postsId) {
       return res.status(403).send("필수 입력요소가 누락되었습니다")
     }
     // 게시글 수정 권한 여부 검토
-    // TODO : 어떻게 처리할 지 생각해보자 / 1차 수정완료
     const postsData = await Post.findOne({ where: { id: postsId } })
       .catch(err => {
         console.log(err);
@@ -113,11 +118,15 @@ module.exports = {
       return res.status(400).send("포스트 아이디를 다시 확인해주세요")
     }
     if (result.id !== postsData.user_id) {
-      return res.status(401).send('게시글의 작성자가 아닙니다')
+      return res.status(401).send("게시글의 작성자가 아닙니다")
     }
+    // TODO : 어떻게 처리할 지 생각해보자 / 1차 수정완료
     // 이미지 배열 처리
     console.log(req.files);
     // 기존 저장된 이미지파일 패스 초기화/ 왜냐하면, 기존 파일들을 삭제시키기 때문
+
+    // 1. 기존 업로드 파일의 변경 여부 확인
+    // 2. 새로 업로드 되는 파일 확인
     let image1 = '';
     let image2 = '';
     let image3 = '';
