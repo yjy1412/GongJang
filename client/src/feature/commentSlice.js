@@ -12,8 +12,8 @@ export const fetchGetAllComments = createAsyncThunk(
 export const fetchCreateComment = createAsyncThunk(
   'comment/fetchCreateComment',
   async (form) => {
-    const { post_id, content } = form;
-    const response = await axios.post('/comments', { post_id, content });
+    const { content, post_id, ref_comment } = form;
+    const response = await axios.post('/comments', { content, post_id, ref_comment });
     return response.data.data;
   }
 )
@@ -74,6 +74,9 @@ export const commentSlice = createSlice({
     },
     [fetchGetAllComments.rejected]: (state, { payload }) => {
       state.loading = false;
+      state.commentList = payload;
+    },
+    [fetchCreateComment.fulfilled]: (state, { payload }) => {
       state.commentList = payload;
     },
   }
