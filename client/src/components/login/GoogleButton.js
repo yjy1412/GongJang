@@ -25,7 +25,6 @@ export default function GoogleButton(){
   const dispatch = useDispatch();
 
   const onSuccess = async (response) => {
-    console.log(response.code)
     await dispatch(fetchSocialLogin(response))
   }
 
