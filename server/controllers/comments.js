@@ -133,6 +133,7 @@ module.exports = {
         })
       }
     } catch (err) {
+      console.log(err);
       return res.status(500).send('서버에 오류가 발생했습니다.')
     }
   },  
