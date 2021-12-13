@@ -76,9 +76,6 @@ export const commentSlice = createSlice({
       state.loading = false;
       state.commentList = payload;
     },
-    [fetchCreateComment.fulfilled]: (state, { payload }) => {
-      state.commentList = payload;
-    },
   }
 })
 

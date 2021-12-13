@@ -11,7 +11,6 @@ const UpdateProfileBlock = styled.div`
   justify-content: space-between;
   width: 100%;
   margin-left: 140px;
-
   input {
     width: 354px;
     height: 40px;
@@ -19,22 +18,37 @@ const UpdateProfileBlock = styled.div`
     font-size: 24px;
     margin-right: 20px;
   }
-`
+  @media only screen and (max-width: 425px){
+    margin-left: 0;
+    h1 {
+      font-size: 1.4rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    input {
+      width: 100%;
+      font-size: 1rem;
+      margin-right: 0;
+    }
+  }
+`;
 
 const UpdateProfileForm = styled.div`
-
   div {
     margin-bottom: 30px;
   }
-
   .update-nickname {
     position: relative;
-
     span {
       cursor: pointer;
     }
   }
-`
+  @media only screen and (max-width: 425px){
+    div {
+      margin-bottom: 1rem;
+    }
+  }
+`;
 
 const ErrorMessage = styled.div`
   position: absolute;

@@ -89,6 +89,40 @@ const PostDetailBlock = styled.div`
       cursor: pointer;
     }
   }
+  @media only screen and (max-width: 1024px){
+    width: 100%;
+    margin: 0;
+    padding: 0 2rem;
+  }
+  @media only screen and (max-width: 768px){
+    padding: 0 1rem;
+  }
+  @media only screen and (max-width: 425px){
+    font-size: 1rem;
+    .title {
+      h3 {
+        font-size: 1.4rem;
+      }
+      .share-status {
+        font-size: 1rem;
+      }
+    }
+    .wrap {
+      .info {
+        p {
+          font-size: 1rem;
+        }
+      }
+      button {
+        font-size: 1rem;
+      }
+    }
+    .desc {
+      p {
+        font-size: 1rem;
+      }
+    }
+  }
 `;
 
 const PostDetail = () => {
@@ -97,6 +131,7 @@ const PostDetail = () => {
   const history = useHistory();
   const [modal, setModal] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [ownPost, setOwnPost] = useState(false);
   const { post, loading, user, commentList } = useSelector(({ post , user, comment }) => ({
     post: post.post,
     error: post.error,
@@ -104,6 +139,14 @@ const PostDetail = () => {
     user: user.user,
     commentList: comment.commentList,
   }));
+
+  useEffect(() => {
+    if(user){
+      if((user.nickname === post?.writer.writer_nickname) || user.admin === true){
+        setOwnPost(true);
+      }
+    }
+  },[post?.writer.writer_nickname, user])
 
   useEffect(() => {
     if(!user){
@@ -167,8 +210,7 @@ const PostDetail = () => {
 
   const date = checkTime(post?.createdAt);
   
-  const ownPost = ((user && user.nickname) === (post && post?.writer.writer_nickname));
-
+  // const ownPost = ((user && user.nickname) === (post && post?.writer.writer_nickname));
   // if(error){
   //   if(error.response && error.response.status === 404){
   //     return <PostDetailBlock>나눔글이 존재하지 않습니다.</PostDetailBlock>;
