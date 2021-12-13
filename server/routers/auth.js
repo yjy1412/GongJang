@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 
-const upload = multer({ dest: 'uploads/', limits: { fieldNameSize: 2*1024*1024 } })
+const upload = multer({ dest: 'uploads/', limits: { fieldSize: 50 * 1024 * 1024 } })
 const router = express.Router();
 const authControllers = require('../controllers/auth')
 
