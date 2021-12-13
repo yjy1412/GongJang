@@ -129,7 +129,7 @@ module.exports = {
       }) 
       const commentWriter = comment.dataValues.user_id
 
-      if (commentWriter !== loginId) { //뒤에 내용은 포스트맨 
+      if (commentWriter !== loginId) { 
         return res.status(401).send('권한이 없습니다.')
       } else {
         await Comment.update({
@@ -139,9 +139,13 @@ module.exports = {
             id: commentsId
           }
         }).then(data => {
-          res.status(201).json({
-            data,
-            nickname,
+         res.status(201).json({
+           data : {     
+            post_id : postsId,
+            user_id : loginId,
+            content : inputContent,
+            nickname
+           },
             message : `${commentsId} 댓글이 수정되었습니다.`
           })
         })
@@ -187,8 +191,11 @@ module.exports = {
           }}
         ).then(data => {
           res.status(201).json({
-            data,
+            data : {
+            post_id : postsId,
+            user_id : loginId,
             nickname,
+          },
             message : `${commentsId}댓글이 삭제되었습니다.`
           })
         })
