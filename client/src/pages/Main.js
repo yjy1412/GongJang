@@ -96,6 +96,7 @@ const Main = () => {
         modal={modal}
         setModal={setModal}
         />
+        
       </MainBlock>
       { modal && (
         <AskModal 
