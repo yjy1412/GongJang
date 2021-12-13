@@ -126,15 +126,15 @@ const SingleComment = ({ post, comment, user }) => {
     }
     const form = {
       content: replyContent,
-      // post_id: post.post_id,
-      // responseTo: ''
+      post_id: post.post_id,
+      ref_comment: comment.id,
     };
     dispatch(fetchCreateComment(form));
     setReplyContent('');
   }
 
   useEffect(() => {
-    if(comment){
+    if(user){
       if(user?.nickname === comment?.User.nickname){
         setPermission(true);
       } else {
@@ -190,11 +190,11 @@ const SingleComment = ({ post, comment, user }) => {
       { openReply && (
         <form className="reply-box" onSubmit={onSubmitReply}>
           <textarea 
-          placeholder="답글을 입력하세요."
+          placeholder="답변을 입력하세요."
           value={replyContent}
           onChange={onChangeReply}
           />
-          <button><b>REPLY</b></button>
+          <button type="submit"><b>REPLY</b></button>
         </form>
       )}
     </SingleCommentBlock>
