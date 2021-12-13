@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { fetchUpdateProfileImage } from '../../feature/userSlice';
+import { changeWishPost } from '../../feature/postSlice';
+import { changeProfileImage, fetchUpdateProfileImage } from '../../feature/userSlice';
 import AskEditModal from '../modal/AskEditModal';
 
 const MyPageProfileImgBlock = styled.div`
-
-display: flex;
+  display: flex;
   flex-direction: column;
-
   img {
     width: 200px;
     height: 200px;
     border-radius: 100px;
   }
-
   label {
     margin-top: 5px;
     display: flex;
@@ -22,7 +20,15 @@ display: flex;
     align-items: flex-end;
     cursor: pointer;
   }
-`
+  @media only screen and (max-width: 425px){
+    align-items: center;
+    margin-bottom: 1rem;
+    img {
+      width: 150px;
+      height: 150px;
+    }
+  }
+`;
 
 const MyPageProfileImg = ({previewProfileImage, setPreviewProfileImage}) => {
 
@@ -42,11 +48,13 @@ const MyPageProfileImg = ({previewProfileImage, setPreviewProfileImage}) => {
     reader.onloadend = (finishedEvent) => {
       const { result } = finishedEvent.currentTarget;
       setPreviewProfileImage(result);
+      dispatch(changeProfileImage(result));
     }
     if(file){
       reader.readAsDataURL(file);
     }
   }
+  
   
   useEffect(() => {
     if(previewProfileImage){
@@ -77,7 +85,7 @@ const MyPageProfileImg = ({previewProfileImage, setPreviewProfileImage}) => {
               previewProfileImage
             } 
             alt="profile"
-            style={{ backgroundImage : previewProfileImage }}  
+            style={{ backgroundImage : profile_image }}  
           />
         </div>  
         <div className="input-box">

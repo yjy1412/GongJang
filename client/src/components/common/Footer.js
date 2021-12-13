@@ -23,6 +23,10 @@ const FooterBlock = styled.footer`
       }
     }
   }
+  @media only screen and (max-width: 768px){
+    flex-direction: column;   
+    gap: 0;
+  }
 `;
 
 const Footer = () => {

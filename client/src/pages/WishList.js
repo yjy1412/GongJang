@@ -26,6 +26,26 @@ const WishListBlock = styled.div`
       right: 35%;
     }
   }
+  @media only screen and (max-width: 1024px){
+    width: 100%;
+    margin: 0;
+    padding: 0 2rem;
+  }
+  @media only screen and (max-width: 768px){
+    padding: 0 1rem;
+    .title:after {
+      left: 27%;
+    }
+    .title:before {
+      right: 27%;
+    }
+  }
+  @media only screen and (max-width: 425px){
+    .title:after,
+    .title:before {
+      display: none;
+    }
+  }
 `;
 
 const WishList = () => {

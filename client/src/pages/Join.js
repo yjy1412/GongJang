@@ -7,8 +7,7 @@ import { fetchSignUp, initialize } from '../feature/userSlice';
 
 
 const AuthBackground = styled.div`
-  margin-top: 200px;
-  margin-bottom: 255px;
+  height: 80vh;
   display:flex;
   justify-content: center;
   align-items: center;
@@ -17,8 +16,8 @@ const AuthBackground = styled.div`
 const AuthJoinBlock = styled.div`
   border-radius: 10px;
   padding: 25px;
-  width: 360px;
-  height: 300px;
+  max-width: 320px;
+  width: 100%;
   background-color: white;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
   display: flex;

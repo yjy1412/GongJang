@@ -57,6 +57,37 @@ const SearchBlock = styled.div`
       cursor: pointer;
     }
   }
+  @media only screen and (max-width: 1024px){
+    .wrap {
+      width: 80%;
+      padding: 1.5rem;
+      .search-container {
+        width: 100%;
+        .search-box {
+          input {
+            font-size: 1rem;
+          }
+          .search-icon {
+            font-size: 1rem;
+          }
+        }
+        .category-box {
+          .category-list {
+            gap: 1rem;
+          }
+        }
+      }
+      .close-icon {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+      }
+    }
+  }
+  @media only screen and (max-width: 768px){
+    .wrap {
+      width: 100%;
+    }
+  }
 `;
 
 const Search = ({ onClick }) => {
