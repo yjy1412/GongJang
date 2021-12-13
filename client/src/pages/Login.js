@@ -7,8 +7,7 @@ import { fetchLogin, initialize } from '../feature/userSlice';
 import GoogleButton from '../components/login/GoogleButton';
 
 const AuthBackground = styled.div`
-  margin-top: 200px;
-  margin-bottom: 255px;
+  height: 80vh;
   display:flex;
   justify-content: center;
   align-items: center;
@@ -17,8 +16,8 @@ const AuthBackground = styled.div`
 const AuthLoginBlock = styled.div`
   border-radius: 10px;
   padding: 25px;
-  width: 360px;
-  height: 300px;
+  max-width: 320px;
+  width: 100%;
   background-color: white;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 
@@ -86,14 +85,14 @@ const Buttons = styled.div`
 `;
 
 const LoginButton = styled(Button)`
-  width: 310px;
+  width: 100%;
   height: 30px;
   font-weight: 500;
 `;
 
 const JoinButton = styled(Button)`
   margin-top: 5px;
-  width: 310px;
+  width: 100%;
   height: 30px;
   color: #575f95;
   background-color: white;

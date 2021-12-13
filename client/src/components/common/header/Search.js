@@ -42,6 +42,7 @@ const SearchBlock = styled.div`
           align-items: center;
           justify-content: flex-start;
           gap: 3rem;
+          flex-wrap: wrap;
           padding-top: 0.5rem;
           padding-bottom: 0.5rem;
           span {
@@ -58,6 +59,37 @@ const SearchBlock = styled.div`
       padding: 2rem;
       font-size: 1.2rem;
       cursor: pointer;
+    }
+  }
+  @media only screen and (max-width: 1024px){
+    .wrap {
+      width: 80%;
+      padding: 1.5rem;
+      .search-container {
+        width: 100%;
+        .search-box {
+          input {
+            font-size: 1rem;
+          }
+          .search-icon {
+            font-size: 1rem;
+          }
+        }
+        .category-box {
+          .category-list {
+            gap: 1rem;
+          }
+        }
+      }
+      .close-icon {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+      }
+    }
+  }
+  @media only screen and (max-width: 768px){
+    .wrap {
+      width: 100%;
     }
   }
 `;

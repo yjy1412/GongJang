@@ -16,10 +16,13 @@ const ItemImgSlideBlock = styled.div`
     background: #ffdeb7;
     .slide {
       position: relative;
+      width: 100%;
+      height: 100%;
       display: flex;
       img {
         position: absolute;
         width: 100%;
+        height: 100%;
         cursor: pointer;
       }
     }

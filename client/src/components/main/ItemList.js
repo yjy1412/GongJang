@@ -8,6 +8,13 @@ const ItemListBlock = styled.ul`
   gap: 2.7rem;
   flex-wrap: wrap;
   padding: 2rem 0 4rem;
+  @media only screen and (max-width: 1024px){
+    gap: 2.8rem;
+  }
+  @media only screen and (max-width: 768px){
+    width: 100%;
+    gap: 2.5rem;
+  }
 `;
 
 const ItemList = ({ posts, user, modal, setModal }) => {

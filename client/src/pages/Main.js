@@ -31,6 +31,26 @@ const MainBlock = styled.div`
       right: 35%;
     }
   }
+  @media only screen and (max-width: 1024px){
+    width: 100%;
+    margin: 0;
+    padding: 0 2rem;
+  }
+  @media only screen and (max-width: 768px){
+    padding: 0 1rem;
+    .share-text:after {
+      left: 27%;
+    }
+    .share-text:before {
+      right: 27%;
+    }
+  }
+  @media only screen and (max-width: 425px){
+    .share-text:after,
+    .share-text:before {
+      display: none;
+    }
+  }
 `;
 
 const Main = () => {

@@ -19,9 +19,18 @@ const SelectCategoryBlock = styled.div`
     padding: 0.3rem 0;
     outline: none;
   }
+  @media only screen and (max-width: 425px){
+    flex-direction: column;
+    align-items: flex-start;
+    label {
+      font-size: 1rem;
+    }
+  }
 `;
 
-const categories = ['--카테고리를 선택하세요.--', '보드게임', '퍼즐', '레고'];
+const categories = [
+  '--카테고리를 선택하세요.--', '장난감', '인형', '보드게임', '퍼즐', '프라모델', '기타'
+];
 const SelectCategory = ({ category }) => {
   const dispatch = useDispatch();
 
