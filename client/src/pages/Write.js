@@ -58,6 +58,32 @@ const WriteBlock = styled.div`
     justify-content: center;
     gap: 1rem;
   }
+  @media only screen and (max-width: 1024px){
+    width: 100%;
+    margin: 0;
+    padding: 0 2rem;
+  }
+  @media only screen and (max-width: 768px){
+    padding: 0 1rem;
+  }
+  @media only screen and (max-width: 425px){
+    form {
+      input {
+        font-size: 1rem;
+      }
+      .info-title {
+        p {
+          font-size: 1rem;
+        }
+      }
+      textarea {
+        font-size: 1rem;
+        &::placeholder {
+          font-size: inherit;
+        }
+      }
+    }
+  }
 `;
 
 const WriteButton = styled(Button)`

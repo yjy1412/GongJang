@@ -156,7 +156,7 @@ const userSlice = createSlice({
       state.passwordError = null;
     },
     changeProfileImage: (state, { payload: value}) => {
-      state.user.profile_image = value; // 수정된 프로필 이미지 user에 저장
+      state.user.profile_image = value.split(',').slice(1).join(''); // 수정된 프로필 이미지 user에 저장
     }
   },
   extraReducers: {

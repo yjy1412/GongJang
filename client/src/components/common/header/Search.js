@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FiSearch } from 'react-icons/fi';
 import { FaTimes } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
+import Categories from './Categories';
+import { fetchGetPostsBySearch } from '../../../feature/postsSlice';
 
 const SearchBlock = styled.div`
   .wrap {
@@ -36,18 +39,12 @@ const SearchBlock = styled.div`
         }
       }
       .category-box {
+        display: flex;
+        align-items: center;
         width: 100%;
-        .category-list {
-          display: flex;
-          align-items: center;
-          justify-content: flex-start;
-          gap: 3rem;
-          padding-top: 0.5rem;
-          padding-bottom: 0.5rem;
-          span {
-            font-weight: 600;
-            margin-right: 1rem;
-          }
+        .category-title {
+          font-weight: 600;
+          margin-right: 3rem;
         }
       }
     }
@@ -60,9 +57,55 @@ const SearchBlock = styled.div`
       cursor: pointer;
     }
   }
+  @media only screen and (max-width: 1024px){
+    .wrap {
+      width: 80%;
+      padding: 1.5rem;
+      .search-container {
+        width: 100%;
+        .search-box {
+          input {
+            font-size: 1rem;
+          }
+          .search-icon {
+            font-size: 1rem;
+          }
+        }
+        .category-box {
+          .category-list {
+            gap: 1rem;
+          }
+        }
+      }
+      .close-icon {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+      }
+    }
+  }
+  @media only screen and (max-width: 768px){
+    .wrap {
+      width: 100%;
+    }
+  }
 `;
 
 const Search = ({ onClick }) => {
+
+  const dispatch = useDispatch();
+
+  const [keyword, setKeyword] = useState("");
+
+  const categories = ['장난감', '인형', '보드게임', '퍼즐', '프라모델', '기타'];
+
+  const handleSearch = (e) => {
+    setKeyword(e.target.value);
+  }
+
+  const handleSubmit = () => {
+    dispatch(fetchGetPostsBySearch(keyword))
+  }
+
   return (
     <SearchBlock>
       <div className="wrap">
@@ -72,18 +115,15 @@ const Search = ({ onClick }) => {
             type="text"
             placeholder="나눔 아이템을 검색하세요." 
             defaultValue=""
+            onChange={(e) => handleSearch(e)}
             />
-            <div className="search-icon" >
+            <div className="search-icon" onClick={handleSubmit} >
               <FiSearch/>
             </div>
           </div>
           <div className="category-box">
-            <ul className="category-list">
-              <li><span>카테고리</span></li>
-              <li>보드게임</li>
-              <li>퍼즐</li>
-              <li>레고</li>
-            </ul>
+            <span className="category-title" >카테고리</span>
+            <Categories categories={categories}/>
           </div>
         </div>
         <div className="close-icon" onClick={onClick}>

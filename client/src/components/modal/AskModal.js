@@ -4,7 +4,7 @@ import Button from '../common/Button';
 import WhiteButton from '../common/WhiteButton';
 
 const ModalBackground = styled.div`
-  z-index: 10;
+  z-index: 100;
   position: fixed;
   top: 0;
   left: 0;

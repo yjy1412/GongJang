@@ -9,8 +9,9 @@ const ReplyComment = () => {
   return (
     <ReplyCommentBlock>
       {/* { commentList.map((comment, index) => (
+        답글들만 렌더링 됨
         comment.responseTo === parentCommentId && (
-          <div>
+          <div style={{marginLeft: '30px'}}>
             <SingleComment/>
             <ReplyComment/>
           </div>
