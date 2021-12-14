@@ -64,11 +64,8 @@ module.exports = {
           ref_comment : commentid
         }
       })
-      .then(async data => {
-        await res.status(200).json({
-          data,
-          message: '대댓글을 불러왔습니다.'
-        })
+      .then(data => {
+       return res.status(200).json(data)
       })
     } catch(err) {
       return res.status(500).send('서버에 오류가 발생했습니다.')
@@ -116,7 +113,7 @@ module.exports = {
             }]
           })
           .then(async data => {
-            await res.status(201).json({
+            await res.status(200).json({
               data,
               message : '대댓글이 수정되었습니다.'
             })
@@ -166,7 +163,7 @@ module.exports = {
             }]
           })
           .then(async data => { //해당 댓글의 대댓글만을 다 불러옴
-            await res.status(201).json({
+            await res.status(200).json({
               data,
               message : '대댓글이 삭제되었습니다.'
             })

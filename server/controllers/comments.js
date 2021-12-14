@@ -46,7 +46,7 @@ module.exports = {
             }
           })
           .then(async data => {
-            await res.status(200).json({
+            await res.status(201).json({
               data,
               message : "댓글을 작성했습니다."
             })
@@ -64,7 +64,7 @@ module.exports = {
             }
           })
           .then(async data => {
-           await res.status(200).json({
+           await res.status(201).json({
               data,
               message : "댓글을 작성했습니다."
             })
@@ -105,11 +105,8 @@ module.exports = {
             ref_comment : null
           }
         })
-          .then(async data => {
-            await res.status(200).json({
-              data,
-              message : "댓글을 불러왔습니다."
-            })
+          .then(data => {
+            res.status(200).json(data)
           })
       } else {
         await Comment.findAll({
@@ -123,11 +120,8 @@ module.exports = {
             ref_comment : null
           }
         })
-        .then(async data => {
-          await res.status(200).json({
-            data,
-            message : "댓글을 불러왔습니다."
-          })
+        .then(data => {
+          return res.status(200).json(data)
         })
       }
     } catch (err) {
@@ -186,7 +180,7 @@ module.exports = {
               }
             })
             .then(async data => {
-              await res.status(201).json({
+              await res.status(200).json({
                 data,
                 message : '댓글이 수정되었습니다.'
               })
@@ -204,7 +198,7 @@ module.exports = {
               }
             })
             .then(async data => {
-              await res.status(201).json({
+              await res.status(200).json({
                 data,
                 message : '댓글이 수정되었습니다.'
               })
@@ -273,7 +267,7 @@ module.exports = {
                 }
               })
               .then(async data => {
-                await res.status(201).json({
+                await res.status(200).json({
                   data,
                   message: '댓글이 삭제되었습니다.'
                 })
@@ -291,7 +285,7 @@ module.exports = {
                 }
               })
               .then(async data => {
-                await res.status(201).json({
+                await res.status(200).json({
                   data,
                   message: '댓글이 삭제되었습니다.'
                 })

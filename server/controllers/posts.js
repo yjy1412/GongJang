@@ -83,7 +83,7 @@ module.exports = {
         res.status(500).send("서버에 오류가 발생했습니다")
       })
   },
-  // PATCH /posts/:posts_id
+  // PATCH /posts/:post_id
   patch: async (req, res) => {
     // 권한 인증
     console.log(req.body);
@@ -94,7 +94,7 @@ module.exports = {
     }
 
     const userEmail = result.email;
-    const postsId = req.params.posts_id;
+    const postId = req.params.post_id;
     const inputTitle = req.body.title;
     const inputContent = req.body.content;
     const inputCategory = req.body.category;
@@ -103,11 +103,11 @@ module.exports = {
     const inputImageFile = req.files;
 
     // 필수 입력요소 누락여부 검토
-    if (!inputTitle || !inputCategory || !postsId) {
+    if (!inputTitle || !inputCategory || !postId) {
       return res.status(403).send("필수 입력요소가 누락되었습니다")
     }
     // 게시글 수정 권한 여부 검토
-    const postsData = await Post.findOne({ where: { id: postsId } })
+    const postsData = await Post.findOne({ where: { id: postId } })
       .catch(err => {
         console.log(err);
         return res.statue(500).send("서버에 오류가 발생했습니다")
@@ -136,7 +136,7 @@ module.exports = {
     if (inputImage !== undefined) {
       if (typeof inputImage === "string") {
 
-        let path = __dirname + '/../uploads/' + `${userEmail}_${postsId}_1`;
+        let path = __dirname + '/../uploads/' + `${userEmail}_${postId}_1`;
         let decode
         try {
           decode = Buffer.from(inputImage, 'base64');
@@ -156,7 +156,7 @@ module.exports = {
 
         for (let i = 0; i < inputImage.length; i += 1) {
           let image = inputImage[i];
-          let path = __dirname + '/../uploads/' + `${userEmail}_${postsId}_${i}`;
+          let path = __dirname + '/../uploads/' + `${userEmail}_${postId}_${i}`;
           let decode
           try {
             decode = Buffer.from(image, 'base64');
@@ -241,13 +241,13 @@ module.exports = {
       image3
     }, {
       where: {
-        id: postsId
+        id: postId
       }
     })
       .then(result => {
         res.status(201).json({
           user_id: postsData.user_id,
-          post_id: postsId,
+          post_id: postId,
           message: "수정 되었습니다"
         })
       })
@@ -255,10 +255,10 @@ module.exports = {
         res.status(500).send('서버에 오류가 발생했습니다.')
       })
   },
-  // DELETE /posts/:posts_id
+  // DELETE /posts/:post_id
   delete: async (req, res) => {
-    console.log(req.params.posts_id)
-    const postsId = req.params.posts_id;
+    console.log(req.params.post_id)
+    const postId = req.params.post_id;
     //유저 권한 인증
     const result = accessFunc(req, res);
     if (!result.identified) {
@@ -266,7 +266,7 @@ module.exports = {
     }
     // 게시글을 삭제할 권한이 있는 지
     const userId = result.id
-    const postInfo = await Post.findOne({ where: { id: postsId } })
+    const postInfo = await Post.findOne({ where: { id: postId } })
       .catch(err => {
         console.log(err);
         return res.status(500).send("서버에 오류가 발생했습니다")
@@ -282,7 +282,7 @@ module.exports = {
     if (!result.admin && postInfo.user_id !== userId) {
       return res.status(401).send('해당 게시글의 작성자만이 삭제할 수 있습니다')
     } else {
-      Post.destroy({ where: { id: postsId } })
+      Post.destroy({ where: { id: postId } })
         .then(result => {
           // 게시글에 이미지 업로드한 파일이 있다면 삭제
           const image1Path = postInfo.image1;
@@ -461,7 +461,7 @@ module.exports = {
       Post.findAll()
         .then(async result => {
           if (result.length === 0) {
-            return res.status(204).send("현재 요청 목록에 해당하는 자료가 없습니다")
+            return res.sendStauts(204)
           }
           // console.log(result);
           const responseData = await Promise.all(
@@ -572,10 +572,10 @@ module.exports = {
         })
     }
   },
-  // GET /posts/:posts_id
+  // GET /posts/:post_id
   getDetail: async (req, res) => {
-    console.log(req.params.posts_id);
-    const postsId = req.params.posts_id;
+    console.log(req.params.post_id);
+    const postId = req.params.post_id;
     let wish = false;
 
     // 1. 회원/비회원 여부 검토
@@ -624,7 +624,7 @@ module.exports = {
           return Wish.findOne({
             where: {
               user_id: id,
-              post_id: postsId
+              post_id: postId
             }
           })
             .then(result => {
@@ -647,7 +647,7 @@ module.exports = {
 
     // 2. 데이터 조회
     Post.findOne({
-      where: { id: postsId },
+      where: { id: postId },
       include: {
         model: User,
         attributes: ['email', 'nickname']
