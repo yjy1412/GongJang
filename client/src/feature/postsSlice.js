@@ -13,6 +13,14 @@ export const fetchGetAllPosts = createAsyncThunk(
   }
 )
 
+export const fetchGetMyPosts = createAsyncThunk(
+  'mypage/fetchGetMyPosts',
+  async() => {
+    const response = await axios.get('/auth/mypage/posts');
+    return response.data;
+  }
+)
+
 export const fetchGetPostsByCategory = createAsyncThunk(  
   'posts/fetchGetPostsByCategory',
   async (category, { rejectWithValue }) => {
@@ -39,6 +47,7 @@ export const fetchGetPostsBySearch = createAsyncThunk(
 
 const initialState = {
   posts: [],
+  myposts: [],
   error: null,
   loading: false,
 }
@@ -96,6 +105,16 @@ export const postsSlice = createSlice({
     },
     [fetchGetPostsBySearch.rejected]: (state, { payload }) => {
       state.error = payload;
+      state.loading = false;
+    },
+    [fetchGetMyPosts.pending]: (state) => {
+      state.loading = true;
+    },
+    [fetchGetMyPosts.fulfilled]: (state, { payload }) => {
+      state.loading = false;
+      state.myposts = payload;
+    },
+    [fetchGetMyPosts.rejected]: (state) => {
       state.loading = false;
     }
   }

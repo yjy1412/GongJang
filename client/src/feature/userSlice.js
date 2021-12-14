@@ -20,14 +20,6 @@ export const fetchSignUp = createAsyncThunk(
   }
 );
 
-export const fetchMypage = createAsyncThunk(
-  'mypage/fetch',
-  async() => {
-    const response = await axios.get('/auth/mypage');
-    return response.data;
-  }
-)
-
 export const fetchLogin = createAsyncThunk(
   'login/fetchLogin',
   async (form, { rejectWithValue }) => {
@@ -139,7 +131,6 @@ export const initialState = {
   signUpError: null,
   userInfoError: null,
   passwordError: null
-
 }
 
 const userSlice = createSlice({
@@ -244,17 +235,6 @@ const userSlice = createSlice({
     [fetchUpdateProfileImage.rejected]: (state, { payload }) => {
       state.loading = false;
       state.userInfoError = payload;
-    },
-    [fetchMypage.pending]: (state) => {
-      state.loading = true;
-    },
-    [fetchMypage.fulfilled]: (state, { payload }) => {
-      state.loading = false;
-      state.user = payload.userInfo;
-    },
-    [fetchMypage.rejected]: (state, { payload }) => {
-      state.loading = false;
-      state.userError = payload;
     },
     [fetchDeleteAccount.pending]: (state) => {
       state.loading = true;
