@@ -50,27 +50,27 @@ const ReplyComment = ({ post, user, parentCommentId, recommentList }) => {
            >답변 {replyCommnetNum}개 보기
           </p>
         )}
+        { openReplyComments && (
+          recommentList.map(recomment => recomment.ref_comment === parentCommentId && (
+            <div 
+            key={recomment.id}
+            style={{marginLeft: '1rem'}}
+            >
+              <SingleComment
+                comment={recomment}
+                post={post}
+                user={user}
+                />
+                <ReplyComment
+                recommentList={recommentList}
+                post={post}
+                user={user}
+                parentCommentId={recomment.ref_comment}
+                />
+            </div>
+          ))
+        )}
       </div>
-      { openReplyComments && (
-        recommentList.map(recomment => recomment.ref_comment === parentCommentId && (
-          <div 
-          key={recomment.id}
-          style={{marginLeft: '1rem'}}
-          >
-            <SingleComment
-              comment={recomment}
-              post={post}
-              user={user}
-              />
-              <ReplyComment
-              recommentList={recommentList}
-              post={post}
-              user={user}
-              parentCommentId={recomment.ref_comment}
-              />
-          </div>
-        ))
-      )}
     </ReplyCommentBlock>
   );
 };
