@@ -5,35 +5,35 @@ const { User, Post, Wish, Comment } = require('../models');
 const { use } = require('../routers');
 
 module.exports = {
-  //POST /recomments/:comments_id  
+  //POST /recomments/:comment_id  
   post: async (req, res) => {
-    const commentsId = req.params.comments_id    
-    //일단 해당 comments_id를 ref_comment로 넣어주자
+    const commentId = req.params.comment_id    
+    //일단 해당 comment_id를 ref_comment로 넣어주자
     const accessResult = accessFunc(req, res); //유저인증(토큰확인)
     if (!accessResult.identified) {
       return accessResult;
     }
     const loginId = accessResult.id
-    const postsId = req.body.post_id
+    const postId = req.body.post_id
     const inputContent = req.body.content
     try{
       await Comment.create({
         content : inputContent,
-        post_id : postsId,
+        post_id : postId,
         user_id : loginId,
-        ref_comment : commentsId 
+        ref_comment : commentId 
       })
-      .then(async data => { //여기서 만약에 대댓글 불러오기를 하려면 어떻게 해야할 지 고민해보자        
-        await Comment.findAll({
+      .then(async data => { //대댓글 생성        
+        await Comment.findAll({ //
           where : {
-            ref_comment : commentsId
+            ref_comment : commentId
           },
           include: [{
             model : User,
-            attributes: ['nickname']
+            attributes : ['nickname']
           }]
         })
-        .then(async data => {
+        .then(async data => { //해당 댓글의 대댓글만을 다 불러옴
           await res.status(201).json({
             data,
             message : '대댓글이 생성되었습니다.'
@@ -41,32 +41,31 @@ module.exports = {
         }) 
       })
     } catch(err) {
-      res.status(500).send("서버에 오류 발생")
+      return res.status(500).send("서버에 오류가 발생했습니다.")
     }
   },
 
-  //GET /recomments/:comments_id
+  //GET /recomments/:comment_id
   get: async(req, res) => { //답글 펼쳐보기 버튼을 눌렀을때 들어오는 요청
-    const accessResult = accessFunc(req, res);  
-    const postsId = req.body.posts_id    
-    const commentsid = req.params.comments_id
+    const accessResult = accessFunc(req, res);
+    const commentid = req.params.comment_id
 
     if (!accessResult.identified) {
       return accessResult;
     }
-    const loginid = accessResult.id
+
     try{
       await Comment.findAll({
-        include: [{
-          model: User,
-          attributes: ['nickname']
+        include : [{
+          model : User,
+          attributes : ['nickname']
         }],
         where : {
-          ref_comment : commentsid
+          ref_comment : commentid
         }
       })
-      .then(data => {
-        res.status(200).json({
+      .then(async data => {
+        await res.status(200).json({
           data,
           message: '대댓글을 불러왔습니다.'
         })
@@ -75,12 +74,11 @@ module.exports = {
       return res.status(500).send('서버에 오류가 발생했습니다.')
     }
   },
-  //PATCH /recomments/:comments_id
+  //PATCH /recomments/:comment_id
   patch: async (req, res) => {
-    const accessResult = accessFunc(req, res);  
-    const postsId = req.body.posts_id    
-    const commentsId = req.params.comments_id
-    const recommentsId = req.body.recomments_id
+    const accessResult = accessFunc(req, res);
+    const commentId = req.params.comment_id
+    const recommentId = req.body.recomment_id
     const inputContent = req.body.content
     if (!accessResult.identified) {
       return accessResult;
@@ -92,7 +90,7 @@ module.exports = {
       }
       const userInfo = await Comment.findOne({
         where : {
-          id : commentsId
+          id : commentId
         }
       })
       const recommentWriter = userInfo.dataValues.user_id
@@ -104,26 +102,36 @@ module.exports = {
           content : inputContent
         }, {
           where : {
-            id : recommentsId
+            id : recommentId
           }
         })
-        .then(data => {
-          res.status(201).json({
-            data,
-            message : '댓글이 수정되었습니다.'
+        .then(async data => {        
+          await Comment.findAll({ //
+            where : {
+              ref_comment : commentId
+            },
+            include: [{
+              model : User,
+              attributes : ['nickname']
+            }]
           })
+          .then(async data => {
+            await res.status(201).json({
+              data,
+              message : '대댓글이 수정되었습니다.'
+            })
+          }) 
         })
       }
     } catch(err) {
-      return res.send('')
+      return res.status(500).send('서버에 오류가 발생했습니다.')
     }
   },
-  //DELETE /recomments/:comments_id
+  //DELETE /recomments/:comment_id
   delete: async (req, res) => {
-    const accessResult = accessFunc(req, res);  
-    const postsId = req.body.posts_id    
-    const commentsId = req.params.comments_id
-    const recommentsId = req.body.recomments_id   
+    const accessResult = accessFunc(req, res);
+    const commentId = req.params.comment_id
+    const recommentId = req.body.recomment_id   
     if (!accessResult.identified) {
       return accessResult;
     }
@@ -131,7 +139,7 @@ module.exports = {
     try{  
       const userInfo = await Comment.findOne({
         where : {
-          id : commentsId
+          id : commentId
         }
       })
       const recommentWriter = userInfo.dataValues.user_id
@@ -140,21 +148,33 @@ module.exports = {
         return res.status(401).send('권한이 없습니다.')
       } else { //댓글 작성자와 로그인 유저가 같다.        
         await Comment.update({
-          isDelete : true
+          isDelete : true,
+          content : "삭제되었습니다."
         }, {
           where : {
-            id : recommentsId
+            id : recommentId
           }
         })
-        .then(data => {
-          res.status(201).json({
-            data,
-            message : '댓글이 삭제되었습니다.'
+        .then(async data => { //대댓글 생성        
+          await Comment.findAll({ //
+            where : {
+              ref_comment : commentId
+            },
+            include: [{
+              model : User,
+              attributes : ['nickname']
+            }]
           })
+          .then(async data => { //해당 댓글의 대댓글만을 다 불러옴
+            await res.status(201).json({
+              data,
+              message : '대댓글이 삭제되었습니다.'
+            })
+          }) 
         })
       }
     } catch(err) {
-      return res.send('')
+      return res.status(500).send('서버에 오류가 발생했습니다.')
     }
   }
 }
