@@ -75,10 +75,10 @@ module.exports = {
         .then(data => {
           console.log(data);
           if (!data) {
-            res.status(404).send("입력하신 이메일 정보와 일치하는 회원정보가 없습니다")
+            res.status(401).send("입력하신 이메일 정보와 일치하는 회원정보가 없습니다")
           } else {
             if (data.password !== inputPassword) {
-              res.status(404).send("비밀번호가 일치하지 않습니다")
+              res.status(401).send("비밀번호가 일치하지 않습니다")
             } else {
               console.log("DATA : ", data);
               const { id, email, nickname, profile_image, admin } = data.dataValues;
@@ -362,7 +362,7 @@ module.exports = {
         }, { where: { email } })
           .then(result => {
             console.log(result);
-            res.status(201).send("닉네임이 변경 되었습니다")
+            res.status(200).send("닉네임이 변경 되었습니다")
           })
           .catch(err => {
             console.log(err);
@@ -408,7 +408,7 @@ module.exports = {
           }, { where: { email } })
             .then(result => {
               console.log("updateResult: ", result);
-              return res.status(201).send("프로필 이미지가 업로드 되었습니다")
+              return res.status(200).send("프로필 이미지가 업로드 되었습니다")
             })
             .catch(err => {
               console.log(err);
@@ -452,7 +452,7 @@ module.exports = {
       }, { where: { email } })
         .then(result => {
           console.log("updateResult: ", result);
-          return res.status(201).send("프로필 이미지가 업로드 되었습니다")
+          return res.status(200).send("프로필 이미지가 업로드 되었습니다")
         })
         .catch(err => {
           console.log(err);
@@ -474,7 +474,7 @@ module.exports = {
       .then(userInfo => {
         // 2-1. 일치하는 유저정보가 존재하지 않을 때
         if (!userInfo) {
-          return res.status(404).send("요청하신 회원정보와 일치하는 회원정보가 존재하지 않습니다")
+          return res.status(401).send("요청하신 회원정보와 일치하는 회원정보가 존재하지 않습니다")
         }
 
         const { password } = userInfo.dataValues;
@@ -483,14 +483,14 @@ module.exports = {
 
         // 2-2. 입력된 비밀번호가 이전 비밀번호와 다를 때
         if (inputCurrentPassword !== password) {
-          return res.status(404).send("비밀번호가 틀렸습니다")
+          return res.status(401).send("비밀번호가 틀렸습니다")
         }
         // 2-3 정상적인 요청 결과
         User.update({ password: inputNewPassword }, {
           where: { email }
         })
           .then(result => {
-            res.status(201).send("회원님의 비밀번호가 정상적으로 수정되었습니다")
+            res.status(200).send("회원님의 비밀번호가 정상적으로 수정되었습니다")
           })
           .catch(err => {
             console.log(err);
@@ -502,7 +502,7 @@ module.exports = {
         res.status(500).send("서버에 오류가 발생했습니다")
       })
   },
-  //POST auth/google/login
+  //POST auth/google/log-in
   googleLogin: async (req, res) => {
     //서버에서는 authorization code(=code로 통칭)를 받아서 oauth에 code를 post해줘야 한다.
     const {code} = req.body
