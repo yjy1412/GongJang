@@ -15,13 +15,9 @@ module.exports = {
     const inputEmail = req.body.email;
     const inputNickname = req.body.nickname;
     const inputPassword = req.body.password;
-    const inputAdmin = req.body.admin;
 
     if (!inputEmail || !inputNickname || !inputPassword) {
       return res.status(400).send("필수 입력요소가 누락되었습니다");
-    }
-    if (inputAdmin && typeof inputAdmin !== 'boolean') {
-      return res.status(400).send("입력 데이터의 타입이 잘못되었습니다")
     }
     // 1. 이메일 중복여부 검사
     User.findOne({ where: { email: inputEmail } })
@@ -39,8 +35,7 @@ module.exports = {
             User.create({
               email: inputEmail,
               nickname: inputNickname,
-              password: inputPassword,
-              admin: inputAdmin
+              password: inputPassword
             })
               .then(result => {
                 res.status(201).send("회원가입 되었습니다")
