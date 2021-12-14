@@ -99,6 +99,7 @@ module.exports = {
     const inputContent = req.body.content;
     const inputCategory = req.body.category;
     const inputSoldOut = req.body.soldOut;
+    console.log("inputSoldOut: ", inputSoldOut);
     const inputImageFile = req.files;
 
     // 필수 입력요소 누락여부 검토
@@ -234,7 +235,7 @@ module.exports = {
       title: inputTitle,
       content: inputContent,
       category: inputCategory,
-      soldout: inputSoldOut,
+      soldOut: inputSoldOut,
       image1,
       image2,
       image3
