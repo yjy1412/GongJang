@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { fetchGetMyPosts } from '../../feature/postsSlice';
 import MyPost from './MyPost';
 
 const MyPostsBlock = styled.div`
@@ -23,17 +25,20 @@ const MyPostsBlock = styled.div`
   }
 `;
 
-const MyPosts = ({ posts, user }) => {
+const MyPosts = ({ myposts }) => {
 
-  const filteredMyPosts = posts.filter((post) => post.writer.writer_email ===  user.email )
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchGetMyPosts());
+  }, [dispatch])
 
   return (
     <MyPostsBlock>
       {
-        filteredMyPosts.map((post, idx) => 
+        myposts.map((post, idx) => 
           <MyPost 
           post={post}
-          user={user}
           key={post?.id}
           />
         )
