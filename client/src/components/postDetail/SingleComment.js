@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { editComment, fetchCreaterecomment, fetchRemoveComment, fetchUpdateComment, removeComment } from '../../feature/commentSlice';
 import checkTime from '../../lib/Time';
-import { RiArrowDownSFill } from 'react-icons/ri';
 
 const SingleCommentBlock = styled.div`
   .single-comment-wrap {
@@ -22,18 +21,22 @@ const SingleCommentBlock = styled.div`
           resize: none;
           color: inherit;
           font-size: 1rem;
-          padding: 0.3rem 0;
+          padding: 0.5rem 0;
         }
       }
     }
     .btn-box {
       display: flex;
       justify-content: space-between;
-      font-size: 0.8rem;
       .open-reply {
         cursor: pointer;
         display: flex;
         align-items: center;
+        color: #575F95;
+        transition: .3s;
+        &:hover {
+          color: #f9796d;
+        }
       }
       .edit-btn {
         button {
@@ -60,16 +63,24 @@ const SingleCommentBlock = styled.div`
       margin-right: 1rem;
       padding: 0.5rem 0; 
       border: none;
+      color: inherit;
       border-bottom: 2px solid #575F95;
       &::placeholder {
         color: #bcbdc4;
         font-size: 1rem;
+      }
+      &:focus {
+        
       }
     }
     button {
       cursor: pointer;
       color: inherit;
       font-size: 1rem;
+      transition: .3s;
+      &:hover {
+        color: #f9796d;
+      }
     }
   }
 `;
@@ -91,7 +102,7 @@ const SingleComment = ({ post, comment, user }) => {
     setEditContent(e.target.value);
   }
 
-  const onEditCommentSubmit = async (e) => {
+  const onEditCommentSubmit = useCallback(async (e) => {
     e.preventDefault();
     if(editContent === ''){
       return;
@@ -107,18 +118,18 @@ const SingleComment = ({ post, comment, user }) => {
       content: editContent
     }));
     setEdit(!edit);
-  }
+  },[comment.id, dispatch, edit, editContent, post?.post_id])
 
-  const onRemoveComment = async () => {
+  const onRemoveComment = useCallback(async () => {
     const form = { 
       post_id: post?.post_id,
       comment_id: comment.id
     }
     await dispatch(fetchRemoveComment(form));
     await dispatch(removeComment(comment.id));
-  }
+  },[comment.id, dispatch, post?.post_id])
 
-  const onSubmitReply = (e) => {
+  const onSubmitReply = useCallback(async e => {
     e.preventDefault();
     //답글 데이터 만들어 보내기
     if(replyContent === ''){
@@ -129,10 +140,10 @@ const SingleComment = ({ post, comment, user }) => {
       post_id: post?.post_id,
       comment_id: comment.id,
     };
-    dispatch(fetchCreaterecomment(form));
+    await dispatch(fetchCreaterecomment(form))
     setOpenReply(false);
     setReplyContent('');
-  }
+  },[comment.id, dispatch, post?.post_id, replyContent])
 
   useEffect(() => {
     if(user){
@@ -172,10 +183,9 @@ const SingleComment = ({ post, comment, user }) => {
           <span 
           onClick={() => setOpenReply(!openReply)} 
           className="open-reply"
-          ><RiArrowDownSFill fill="#fa8072"/>답변</span>
+          >답변하기</span>
           { !comment.isDelete && (
             permission && (
-              !comment.ref_comment ? (
               <>
                 <div className={edit ? "edit-btn hide" : "edit-btn"}>
                   <button onClick={() => setEdit(!edit)}>수정</button>
@@ -186,18 +196,6 @@ const SingleComment = ({ post, comment, user }) => {
                   <button onClick={() => setEdit(!edit)}>취소</button>
                 </div>
               </>
-            ) : (
-              <>
-                <div className={edit ? "edit-btn hide" : "edit-btn"}>
-                  <button onClick={() => setEdit(!edit)}>답변수정</button>
-                  <button >답변삭제</button>
-                </div>
-                <div className={!edit ? "edit-btn hide" : "edit-btn"}>
-                  <button type="submit">답변수정</button>
-                  <button onClick={() => setEdit(!edit)}>답변취소</button>
-                </div>
-              </>
-            )
           ))}
         </div>
       </div>

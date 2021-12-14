@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import Button from '../common/Button';
 import SingleComment from './SingleComment';
@@ -20,11 +20,15 @@ const CommentsBlock = styled.div`
       font-size: 1.2rem;
       margin-right: 1rem;
       padding: 0.5rem; 
+      color: inherit;
       border: 2px solid #575F95;
       border-radius: 4px;
       &::placeholder {
         color: #bcbdc4;
         font-size: 1rem;
+      }
+      &:focus {
+        border: 2px solid #fcb0a9;
       }
     }
   }
@@ -42,7 +46,7 @@ const Comments = ({ post, commentList, recommentList, onClickInput, user }) => {
     setComment(e.target.value)
   }
 
-  const onSubmitComment = async (e) => {
+  const onSubmitComment = useCallback(async (e) => {
     e.preventDefault();
     if(comment === ''){
       return;
@@ -54,7 +58,7 @@ const Comments = ({ post, commentList, recommentList, onClickInput, user }) => {
     };
     await dispatch(fetchCreateComment(form));
     setComment('');
-  }
+  },[comment, dispatch, post.post_id])
 
   return (
       <CommentsBlock>
@@ -71,8 +75,8 @@ const Comments = ({ post, commentList, recommentList, onClickInput, user }) => {
         </form>
         {/* comments Lists */}
         { commentList && (
-          commentList.map((comment, index) => !comment.ref_comment && (
-            <div key={index}>
+          commentList.map((comment) => !comment.ref_comment && (
+            <div key={comment.id}>
               <SingleComment
               comment={comment}
               post={post}
@@ -83,11 +87,10 @@ const Comments = ({ post, commentList, recommentList, onClickInput, user }) => {
               post={post}
               user={user}
               parentCommentId={comment.id}
-              />
+              />              
             </div>
           ))
         )}
-        <ReplyComment/>
       </CommentsBlock>
   );
 };

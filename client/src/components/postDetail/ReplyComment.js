@@ -2,14 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { fetchGetAllrecomments } from '../../feature/commentSlice';
-import SingleComment from './SingleComment';
+import ReplyContent from './ReplyContent';
+import { RiArrowDownSFill } from 'react-icons/ri';
 
 const ReplyCommentBlock = styled.div`
-
+  .reply-count {
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    span {
+      color: #f9796d;
+    }
+  }
 `;
 
 const ReplyComment = ({ post, user, parentCommentId, recommentList }) => {
-  const [replyCommnetNum, setReplyCommentNum] = useState(0);
+  const [replyCommentNum, setReplyCommentNum] = useState(0);
   const [openReplyComments, setOpenReplyComments] = useState(false);
   const dispatch = useDispatch();
 
@@ -18,9 +25,7 @@ const ReplyComment = ({ post, user, parentCommentId, recommentList }) => {
       post_id: post?.post_id,
       comment_id: parentCommentId
     }
-    if(user){
       dispatch(fetchGetAllrecomments(form));
-    }
   },[dispatch, parentCommentId, post?.post_id, user])
   
   useEffect(() => {
@@ -43,31 +48,22 @@ const ReplyComment = ({ post, user, parentCommentId, recommentList }) => {
   return (
     <ReplyCommentBlock>
       <div>
-        { replyCommnetNum > 0 && (
+        { replyCommentNum > 0 && (
           <p
+          className="reply-count"
            onClick={openReplyCommentsHandle}
-           style={{color: '#f9796d'}}
-           >답변 {replyCommnetNum}개 보기
+           ><RiArrowDownSFill fill="#fa8072"/>답변 <span>{replyCommentNum}</span>개 보기
           </p>
         )}
         { openReplyComments && (
           recommentList.map(recomment => recomment.ref_comment === parentCommentId && (
-            <div 
+            <ReplyContent
             key={recomment.id}
-            style={{marginLeft: '1rem'}}
-            >
-              <SingleComment
-                comment={recomment}
-                post={post}
-                user={user}
-                />
-                <ReplyComment
-                recommentList={recommentList}
-                post={post}
-                user={user}
-                parentCommentId={recomment.ref_comment}
-                />
-            </div>
+            post={post}
+            user={user}
+            recomment={recomment}
+            parentCommentId={parentCommentId}
+            />
           ))
         )}
       </div>
