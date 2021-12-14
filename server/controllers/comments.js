@@ -114,9 +114,9 @@ module.exports = {
             model : User,
             attributes : ['nickname']
           }],
-          where : {
-            post_id : postId,
-            user_id : loginId,
+          where: {
+            post_id: postId,
+            user_id: loginId,
             ref_comment : null
           }
         })
@@ -174,9 +174,9 @@ module.exports = {
                 model : User,
                 attributes : ['nickname']
               }],
-              where : {
-                post_id : postId,
-                ref_comment : null
+              where: {
+                post_id: postId,
+                ref_comment: null
               }
             })
             .then(async data => {
@@ -191,10 +191,10 @@ module.exports = {
                 model : User,
                 attributes : ['nickname']
               }],
-              where : {
-                post_id : postId,
-                user_id : loginId,
-                ref_comment : null
+              where: {
+                post_id: postId,
+                user_id: loginId,
+                ref_comment: null
               }
             })
             .then(async data => {

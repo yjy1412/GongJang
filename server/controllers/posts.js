@@ -50,7 +50,7 @@ module.exports = {
         console.log(result);
         // 3. 유저 유효성 검사
         if (!result) {
-          return res.status(404).send("요청하신 회원정보와 일치하는 회원정보가 없습니다")
+          return res.status(400).send("요청하신 회원정보와 일치하는 회원정보가 없습니다")
         }
         // 4. 정상적인 요청 처리
         const userInfo = result.dataValues;
@@ -104,7 +104,7 @@ module.exports = {
 
     // 필수 입력요소 누락여부 검토
     if (!inputTitle || !inputCategory || !postId) {
-      return res.status(403).send("필수 입력요소가 누락되었습니다")
+      return res.status(400).send("필수 입력요소가 누락되었습니다")
     }
     // 게시글 수정 권한 여부 검토
     const postsData = await Post.findOne({ where: { id: postId } })
@@ -245,7 +245,7 @@ module.exports = {
       }
     })
       .then(result => {
-        res.status(201).json({
+        res.status(200).json({
           user_id: postsData.user_id,
           post_id: postId,
           message: "수정 되었습니다"
@@ -461,7 +461,7 @@ module.exports = {
       Post.findAll()
         .then(async result => {
           if (result.length === 0) {
-            return res.sendStauts(204)
+            return res.sendStatus(204);
           }
           // console.log(result);
           const responseData = await Promise.all(
@@ -616,7 +616,7 @@ module.exports = {
         .then(result => {
           const userInfo = result.dataValues;
           if (!userInfo) {
-            return res.status(404).send("요청하신 회원정보와 일치하는 회원정보가 없습니다")
+            return res.status(400).send("요청하신 회원정보와 일치하는 회원정보가 없습니다")
           }
           const { id } = userInfo;
 
@@ -655,7 +655,7 @@ module.exports = {
     })
       .then(result => {
         if (!result) {
-          return res.status(404).send("해당 게시물은 존재하지 않습니다")
+          return res.status(400).send("해당 게시물은 존재하지 않습니다")
         }
         console.log(result.dataValues);
         console.log(result.User.dataValues.email);
