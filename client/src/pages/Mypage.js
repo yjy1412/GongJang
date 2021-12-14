@@ -100,7 +100,7 @@ const MyPage = () => {
   const dispatch = useDispatch();
   
   const { user, isEdited, userInfoError } = useSelector( state => state.user );
-  const { posts } = useSelector( state => state.posts);
+  const { myposts } = useSelector( state => state.posts)
 
   const handleDeleteButton = () => {
     setVisible(true)
@@ -129,11 +129,11 @@ const MyPage = () => {
             setPreviewProfileImage={setPreviewProfileImage}
           />
           <UpdateProfile 
-          user={user}
-          isEdited={isEdited}
-          userInfoError={userInfoError}
-          newNickname={newNickname}
-          setNewNickname={setNewNickname}
+            user={user}
+            isEdited={isEdited}
+            userInfoError={userInfoError}
+            newNickname={newNickname}
+            setNewNickname={setNewNickname}
           />
         </div>
         <div className="wrap">
@@ -146,8 +146,7 @@ const MyPage = () => {
           </div>
         </div>
         <MyPosts 
-        posts={posts}
-        user={user}
+          myposts={myposts}
         />
       </MyPageBlock>
       { 
