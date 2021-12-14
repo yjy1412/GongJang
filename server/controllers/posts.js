@@ -50,7 +50,7 @@ module.exports = {
         console.log(result);
         // 3. 유저 유효성 검사
         if (!result) {
-          return res.status(404).send("요청하신 회원정보와 일치하는 회원정보가 없습니다")
+          return res.status(400).send("요청하신 회원정보와 일치하는 회원정보가 없습니다")
         }
         // 4. 정상적인 요청 처리
         const userInfo = result.dataValues;
@@ -616,7 +616,7 @@ module.exports = {
         .then(result => {
           const userInfo = result.dataValues;
           if (!userInfo) {
-            return res.status(404).send("요청하신 회원정보와 일치하는 회원정보가 없습니다")
+            return res.status(400).send("요청하신 회원정보와 일치하는 회원정보가 없습니다")
           }
           const { id } = userInfo;
 
@@ -655,7 +655,7 @@ module.exports = {
     })
       .then(result => {
         if (!result) {
-          return res.status(404).send("해당 게시물은 존재하지 않습니다")
+          return res.status(400).send("해당 게시물은 존재하지 않습니다")
         }
         console.log(result.dataValues);
         console.log(result.User.dataValues.email);

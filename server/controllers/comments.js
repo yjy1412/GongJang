@@ -19,12 +19,6 @@ module.exports = {
       if (!inputContent) {
         return res.status(400).send('내용을 입력해주세요')
       }
-      const userInfo = await User.findOne({
-        where : {
-          id : loginId
-        }
-      })
-      const nickname = userInfo.dataValues.nickname
 
       const postInfo = await Post.findOne({
         where : {
@@ -40,8 +34,8 @@ module.exports = {
       })
       .then(async data => {
         console.log(data)
-        if(loginId === writer) {
-          await Comment.findAll({
+        if(loginId === writer) { //작성자와 로그인아이디가 동일하다면
+          await Comment.findAll({ //모든 일반 댓글을 불러오는 코드
             include : [{
               model : User,
               attributes: ['nickname']
@@ -52,36 +46,36 @@ module.exports = {
             }
           })
           .then(async data => {
-            res.status(200).json({
+            await res.status(201).json({
               data,
               message : "댓글을 작성했습니다."
             })
           })
-        } else {
+        } else { //작성자와 로그인 유저가 일치하지 않으면
           await Comment.findAll({
-            include: [{
-              model: User,
-              attributes: ['nickname']
+            include : [{
+              model : User,
+              attributes : ['nickname']
             }],
-            where : {
+            where : { //해당 게시물에서 본인이 쓴 모든 글을 불러옴
             post_id : postId,
             user_id : loginId,
-            ref_comment: null
+            ref_comment : null
             }
           })
           .then(async data => {
-            res.status(200).json({
+           await res.status(201).json({
               data,
-              message: "댓글을 작성했습니다."
+              message : "댓글을 작성했습니다."
             })
           })
         }
       })
     } catch (err) {
-      res.status(500).send("서버에 오류가 발생했습니다")
+      return res.status(500).send("서버에 오류가 발생했습니다")
     }
   },
-
+  //GET /comments/:post_id
   get: async (req, res) => {    
     const accessResult = accessFunc(req, res);
     if (!accessResult.identified) {
@@ -102,26 +96,23 @@ module.exports = {
 
       if(loginId === writer) {
         await Comment.findAll({
-          include: [{
-            model: User,
-            attributes: ['nickname']
+          include : [{
+            model : User,
+            attributes : ['nickname']
           }],
           where: {
-            post_id: postId,
+            post_id : postId,
             ref_comment : null
           }
         })
-          .then(async data => {
-            res.status(200).json({
-              data,
-              message: "댓글을 불러왔습니다."
-            })
+          .then(data => {
+            res.status(200).json(data)
           })
       } else {
         await Comment.findAll({
-          include: [{
-            model: User,
-            attributes: ['nickname']
+          include : [{
+            model : User,
+            attributes : ['nickname']
           }],
           where: {
             post_id: postId,
@@ -130,18 +121,14 @@ module.exports = {
           }
         })
         .then(data => {
-          res.status(200).json({
-            data,
-            message: "댓글을 불러왔습니다."
-          })
+          return res.status(200).json(data)
         })
       }
     } catch (err) {
-      console.log(err);
       return res.status(500).send('서버에 오류가 발생했습니다.')
     }
   },  
-  // PATCH /comments/:comments_id
+  // PATCH /comments/:comment_id
   patch: async (req, res) => {
     const accessResult = accessFunc(req, res); //유저인증(토큰확인) 
     if (!accessResult.identified) {
@@ -149,19 +136,13 @@ module.exports = {
     }
     const inputContent = req.body.content
     const loginId = accessResult.id
-    const commentsId = req.params.comments_id
+    const commentId = req.params.comment_id
     const postId = req.body.post_id
     //댓글 수정 - 빈칸    
     try {
       if (!inputContent) {
         return res.status(400).send('내용을 입력해주세요')
       }
-      const userInfo = await User.findOne({
-        where : {
-          id : loginId
-        }
-      })
-      const nickname = userInfo.dataValues.nickname
 
       const postInfo = await Post.findOne({
         where : {
@@ -171,8 +152,8 @@ module.exports = {
       const writer = postInfo.dataValues.user_id
 
       const comment = await Comment.findOne({
-        where: {
-          id: commentsId
+        where : {
+          id : commentId
         }
       }) 
       const commentWriter = comment.dataValues.user_id
@@ -183,15 +164,15 @@ module.exports = {
         await Comment.update({
           content: inputContent
         }, {
-          where: {
-            id: commentsId
+          where : { //대댓글이 수정되어야 함.
+            id : commentId
           }
         }).then(async data => {
           if(writer === loginId) {
             await Comment.findAll({
-              include: [{
-                model: User,
-                attributes: ['nickname']
+              include : [{
+                model : User,
+                attributes : ['nickname']
               }],
               where: {
                 post_id: postId,
@@ -201,14 +182,14 @@ module.exports = {
             .then(async data => {
               await res.status(200).json({
                 data,
-                message: '댓글이 수정되었습니다.'
+                message : '댓글이 수정되었습니다.'
               })
             })
           } else {
             await Comment.findAll({
-              include: [{
-                model: User,
-                attributes: ['nickname']
+              include : [{
+                model : User,
+                attributes : ['nickname']
               }],
               where: {
                 post_id: postId,
@@ -219,7 +200,7 @@ module.exports = {
             .then(async data => {
               await res.status(200).json({
                 data,
-                message: '댓글이 수정되었습니다.'
+                message : '댓글이 수정되었습니다.'
               })
             })
           }
@@ -230,7 +211,7 @@ module.exports = {
     }
 
   },
-  // DELETE /comments/:comments_id
+  // DELETE /comments/:comment_id
   delete: async (req, res) => {
     const accessResult = accessFunc(req, res);   
     if (!accessResult.identified) {
@@ -239,7 +220,7 @@ module.exports = {
     const postId = req.body.post_id     
     const loginId = accessResult.id
     const admin = accessResult.admin
-    const commentsId = req.params.comments_id; //commentsid 
+    const commentId = req.params.comment_id; //commentsid 
 
     try {
       const userInfo = await User.findOne({
@@ -251,7 +232,7 @@ module.exports = {
 
       const comment = await Comment.findOne({
         where: {
-          id: commentsId
+          id: commentId
         }
       })
       const commentWriter = comment.dataValues.user_id
@@ -267,10 +248,11 @@ module.exports = {
         return res.status(401).send('권한이 없습니다.');
       } else {
         await Comment.update({
-          isDelete : true
+          isDelete : true,
+          content : "삭제되었습니다."
         },{
           where: {
-            id: commentsId
+            id: commentId
           }}
         ).then(async data => {
             if(writer === loginId) {
@@ -285,7 +267,7 @@ module.exports = {
                 }
               })
               .then(async data => {
-                await res.status(201).json({
+                await res.status(200).json({
                   data,
                   message: '댓글이 삭제되었습니다.'
                 })
@@ -303,7 +285,7 @@ module.exports = {
                 }
               })
               .then(async data => {
-                await res.status(201).json({
+                await res.status(200).json({
                   data,
                   message: '댓글이 삭제되었습니다.'
                 })
@@ -312,7 +294,7 @@ module.exports = {
         })
       }
       } catch (err) {
-        res.status(500).send("서버에 오류가 발생했습니다")
+        return res.status(500).send("서버에 오류가 발생했습니다")
       }
   }
   }
