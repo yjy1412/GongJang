@@ -6,7 +6,7 @@ export const fetchGetAllComments = createAsyncThunk(
   'comment/fetchGetAllComments',
   async (post_id) => {
     const response = await axios.get(`/comments/${post_id}`);
-    return response.data.data;
+    return response.data;
   }
 )
 
@@ -23,8 +23,7 @@ export const fetchUpdateComment = createAsyncThunk(
   'comment/fetchUpdateComment',
   async (form) => {
     const { comment_id, post_id, content } = form;
-    const response = await axios.patch(`/comments/${comment_id}`, { post_id, content });
-    return response.data.data;
+    await axios.patch(`/comments/${comment_id}`, { post_id, content });
   }
 )
 
