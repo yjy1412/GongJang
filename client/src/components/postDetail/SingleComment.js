@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { editComment, fetchCreateComment, fetchRemoveComment, fetchUpdateComment, removeComment } from '../../feature/commentSlice';
+import { editComment, fetchCreaterecomment, fetchRemoveComment, fetchUpdateComment, removeComment } from '../../feature/commentSlice';
 import checkTime from '../../lib/Time';
 import { RiArrowDownSFill } from 'react-icons/ri';
 
@@ -126,10 +126,11 @@ const SingleComment = ({ post, comment, user }) => {
     }
     const form = {
       content: replyContent,
-      post_id: post.post_id,
-      ref_comment: comment.id,
+      posts_id: post?.post_id,
+      comments_id: comment.id,
     };
-    dispatch(fetchCreateComment(form));
+    dispatch(fetchCreaterecomment(form));
+    setOpenReply(false);
     setReplyContent('');
   }
 
@@ -171,7 +172,7 @@ const SingleComment = ({ post, comment, user }) => {
           <span 
           onClick={() => setOpenReply(!openReply)} 
           className="open-reply"
-          ><RiArrowDownSFill fill="#fa8072"/>답변 보기</span>
+          ><RiArrowDownSFill fill="#fa8072"/>답변</span>
           { !comment.isDelete && (
             permission && (
             <>

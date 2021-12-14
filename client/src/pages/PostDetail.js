@@ -132,12 +132,13 @@ const PostDetail = () => {
   const [modal, setModal] = useState(false);
   const [visible, setVisible] = useState(false);
   const [ownPost, setOwnPost] = useState(false);
-  const { post, loading, user, commentList } = useSelector(({ post , user, comment }) => ({
+  const { post, loading, user, commentList, recommentList } = useSelector(({ post , user, comment }) => ({
     post: post.post,
     error: post.error,
     loading: post.loading,
     user: user.user,
     commentList: comment.commentList,
+    recommentList: comment.recommentList
   }));
 
   useEffect(() => {
@@ -149,12 +150,8 @@ const PostDetail = () => {
   },[post?.writer.writer_nickname, user])
 
   useEffect(() => {
-    if(!user){
-      dispatch(fetchGetPostDetail(id));
-    } else {
       dispatch(fetchGetPostDetail(id));
       dispatch(fetchGetAllComments(id));
-    }
     return () => {
       dispatch(unloadPost());
       dispatch(unloadComment());
@@ -253,7 +250,7 @@ const PostDetail = () => {
         <div className="interest">
           <div>
             <span>댓글</span>
-            <span> {commentList.length}</span>
+            <span> {commentList ? commentList.length : 0}</span>
           </div>
           <div className="heart" onClick={onClickWish}>
             { post?.wish ? (
@@ -268,6 +265,7 @@ const PostDetail = () => {
         post={post}
         user={user}
         commentList={commentList}
+        recommentList={recommentList}
         onClickInput={onClickInput}
         />
       </PostDetailBlock>
