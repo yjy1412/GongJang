@@ -27,7 +27,7 @@ const TopBtnStyle = styled.div`
   display: flex;
   align-items: center;
   text-align: center;
-  background: rgba(218, 220, 236, 0.5);
+  background: rgba(252, 152, 141,0.3);
   cursor: pointer;
   transition: opacity .3s;
   span {
