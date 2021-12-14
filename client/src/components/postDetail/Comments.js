@@ -34,7 +34,7 @@ const CommentBtn = styled(Button)`
   padding: 0.8rem;
 `;
 
-const Comments = ({ post, commentList, onClickInput, user }) => {
+const Comments = ({ post, commentList, recommentList, onClickInput, user }) => {
   const [comment, setComment] = useState('');
   const dispatch = useDispatch();
 
@@ -79,7 +79,7 @@ const Comments = ({ post, commentList, onClickInput, user }) => {
               user={user}
               />
               <ReplyComment
-              commentList={commentList}
+              recommentList={recommentList}
               post={post}
               user={user}
               parentCommentId={comment.id}

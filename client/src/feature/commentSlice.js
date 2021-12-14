@@ -1,10 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+//comments
 export const fetchGetAllComments = createAsyncThunk(
   'comment/fetchGetAllComments',
-  async (post_id) => {
-    const response = await axios.get(`/comments/${post_id}`);
+  async (posts_id) => {
+    const response = await axios.get(`/comments/${posts_id}`);
     return response.data.data;
   }
 )
@@ -12,8 +13,8 @@ export const fetchGetAllComments = createAsyncThunk(
 export const fetchCreateComment = createAsyncThunk(
   'comment/fetchCreateComment',
   async (form) => {
-    const { content, post_id, ref_comment } = form;
-    const response = await axios.post('/comments', { content, post_id, ref_comment });
+    const { content, post_id } = form;
+    const response = await axios.post('/comments', { content, post_id });
     return response.data.data;
   }
 )
@@ -34,10 +35,46 @@ export const fetchRemoveComment = createAsyncThunk(
     await axios.delete(`/comments/${comments_id}`, {data: { post_id }});
   }
 )
+//recomments
+export const fetchGetAllrecomments = createAsyncThunk(
+  'comment/fetchGetAllrecomments',
+  async (form) => {
+    const { comments_id, posts_id } = form;
+    const response = await axios.get(`/recomments/${comments_id}`, { posts_id});
+    return response.data.data;
+  }
+)
+
+export const fetchCreaterecomment = createAsyncThunk(
+  'comment/fetchCreaterecomment',
+  async (form) => {
+    const { content, posts_id, comments_id } = form;
+    const response = await axios.post(`/recomments/${comments_id}`, { content, posts_id });
+    return response.data.data;
+  }
+)
+
+export const fetchUpdatrecomment = createAsyncThunk(
+  'comment/fetchUpdatrecomment',
+  async (form) => {
+    const { comments_id, post_id, content, recomments_id } = form;
+    const response = await axios.patch(`/recomments/${comments_id}`, { post_id, content, recomments_id });
+    return response.data.data;
+  }
+)
+
+export const fetchRemoverecomment = createAsyncThunk(
+  'comment/fetchRemoverecomment',
+  async (form) => {
+    const { posts_id, comments_id, recomments_id } = form;
+    await axios.delete(`/recomments/${comments_id}`, {data: { posts_id, recomments_id }});
+  }
+)
 
 const initialState = {
   commentList:[],
   loading: false,
+  recommentList: [],
 }
 
 export const commentSlice = createSlice({
@@ -78,6 +115,12 @@ export const commentSlice = createSlice({
     },
     [fetchCreateComment.fulfilled]: (state, { payload }) => {
       state.commentList = payload;
+    },
+    [fetchGetAllrecomments.fulfilled]: (state, { payload }) => {
+      state.recommentList = payload;
+    },
+    [fetchCreaterecomment.fulfilled]: (state, { payload }) => {
+      state.recommentList = payload;
     },
   }
 })
