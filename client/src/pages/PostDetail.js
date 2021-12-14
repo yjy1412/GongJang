@@ -150,8 +150,12 @@ const PostDetail = () => {
   },[post?.writer.writer_nickname, user])
 
   useEffect(() => {
+    if(!user){
+      dispatch(fetchGetPostDetail(id));
+    } else {
       dispatch(fetchGetPostDetail(id));
       dispatch(fetchGetAllComments(id));
+    }
     return () => {
       dispatch(unloadPost());
       dispatch(unloadComment());

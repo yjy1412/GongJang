@@ -18,8 +18,10 @@ const ReplyComment = ({ post, user, parentCommentId, recommentList }) => {
       posts_id: post?.post_id,
       comments_id: parentCommentId
     }
-    dispatch(fetchGetAllrecomments(form));
-  },[dispatch, parentCommentId, post?.post_id])
+    if(user){
+      dispatch(fetchGetAllrecomments(form));
+    }
+  },[dispatch, parentCommentId, post?.post_id, user])
   
   useEffect(() => {
     let recommentNum = 0;
