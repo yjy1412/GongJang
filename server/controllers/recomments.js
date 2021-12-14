@@ -23,22 +23,8 @@ module.exports = {
         user_id : loginId,
         ref_comment : commentId 
       })
-      .then(async data => { //대댓글 생성        
-        await Comment.findAll({ //
-          where : {
-            ref_comment : commentId
-          },
-          include: [{
-            model : User,
-            attributes : ['nickname']
-          }]
-        })
-        .then(async data => { //해당 댓글의 대댓글만을 다 불러옴
-          await res.status(201).json({
-            data,
-            message : '대댓글이 생성되었습니다.'
-          })
-        }) 
+      .then(data => {
+        res.status(201).json(data)
       })
     } catch(err) {
       return res.status(500).send("서버에 오류가 발생했습니다.")
