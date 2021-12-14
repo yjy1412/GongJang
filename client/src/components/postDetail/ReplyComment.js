@@ -15,8 +15,8 @@ const ReplyComment = ({ post, user, parentCommentId, recommentList }) => {
 
   useEffect(() => {
     const form = {
-      posts_id: post?.post_id,
-      comments_id: parentCommentId
+      post_id: post?.post_id,
+      comment_id: parentCommentId
     }
     if(user){
       dispatch(fetchGetAllrecomments(form));
@@ -46,13 +46,17 @@ const ReplyComment = ({ post, user, parentCommentId, recommentList }) => {
         { replyCommnetNum > 0 && (
           <p
            onClick={openReplyCommentsHandle}
+           style={{color: '#f9796d'}}
            >답변 {replyCommnetNum}개 보기
           </p>
         )}
       </div>
       { openReplyComments && (
-        recommentList.map(recomment => (
-          <div key={recomment.id}>
+        recommentList.map(recomment => recomment.ref_comment === parentCommentId && (
+          <div 
+          key={recomment.id}
+          style={{marginLeft: '1rem'}}
+          >
             <SingleComment
               comment={recomment}
               post={post}

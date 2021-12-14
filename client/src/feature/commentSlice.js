@@ -4,8 +4,8 @@ import axios from 'axios';
 //comments
 export const fetchGetAllComments = createAsyncThunk(
   'comment/fetchGetAllComments',
-  async (posts_id) => {
-    const response = await axios.get(`/comments/${posts_id}`);
+  async (post_id) => {
+    const response = await axios.get(`/comments/${post_id}`);
     return response.data.data;
   }
 )
@@ -22,8 +22,8 @@ export const fetchCreateComment = createAsyncThunk(
 export const fetchUpdateComment = createAsyncThunk(
   'comment/fetchUpdateComment',
   async (form) => {
-    const { comments_id, post_id, content } = form;
-    const response = await axios.patch(`/comments/${comments_id}`, { post_id, content });
+    const { comment_id, post_id, content } = form;
+    const response = await axios.patch(`/comments/${comment_id}`, { post_id, content });
     return response.data.data;
   }
 )
@@ -31,16 +31,16 @@ export const fetchUpdateComment = createAsyncThunk(
 export const fetchRemoveComment = createAsyncThunk(
   'comment/fetchRemoveComment',
   async (form) => {
-    const { post_id, comments_id } = form;
-    await axios.delete(`/comments/${comments_id}`, {data: { post_id }});
+    const { post_id, comment_id } = form;
+    await axios.delete(`/comments/${comment_id}`, {data: { post_id }});
   }
 )
 //recomments
 export const fetchGetAllrecomments = createAsyncThunk(
   'comment/fetchGetAllrecomments',
   async (form) => {
-    const { comments_id, posts_id } = form;
-    const response = await axios.get(`/recomments/${comments_id}`, { posts_id});
+    const { comment_id, post_id } = form;
+    const response = await axios.get(`/recomments/${comment_id}`, { post_id});
     return response.data.data;
   }
 )
@@ -48,8 +48,8 @@ export const fetchGetAllrecomments = createAsyncThunk(
 export const fetchCreaterecomment = createAsyncThunk(
   'comment/fetchCreaterecomment',
   async (form) => {
-    const { content, posts_id, comments_id } = form;
-    const response = await axios.post(`/recomments/${comments_id}`, { content, posts_id });
+    const { content, post_id, comment_id } = form;
+    const response = await axios.post(`/recomments/${comment_id}`, { content, post_id });
     return response.data.data;
   }
 )
@@ -57,8 +57,8 @@ export const fetchCreaterecomment = createAsyncThunk(
 export const fetchUpdatrecomment = createAsyncThunk(
   'comment/fetchUpdatrecomment',
   async (form) => {
-    const { comments_id, post_id, content, recomments_id } = form;
-    const response = await axios.patch(`/recomments/${comments_id}`, { post_id, content, recomments_id });
+    const { comment_id, post_id, content, recomment_id } = form;
+    const response = await axios.patch(`/recomments/${comment_id}`, { post_id, content, recomment_id });
     return response.data.data;
   }
 )
@@ -66,8 +66,8 @@ export const fetchUpdatrecomment = createAsyncThunk(
 export const fetchRemoverecomment = createAsyncThunk(
   'comment/fetchRemoverecomment',
   async (form) => {
-    const { posts_id, comments_id, recomments_id } = form;
-    await axios.delete(`/recomments/${comments_id}`, {data: { posts_id, recomments_id }});
+    const { post_id, comment_id, recomment_id } = form;
+    await axios.delete(`/recomments/${comment_id}`, {data: { post_id, recomment_id }});
   }
 )
 

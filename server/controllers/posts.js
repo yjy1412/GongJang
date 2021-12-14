@@ -234,7 +234,7 @@ module.exports = {
       title: inputTitle,
       content: inputContent,
       category: inputCategory,
-      soldout: inputSoldOut,
+      soldOut: inputSoldOut,
       image1,
       image2,
       image3

@@ -97,7 +97,7 @@ const SingleComment = ({ post, comment, user }) => {
       return;
     }
     const form = {
-      comments_id: comment.id,
+      comment_id: comment.id,
       post_id: post?.post_id,
       content: editContent,
     }
@@ -112,7 +112,7 @@ const SingleComment = ({ post, comment, user }) => {
   const onRemoveComment = async () => {
     const form = { 
       post_id: post?.post_id,
-      comments_id: comment.id
+      comment_id: comment.id
     }
     await dispatch(fetchRemoveComment(form));
     await dispatch(removeComment(comment.id));
@@ -126,8 +126,8 @@ const SingleComment = ({ post, comment, user }) => {
     }
     const form = {
       content: replyContent,
-      posts_id: post?.post_id,
-      comments_id: comment.id,
+      post_id: post?.post_id,
+      comment_id: comment.id,
     };
     dispatch(fetchCreaterecomment(form));
     setOpenReply(false);
