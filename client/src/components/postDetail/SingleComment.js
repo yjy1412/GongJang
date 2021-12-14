@@ -175,16 +175,29 @@ const SingleComment = ({ post, comment, user }) => {
           ><RiArrowDownSFill fill="#fa8072"/>답변</span>
           { !comment.isDelete && (
             permission && (
-            <>
-              <div className={edit ? "edit-btn hide" : "edit-btn"}>
-                <button onClick={() => setEdit(!edit)}>수정</button>
-                <button onClick={onRemoveComment}>삭제</button>
-              </div>
-              <div className={!edit ? "edit-btn hide" : "edit-btn"}>
-                <button type="submit" onClick={onEditCommentSubmit}>수정</button>
-                <button onClick={() => setEdit(!edit)}>취소</button>
-              </div>
-            </>
+              !comment.ref_comment ? (
+              <>
+                <div className={edit ? "edit-btn hide" : "edit-btn"}>
+                  <button onClick={() => setEdit(!edit)}>수정</button>
+                  <button onClick={onRemoveComment}>삭제</button>
+                </div>
+                <div className={!edit ? "edit-btn hide" : "edit-btn"}>
+                  <button type="submit" onClick={onEditCommentSubmit}>수정</button>
+                  <button onClick={() => setEdit(!edit)}>취소</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className={edit ? "edit-btn hide" : "edit-btn"}>
+                  <button onClick={() => setEdit(!edit)}>답변수정</button>
+                  <button >답변삭제</button>
+                </div>
+                <div className={!edit ? "edit-btn hide" : "edit-btn"}>
+                  <button type="submit">답변수정</button>
+                  <button onClick={() => setEdit(!edit)}>답변취소</button>
+                </div>
+              </>
+            )
           ))}
         </div>
       </div>
