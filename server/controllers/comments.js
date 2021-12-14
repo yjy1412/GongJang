@@ -11,7 +11,7 @@ module.exports = {
     if (!accessResult.identified) {
       return accessResult;
     }
-    const postsId = req.body.post_id; //postId       
+    const postId = req.body.post_id; //postId       
     const loginId = accessResult.id; //userId
     const inputContent = req.body.content //내용이 있어야 함
 
@@ -28,14 +28,14 @@ module.exports = {
 
       const postInfo = await Post.findOne({
         where : {
-          id : postsId
+          id : postId
         }
       })
       const writer = postInfo.dataValues.user_id
 
       await Comment.create({
         content : inputContent,
-        post_id : postsId,
+        post_id : postId,
         user_id : loginId
       })
       .then(async data => {
@@ -47,7 +47,7 @@ module.exports = {
               attributes: ['nickname']
             }],
             where : {
-              post_id : postsId,
+              post_id : postId,
               ref_comment : null
             }
           })
@@ -64,7 +64,7 @@ module.exports = {
               attributes: ['nickname']
             }],
             where : {
-            post_id : postsId,
+            post_id : postId,
             user_id : loginId,
             ref_comment: null
             }
@@ -87,7 +87,7 @@ module.exports = {
     if (!accessResult.identified) {
       return accessResult;
     }
-    const postsId = req.params.posts_id
+    const postId = req.params.post_id
     const loginId = accessResult.id
     //get에서 분기를 나눠줘야 한다
     //1. loginId가 Post.user_id와 일치할 때 => ref_comment가 null인 댓글을 불러와야 한다.
@@ -95,7 +95,7 @@ module.exports = {
     try {
       const postInfo = await Post.findOne({
         where : {
-          id : postsId
+          id : postId
         }
       })
       const writer = postInfo.dataValues.user_id
@@ -107,12 +107,12 @@ module.exports = {
             attributes: ['nickname']
           }],
           where: {
-            post_id: postsId,
+            post_id: postId,
             ref_comment : null
           }
         })
           .then(async data => {
-            await res.status(200).json({
+            res.status(200).json({
               data,
               message: "댓글을 불러왔습니다."
             })
@@ -124,7 +124,7 @@ module.exports = {
             attributes: ['nickname']
           }],
           where: {
-            post_id: postsId,
+            post_id: postId,
             user_id: loginId,
             ref_comment : null
           }
@@ -150,7 +150,7 @@ module.exports = {
     const inputContent = req.body.content
     const loginId = accessResult.id
     const commentsId = req.params.comments_id
-    const postsId = req.body.post_id
+    const postId = req.body.post_id
     //댓글 수정 - 빈칸    
     try {
       if (!inputContent) {
@@ -165,7 +165,7 @@ module.exports = {
 
       const postInfo = await Post.findOne({
         where : {
-          id : postsId
+          id : postId
         }
       })
       const writer = postInfo.dataValues.user_id
@@ -194,12 +194,12 @@ module.exports = {
                 attributes: ['nickname']
               }],
               where: {
-                post_id: postsId,
+                post_id: postId,
                 ref_comment: null
               }
             })
             .then(async data => {
-              await res.status(201).json({
+              await res.status(200).json({
                 data,
                 message: '댓글이 수정되었습니다.'
               })
@@ -211,13 +211,13 @@ module.exports = {
                 attributes: ['nickname']
               }],
               where: {
-                post_id: postsId,
+                post_id: postId,
                 user_id: loginId,
                 ref_comment: null
               }
             })
             .then(async data => {
-              await res.status(201).json({
+              await res.status(200).json({
                 data,
                 message: '댓글이 수정되었습니다.'
               })
@@ -236,7 +236,7 @@ module.exports = {
     if (!accessResult.identified) {
       return accessResult;
     }
-    const postsId = req.body.post_id     
+    const postId = req.body.post_id     
     const loginId = accessResult.id
     const admin = accessResult.admin
     const commentsId = req.params.comments_id; //commentsid 
@@ -258,7 +258,7 @@ module.exports = {
 
       const postInfo = await Post.findOne({
         where : {
-          id : postsId
+          id : postId
         }
       })
       const writer = postInfo.dataValues.user_id
@@ -280,7 +280,7 @@ module.exports = {
                   attributes: ['nickname']
                 },
                 where: {
-                  post_id: postsId,
+                  post_id: postId,
                   ref_comment: null
                 }
               })
@@ -297,7 +297,7 @@ module.exports = {
                   attributes: ['nickname']
                 },
                 where: {
-                  post_id: postsId,
+                  post_id: postId,
                   user_id: loginId,
                   ref_comment: null
                 }

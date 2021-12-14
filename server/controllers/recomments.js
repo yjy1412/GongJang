@@ -14,12 +14,12 @@ module.exports = {
       return accessResult;
     }
     const loginId = accessResult.id
-    const postsId = req.body.post_id
+    const postId = req.body.post_id
     const inputContent = req.body.content
     try{
       await Comment.create({
         content : inputContent,
-        post_id : postsId,
+        post_id : postId,
         user_id : loginId,
         ref_comment : commentsId 
       })
@@ -48,7 +48,7 @@ module.exports = {
   //GET /recomments/:comments_id
   get: async(req, res) => { //답글 펼쳐보기 버튼을 눌렀을때 들어오는 요청
     const accessResult = accessFunc(req, res);  
-    const postsId = req.body.posts_id    
+    const postId = req.body.post_id    
     const commentsid = req.params.comments_id
 
     if (!accessResult.identified) {
@@ -78,7 +78,7 @@ module.exports = {
   //PATCH /recomments/:comments_id
   patch: async (req, res) => {
     const accessResult = accessFunc(req, res);  
-    const postsId = req.body.posts_id    
+    const postId = req.body.post_id    
     const commentsId = req.params.comments_id
     const recommentsId = req.body.recomments_id
     const inputContent = req.body.content
@@ -108,7 +108,7 @@ module.exports = {
           }
         })
         .then(data => {
-          res.status(201).json({
+          res.status(200).json({
             data,
             message : '댓글이 수정되었습니다.'
           })
@@ -121,7 +121,7 @@ module.exports = {
   //DELETE /recomments/:comments_id
   delete: async (req, res) => {
     const accessResult = accessFunc(req, res);  
-    const postsId = req.body.posts_id    
+    const postId = req.body.post_id    
     const commentsId = req.params.comments_id
     const recommentsId = req.body.recomments_id   
     if (!accessResult.identified) {

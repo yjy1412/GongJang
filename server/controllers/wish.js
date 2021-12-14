@@ -20,7 +20,7 @@ module.exports = {
     Post.findOne({ where: { id: postId } })
       .then(result => {
         if (!result) {
-          return res.status(404).send("요청하신 게시글 정보를 찾을 수 없습니다")
+          return res.status(400).send("요청하신 게시글 정보를 찾을 수 없습니다")
         }
       })
       .catch(err => {
@@ -63,7 +63,7 @@ module.exports = {
     Post.findOne({ where: { id: postId } })
       .then(result => {
         if (!result) {
-          return res.status(404).send("요청하신 게시글 정보를 찾을 수 없습니다")
+          return res.status(400).send("요청하신 게시글 정보를 찾을 수 없습니다")
         }
       })
       .catch(err => {
