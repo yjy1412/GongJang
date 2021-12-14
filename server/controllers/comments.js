@@ -63,8 +63,11 @@ module.exports = {
               model: User,
               attributes: ['nickname']
             }],
+            where : {
+            post_id : postsId,
             user_id : loginId,
             ref_comment: null
+            }
           })
           .then(async data => {
             res.status(200).json({
@@ -121,6 +124,7 @@ module.exports = {
             attributes: ['nickname']
           }],
           where: {
+            post_id: postsId,
             user_id: loginId,
             ref_comment : null
           }
@@ -207,6 +211,7 @@ module.exports = {
                 attributes: ['nickname']
               }],
               where: {
+                post_id: postsId,
                 user_id: loginId,
                 ref_comment: null
               }
@@ -292,6 +297,7 @@ module.exports = {
                   attributes: ['nickname']
                 },
                 where: {
+                  post_id: postsId,
                   user_id: loginId,
                   ref_comment: null
                 }
