@@ -56,6 +56,10 @@ const PostDetailBlock = styled.div`
       color: #575F95;
       padding: 0.5rem 0.5rem 0;
       cursor: pointer;
+      transition: .3s;
+      &:hover {
+        color: #f9796d;
+      }
     }
   }
   .desc {
@@ -211,13 +215,6 @@ const PostDetail = () => {
 
   const date = checkTime(post?.createdAt);
   
-  // const ownPost = ((user && user.nickname) === (post && post?.writer.writer_nickname));
-  // if(error){
-  //   if(error.response && error.response.status === 404){
-  //     return <PostDetailBlock>나눔글이 존재하지 않습니다.</PostDetailBlock>;
-  //   }
-  //   return <PostDetailBlock>예상치 못한 오류가 발생했습니다.</PostDetailBlock>;
-  // }
   if(loading || !post){
     return <Loading/>;
   }
