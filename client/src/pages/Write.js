@@ -176,7 +176,7 @@ const Write = () => {
     if(postError){
       console.log(postError);
     }
-    return () => { //언마운트될 때 초기화
+    return () => { 
        dispatch(initialize());
     }
   },[dispatch, history, post, postError])
