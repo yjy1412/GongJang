@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { fetchGetPostsByCategory } from '../../../feature/postsSlice';
+import { fetchGetAllPosts } from '../../../feature/postsSlice';
 
 const CategoryList = styled.ul`
   display: flex;
@@ -25,16 +25,15 @@ const CategoryList = styled.ul`
 const Categories = ({ categories }) => {
 
   const dispatch = useDispatch();
-
   const handleCategory = (category) => {
-    dispatch(fetchGetPostsByCategory(category));
+    dispatch(fetchGetAllPosts({ category: category }));
   }
 
   return (
     <CategoryList>
       {
         categories.map((category, idx) => 
-          <li className="category-menu" key={idx} onClick={() => handleCategory(category)} >{category}</li>
+          <li className="category-menu" key={idx} onClick={() => handleCategory(category, idx)} >{category}</li>
         )
       }
     </CategoryList>

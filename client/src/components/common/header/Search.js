@@ -4,7 +4,7 @@ import { FiSearch } from 'react-icons/fi';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import Categories from './Categories';
-import { fetchGetPostsBySearch } from '../../../feature/postsSlice';
+import { fetchGetAllPosts } from '../../../feature/postsSlice';
 
 const SearchBlock = styled.div`
   .wrap {
@@ -94,18 +94,23 @@ const Search = ({ onClick }) => {
 
   const dispatch = useDispatch();
 
-  const [keyword, setKeyword] = useState("");
+  const [search, setSearch] = useState("");
 
-  const categories = ['장난감', '인형', '보드게임', '퍼즐', '프라모델', '기타'];
+  const categories = ['전체', '장난감', '인형', '보드게임', '퍼즐', '기타'];
 
   const handleSearch = (e) => {
-    setKeyword(e.target.value);
+    setSearch(e.target.value);
   }
 
   const handleSubmit = () => {
-    dispatch(fetchGetPostsBySearch(keyword))
+    dispatch(fetchGetAllPosts({ search: search }))
   }
 
+  const onKeyPress = (e) => {
+    if(e.key === 'Enter'){
+      handleSubmit(e);
+    }
+  }
   return (
     <SearchBlock>
       <div className="wrap">
@@ -116,6 +121,7 @@ const Search = ({ onClick }) => {
             placeholder="나눔 아이템을 검색하세요." 
             defaultValue=""
             onChange={(e) => handleSearch(e)}
+            onKeyPress={onKeyPress}
             />
             <div className="search-icon" onClick={handleSubmit} >
               <FiSearch/>
