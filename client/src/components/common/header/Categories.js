@@ -8,6 +8,7 @@ const CategoryList = styled.ul`
   align-items: center;
   justify-content: flex-start;
   gap: 2rem;
+  flex-wrap: wrap;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   .category-menu {
@@ -20,7 +21,10 @@ const CategoryList = styled.ul`
       border-radius: 5px;
     }
   }
-`
+  @media only screen and (max-width: 768px){
+    gap: 0;
+  }
+`;
 
 const Categories = ({ categories }) => {
 

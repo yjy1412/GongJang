@@ -45,6 +45,7 @@ const SearchBlock = styled.div`
         .category-title {
           font-weight: 600;
           margin-right: 3rem;
+          white-space: nowrap;
         }
       }
     }
@@ -71,11 +72,6 @@ const SearchBlock = styled.div`
             font-size: 1rem;
           }
         }
-        .category-box {
-          .category-list {
-            gap: 1rem;
-          }
-        }
       }
       .close-icon {
         padding: 0.5rem 1rem;
@@ -86,6 +82,13 @@ const SearchBlock = styled.div`
   @media only screen and (max-width: 768px){
     .wrap {
       width: 100%;
+      .search-container {
+        .category-box {
+          .category-title {
+            margin-right: 0.5rem;
+          }
+        }
+      }
     }
   }
 `;

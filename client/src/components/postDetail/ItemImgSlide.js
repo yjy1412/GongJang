@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { HiOutlineChevronLeft, HiOutlineChevronRight } from 'react-icons/hi';
 import SlideImgModal from '../modal/SlideImgModal';
+import DefaultImg from '../../style/images/defaultImg.png';
 
 const ItemImgSlideBlock = styled.div`
   display: flex;
@@ -54,29 +55,31 @@ const ItemImgSlide = ({ post }) => {
   })
   const activeSlide = data[activeIndex];
 
-  const prevHandler = () => {
+  const prevHandler = useCallback(() => {
     activeIndex <= 0 ? 
     setActiveIndex(data.length - 1) : 
     setActiveIndex((oldIndex) => oldIndex - 1);
-  }
+  },[activeIndex, data.length])
 
-  const nextHandler = () => {
+  const nextHandler = useCallback(() => {
     activeIndex >= data.length - 1 ? 
     setActiveIndex(0) : 
     setActiveIndex((oldIndex) => oldIndex + 1);
-  }
+  },[activeIndex, data.length])
 
   const onClickSlideImg = () => {
     setModal(!modal);
   }
 
-  //업로드한 이미지 없을 경우 기본 이미지 보여주기 
-
   return (
     <ItemImgSlideBlock>
       <div className="slide-box">
           <div className="slide" onClick={onClickSlideImg}>
-            <img src={activeSlide} alt="나눔 이미지" />
+            { !activeSlide ? (
+              <img src={DefaultImg} alt="나눔 기본 이미지"/>
+            ) : (
+              <img src={activeSlide} alt="나눔 이미지" />
+              )}
           </div>
         <div 
         className="prev"
