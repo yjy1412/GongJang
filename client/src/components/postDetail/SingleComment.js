@@ -91,13 +91,13 @@ const SingleComment = ({ post, comment, user }) => {
   const [edit, setEdit] = useState(false);
   const [editContent, setEditContent] = useState(comment.content);
   const [permission, setPermission] = useState(false);
+
   const dispatch = useDispatch();
 
   const onChangeReply = (e) => {
     setReplyContent(e.target.value);
   }
 
-  // 코멘트 수정
   const onEditComment = (e) => {
     setEditContent(e.target.value);
   }
@@ -129,9 +129,9 @@ const SingleComment = ({ post, comment, user }) => {
     await dispatch(removeComment(comment.id));
   },[comment.id, dispatch, post?.post_id])
 
-  const onSubmitReply = useCallback(async e => {
+  const onSubmitReply = useCallback(async (e) => {
     e.preventDefault();
-    //답글 데이터 만들어 보내기
+
     if(replyContent === ''){
       return;
     }
@@ -147,7 +147,7 @@ const SingleComment = ({ post, comment, user }) => {
 
   useEffect(() => {
     if(user){
-      if(user?.nickname === comment?.User.nickname){
+      if((user?.nickname === comment?.User.nickname) || user?.admin === true){
         setPermission(true);
       } else {
         setPermission(false);

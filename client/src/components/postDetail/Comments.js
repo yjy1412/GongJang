@@ -51,7 +51,6 @@ const Comments = ({ post, commentList, recommentList, onClickInput, user }) => {
     if(comment === ''){
       return;
     }
-    //댓글 데이터 만들어 보내기
     const form = {
       content: comment,
       post_id: post.post_id,
@@ -62,7 +61,6 @@ const Comments = ({ post, commentList, recommentList, onClickInput, user }) => {
 
   return (
       <CommentsBlock>
-        {/* root comment */}
         <form className="comment-box" onSubmit={onSubmitComment}>
           <textarea 
           type="text" 
@@ -73,7 +71,6 @@ const Comments = ({ post, commentList, recommentList, onClickInput, user }) => {
           />
           <CommentBtn>COMMENT</CommentBtn>
         </form>
-        {/* comments Lists */}
         { commentList && (
           commentList.map((comment) => !comment.ref_comment && (
             <div key={comment.id}>
