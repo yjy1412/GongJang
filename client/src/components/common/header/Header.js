@@ -100,6 +100,11 @@ const MenuBoxBlock = styled.div`
         font-size: 0.9rem;
         li {
             display: flex;
+            color: #575f95;
+            transition: .3s;
+            &:hover {
+                color: #f9796d;
+            }
             a {
                padding: 0.5rem 1.5rem 0;
             }
