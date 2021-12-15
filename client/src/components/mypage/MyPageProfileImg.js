@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { changeWishPost } from '../../feature/postSlice';
 import { changeProfileImage, fetchUpdateProfileImage } from '../../feature/userSlice';
 import AskEditModal from '../modal/AskEditModal';
 
@@ -31,12 +30,11 @@ const MyPageProfileImgBlock = styled.div`
 `;
 
 const MyPageProfileImg = ({previewProfileImage, setPreviewProfileImage}) => {
-
-  const dispatch = useDispatch();
-  const { user } = useSelector( state => state.user )
-
   const [visible, setVisible] = useState(false);
   const [ profile_image, setProfile_image] = useState(null);
+  const { user } = useSelector( state => state.user )
+
+  const dispatch = useDispatch();
 
   const onFileChange = (e) => {
     let file = e.target.files[0];
@@ -54,7 +52,6 @@ const MyPageProfileImg = ({previewProfileImage, setPreviewProfileImage}) => {
       reader.readAsDataURL(file);
     }
   }
-  
   
   useEffect(() => {
     if(previewProfileImage){
