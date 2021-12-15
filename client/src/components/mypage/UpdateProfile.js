@@ -88,6 +88,13 @@ const UpdateProfile = ({ user, userInfoError, isEdited, setNewNickname, newNickn
     setNewNickname('');
   }
 
+  const onKeyPress = (e) => {
+    if(e.key === 'Enter'){
+      if(newNickname) {
+        setVisible(true)
+      }
+    }
+  }
   useEffect(() => {
     if(isEdited){
       history.push('/mypage');
@@ -105,7 +112,7 @@ const UpdateProfile = ({ user, userInfoError, isEdited, setNewNickname, newNickn
     <>
       <UpdateProfileBlock>
         <h1><span>{user ? user.nickname : ""}</span> 님, 안녕하세요.</h1>
-        <UpdateProfileForm>
+        <UpdateProfileForm onKeyPress={onKeyPress}>
           <div className="update-nickname">
             <input 
               type="text" 
