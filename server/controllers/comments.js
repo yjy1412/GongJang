@@ -83,6 +83,7 @@ module.exports = {
     }
     const postId = req.params.post_id
     const loginId = accessResult.id
+    const admin = accessResult.admin    
     //get에서 분기를 나눠줘야 한다
     //1. loginId가 Post.user_id와 일치할 때 => ref_comment가 null인 댓글을 불러와야 한다.
     //1. 1번이 아닐때는 Comment.user_id 가 loginId와 일치하는 ref_comment가 null인 댓글을 불러와야 한다.
@@ -94,7 +95,7 @@ module.exports = {
       })
       const writer = postInfo.dataValues.user_id
 
-      if(loginId === writer) {
+      if( admin === true || loginId === writer ) {
         await Comment.findAll({
           include : [{
             model : User,
@@ -244,7 +245,7 @@ module.exports = {
       })
       const writer = postInfo.dataValues.user_id
       
-      if ( admin === null || commentWriter !== loginId ) { //admin이 없거나 댓글 작성자와 로그인유저가 다를때 => 권한이 없다.
+      if ( admin === false && commentWriter !== loginId ) { //admin이 없거나 댓글 작성자와 로그인유저가 다를때 => 권한이 없다.
         return res.status(401).send('권한이 없습니다.');
       } else {
         await Comment.update({
