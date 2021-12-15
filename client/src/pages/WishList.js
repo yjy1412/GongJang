@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Wish from '../components/wishlist/Wish';
+import { fetchGetAllPosts } from '../feature/postsSlice';
 
 const WishListBlock = styled.div`
   width: 1130px;
@@ -49,11 +50,17 @@ const WishListBlock = styled.div`
 `;
 
 const WishList = () => {
-  const { posts } = useSelector( state => state.posts);
-  const { user } = useSelector( state => state.user);
-  const { wish } = useSelector( state => state.wish);
-
   const [modal, setModal] = useState(false);
+  const { posts, user, wish } = useSelector(({ posts, user, wish }) => ({
+    posts: posts.posts,
+    user: user.user,
+    wish: wish.wish
+  }));
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchGetAllPosts());
+  },[dispatch])
 
   return (
     <WishListBlock>
