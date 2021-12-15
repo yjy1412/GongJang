@@ -113,7 +113,8 @@ module.exports = {
   delete: async (req, res) => {
     const accessResult = accessFunc(req, res);
     const commentId = req.params.comment_id
-    const recommentId = req.body.recomment_id   
+    const recommentId = req.body.recomment_id 
+    const admin = accessResult.admin  
     if (!accessResult.identified) {
       return accessResult;
     }
@@ -126,7 +127,7 @@ module.exports = {
       })
       const recommentWriter = userInfo.dataValues.user_id
       console.log(recommentWriter)
-      if(recommentWriter !== loginid) {
+      if( admin === false && recommentWriter !== loginid ) {
         return res.status(401).send('권한이 없습니다.')
       } else { //댓글 작성자와 로그인 유저가 같다.        
         await Comment.update({
@@ -137,7 +138,7 @@ module.exports = {
             id : recommentId
           }
         })
-        .then(async data => {
+        .then(data => {
           return res.status(200).json(data)
         })
       }
