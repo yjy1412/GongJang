@@ -39,7 +39,7 @@ export const fetchSocialLogin = createAsyncThunk(
   async (response, { rejectWithValue }) => {
     const { code } = response;
     try {
-      const response = await axios.post('/auth/google/login', { code })
+      const response = await axios.post('/auth/google/log-in', { code })
       return response.data
     } catch(err) {
       return rejectWithValue(err.response.data);
