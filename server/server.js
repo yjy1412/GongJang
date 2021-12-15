@@ -9,10 +9,9 @@ const app = express();
 const NODE_ENV = process.env.NODE_ENV;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN;
 const PRODUCT_CLIENT_ORIGIN = process.env.PRODUCT_CLIENT_ORIGIN;
-
 let origin = CLIENT_ORIGIN;
-if ( NODE_ENV === 'production') {
-  origin = PRODUCT_CLIENT_ORIGIN;
+if ( NODE_ENV === 'production' ) {
+  origin = PRODUCT_CLIENT_ORIGIN
 }
 
 app.use(express.json())
