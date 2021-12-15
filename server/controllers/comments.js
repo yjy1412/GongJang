@@ -45,8 +45,8 @@ module.exports = {
               ref_comment : null
             }
           })
-          .then(async data => {
-            await res.status(201).json({
+          .then(data => {
+            return res.status(201).json({
               data,
               message : "댓글을 작성했습니다."
             })
@@ -63,8 +63,8 @@ module.exports = {
             ref_comment : null
             }
           })
-          .then(async data => {
-           await res.status(201).json({
+          .then(data => {
+            return res.status(201).json({
               data,
               message : "댓글을 작성했습니다."
             })
@@ -180,8 +180,8 @@ module.exports = {
                 ref_comment: null
               }
             })
-            .then(async data => {
-              await res.status(200).json({
+            .then(data => {
+              return res.status(200).json({
                 data,
                 message : '댓글이 수정되었습니다.'
               })
@@ -198,8 +198,8 @@ module.exports = {
                 ref_comment: null
               }
             })
-            .then(async data => {
-              await res.status(200).json({
+            .then(data => {
+              return res.status(200).json({
                 data,
                 message : '댓글이 수정되었습니다.'
               })
@@ -256,7 +256,7 @@ module.exports = {
             id: commentId
           }}
         ).then(async data => {
-            if(writer === loginId) {
+            if(admin === true || writer === loginId) {
               await Comment.findAll({
                 include: {
                   model: User,
@@ -267,8 +267,8 @@ module.exports = {
                   ref_comment: null
                 }
               })
-              .then(async data => {
-                await res.status(200).json({
+              .then(data => {
+                return res.status(200).json({
                   data,
                   message: '댓글이 삭제되었습니다.'
                 })
@@ -285,8 +285,8 @@ module.exports = {
                   ref_comment: null
                 }
               })
-              .then(async data => {
-                await res.status(200).json({
+              .then(data => {
+                return res.status(200).json({
                   data,
                   message: '댓글이 삭제되었습니다.'
                 })
