@@ -7,6 +7,7 @@ import AskAccountDeleteModal from '../components/modal/AskAccountDeleteModal'
 import { fetchDeleteAccount, fetchLogOut } from '../feature/userSlice';
 import MyPageProfileImg from '../components/mypage/MyPageProfileImg';
 import MyPosts from '../components/mypage/MyPosts'
+import NoMyPosts from '../components/mypage/NoMyPosts';
 
 const MyPageBlock = styled.div`
   width: 1130px;
@@ -144,9 +145,10 @@ const MyPage = () => {
             <DeleteButton onClick={handleDeleteButton}>DELETE ACCOUNT</DeleteButton>
           </div>
         </div>
-        <MyPosts 
-          myposts={myposts}
-        />
+        {
+          
+          <NoMyPosts />
+        }
       </MyPageBlock>
       { 
         visible && (
