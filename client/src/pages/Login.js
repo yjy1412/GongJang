@@ -15,7 +15,7 @@ const AuthBackground = styled.div`
 
 const AuthLoginBlock = styled.div`
   border-radius: 10px;
-  padding: 25px;
+  padding: 20px 20px 12px 20px;
   max-width: 320px;
   width: 100%;
   background-color: white;
@@ -61,7 +61,7 @@ const Message = styled.div`
   top: 20px;
   display: flex;
   justify-content: end;
-  font-size: 10px;
+  font-size: 9px;
   color: red;
   margin-left: 2px;
 `;
@@ -132,7 +132,7 @@ const Login = () => {
     setLoginInfo({ ...loginInfo, [e.target.name] : e.target.value});
     const testPassword = /(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/
     if(!testPassword.test(e.target.value)){
-      setPasswordMessage('숫자+영문자+특수문자 조합으로 8자리 이상 16자리 이하로 입력해주세요');
+      setPasswordMessage('영문 대소문자/숫자/특수문자 포함 8-16자 이내여야 합니다');
     } else {
       setPasswordMessage('');
     }
