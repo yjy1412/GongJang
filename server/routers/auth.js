@@ -26,6 +26,6 @@ router.get('/mypage/posts', authControllers.getMyPosts);
 
 router.get('/wish-list', authControllers.getWishLists);
 
-router.post('/google/log-in', authControllers.googleLogin);
+router.post('/google/login', authControllers.googleLogin);
 
 module.exports = router;
