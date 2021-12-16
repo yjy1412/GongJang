@@ -34,8 +34,11 @@ const Categories = ({ categories }) => {
 
   const handleCategory = (category) => {
     history.push('/')
-    setTimeout(() => {dispatch(fetchGetAllPosts({ category: category }));}, 500)
-    
+    if(category === '전체'){
+      setTimeout(() => {dispatch(fetchGetAllPosts());}, 300)
+    } else {
+      setTimeout(() => {dispatch(fetchGetAllPosts({ category: category }));}, 300)
+    }
   }
 
   return (

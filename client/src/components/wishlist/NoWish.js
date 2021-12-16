@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { BsFillEmojiNeutralFill } from 'react-icons/bs'
-const NoResult = () => {
+const NoWish = () => {
 
   const NoResultBlock = styled.div`
   height: 80vh;
@@ -41,11 +41,11 @@ const NoResult = () => {
       <div className="no-result-box">
         <BsFillEmojiNeutralFill className="no-result-icon"/>
         <div className="no-result-message ">
-          <span>해당 게시글이 존재하지 않습니다.</span>
+          <span>위시리스트가 존재하지 않습니다.</span>
         </div>
       </div>
     </NoResultBlock>
   );
 };
 
-export default NoResult;
+export default NoWish;
