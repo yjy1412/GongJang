@@ -4,7 +4,7 @@ import Button from '../common/Button';
 import SingleComment from './SingleComment';
 import ReplyComment from './ReplyComment';
 import { useDispatch } from 'react-redux';
-import { fetchCreateComment } from '../../feature/commentSlice';
+import { fetchCreateComment, fetchGetAllComments } from '../../feature/commentSlice';
 
 const CommentsBlock = styled.div`
   padding-bottom: 3rem;
@@ -56,6 +56,7 @@ const Comments = ({ post, commentList, recommentList, onClickInput, user }) => {
       post_id: post.post_id,
     };
     await dispatch(fetchCreateComment(form));
+    await dispatch(fetchGetAllComments(post.post_id))
     setComment('');
   },[comment, dispatch, post.post_id])
 

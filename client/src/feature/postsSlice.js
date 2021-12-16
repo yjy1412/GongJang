@@ -9,6 +9,9 @@ export const fetchGetAllPosts = createAsyncThunk(
   'posts/fetchGetAllPosts',
   async ( form ) => {
       try {
+        if(form.category === '전체') {
+          form = null;
+        }
         const params = form;
         const response = await axios.get('/posts', 
           { 
@@ -35,6 +38,7 @@ const initialState = {
   myposts: [],
   error: null,
   loading: false,
+  noresult: false
 }
 
 export const postsSlice = createSlice({
@@ -59,10 +63,13 @@ export const postsSlice = createSlice({
       state.loading = true;
     },
     [fetchGetAllPosts.fulfilled]: (state, { payload }) => {
-      if(typeof payload !== 'string'){
-        state.posts = payload;
-      }
       state.loading = false;
+      if(typeof payload !== 'string'){
+        state.noresult = false;
+        state.posts = payload;
+      } else {
+        state.noresult = true;
+      }
     },
     [fetchGetAllPosts.rejected]: (state, { payload }) => {
       state.error = payload;

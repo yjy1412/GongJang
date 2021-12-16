@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import Item from '../main/Item';
+import NoWish from './NoWish';
 
 const WishItemListBlock = styled.ul`
   display: flex;
@@ -20,6 +21,10 @@ const WishItemListBlock = styled.ul`
 const Wish = ({posts, user, setModal, modal}) => {
 
   const filteredWish = posts.filter((post) => post.wish === true);
+
+  if(!filteredWish.length){
+    return <NoWish />
+  }
 
   return (
     <>

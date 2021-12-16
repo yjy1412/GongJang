@@ -355,7 +355,7 @@ module.exports = {
       let queryCategory = req.query.category;
 
       // 1-2 검색 범위 설정 : title, content, category
-      const category = ["장난감", "보드게임", "퍼즐", "프라모델", "인형", "기타"];
+      const category = ["전체", "장난감", "보드게임", "퍼즐", "인형", "기타"];
 
       // 1-3 input 데이터 유효성 검증
       if (queryCategory && !category.includes(queryCategory)) {
