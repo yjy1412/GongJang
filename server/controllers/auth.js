@@ -520,7 +520,9 @@ module.exports = {
     if(!code) {
       return res.status(401).send('권한이 없습니다.')
     }
-   await axios.post(tokenUrl, { //1.구글 오쓰 서버에 요청해서 토큰을 받아옴
+  
+   try{
+    await axios.post(tokenUrl, { //1.구글 오쓰 서버에 요청해서 토큰을 받아옴
       code : code,
       client_id : client_id,
       client_secret : client_secret,
@@ -578,9 +580,11 @@ module.exports = {
                 userInfo: { id, email, nickname, profile_image: convertImg, admin },
                 message: "로그인에 성공했습니다"
               })
-           })          
+           })  
         })             
     })  
- 
+   } catch(err) {
+     return res.status(500).send('서버에 오류가 발생했습니다.')
+   } 
 }
 }
