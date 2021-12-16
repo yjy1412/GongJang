@@ -1,15 +1,24 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import qs from "qs";
+axios.default.paramsSerializer = params => {
+  return qs.stringify(params);
+}
 
 export const fetchGetAllPosts = createAsyncThunk(
   'posts/fetchGetAllPosts',
-  async () => {
-    try {
-      const response = await axios.get('/posts');
-      return response.data;
-    } catch(err){
-      return err.response.data;
-    }
+  async ( form ) => {
+      try {
+        const params = form;
+        const response = await axios.get('/posts', 
+          { 
+            params        
+          }
+        );
+        return response.data;
+      } catch(err){
+        return err.response.data;
+      }
   }
 )
 
@@ -21,35 +30,12 @@ export const fetchGetMyPosts = createAsyncThunk(
   }
 )
 
-export const fetchGetPostsByCategory = createAsyncThunk(  
-  'posts/fetchGetPostsByCategory',
-  async (category, { rejectWithValue }) => {
-    try {
-      const response = await axios.get(`/posts?category=${category}`);
-      return response.data;
-    } catch(err){
-      return rejectWithValue(err.response.data);
-    }
-  }
-)
-
-export const fetchGetPostsBySearch = createAsyncThunk(
-  'posts/fetchGetPostsBySearch',
-  async (keyword, { rejectWithValue }) => {
-    try {
-      const response = await axios.get(`/posts?search=${keyword}`)
-      return response.data;
-    } catch (err) {
-      return rejectWithValue(err.response.data);
-    }
-  }
-)
-
 const initialState = {
   posts: [],
   myposts: [],
   error: null,
   loading: false,
+  noresult: false
 }
 
 export const postsSlice = createSlice({
@@ -74,36 +60,15 @@ export const postsSlice = createSlice({
       state.loading = true;
     },
     [fetchGetAllPosts.fulfilled]: (state, { payload }) => {
-      state.posts = payload;
       state.loading = false;
+      if(typeof payload !== 'string'){
+        state.noresult = false;
+        state.posts = payload;
+      } else {
+        state.noresult = true;
+      }
     },
     [fetchGetAllPosts.rejected]: (state, { payload }) => {
-      state.error = payload;
-      state.loading = false;
-    },
-    [fetchGetPostsByCategory.pending]: (state) => {
-      state.loading = true;
-    },
-    [fetchGetPostsByCategory.fulfilled]: (state, { payload }) => {
-      state.loading = false;
-      if(typeof payload !== 'string'){
-        state.posts = payload
-      }
-    },
-    [fetchGetPostsByCategory.rejected]: (state, { payload }) => {
-      state.error = payload;
-      state.loading = false;
-    },
-    [fetchGetPostsBySearch.pending]: (state) => {
-      state.loading = true;
-    },
-    [fetchGetPostsBySearch.fulfilled]: (state, { payload }) => {
-      state.loading = false;
-      if(typeof payload !== 'string'){
-        state.posts = payload
-      }
-    },
-    [fetchGetPostsBySearch.rejected]: (state, { payload }) => {
       state.error = payload;
       state.loading = false;
     },

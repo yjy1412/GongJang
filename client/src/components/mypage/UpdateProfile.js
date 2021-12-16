@@ -18,17 +18,41 @@ const UpdateProfileBlock = styled.div`
     font-size: 24px;
     margin-right: 20px;
   }
+  .update-password {
+    display: flex;
+    align-items: center;
+    p {
+      width: 354px;
+      height: 40px;
+      border-bottom: solid 1.2px #D4D4D4;
+      font-size: 24px;
+      margin-right: 20px;
+    }
+  }
   @media only screen and (max-width: 425px){
     margin-left: 0;
     h1 {
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       text-align: center;
       margin-bottom: 1rem;
+      span {
+        font-size: inherit;
+      }
     }
-    input {
+    input, span {
       width: 100%;
       font-size: 1rem;
       margin-right: 0;
+    }
+    .update-password {
+      flex-direction: column;
+      align-items: flex-start;
+      p {
+        width: 100%;
+        font-size: 1rem;
+        margin-right: 0;
+        padding-top: 0.5rem;
+      }
     }
   }
 `;
@@ -88,6 +112,13 @@ const UpdateProfile = ({ user, userInfoError, isEdited, setNewNickname, newNickn
     setNewNickname('');
   }
 
+  const onKeyPress = (e) => {
+    if(e.key === 'Enter'){
+      if(newNickname) {
+        setVisible(true)
+      }
+    }
+  }
   useEffect(() => {
     if(isEdited){
       history.push('/mypage');
@@ -105,7 +136,7 @@ const UpdateProfile = ({ user, userInfoError, isEdited, setNewNickname, newNickn
     <>
       <UpdateProfileBlock>
         <h1><span>{user ? user.nickname : ""}</span> 님, 안녕하세요.</h1>
-        <UpdateProfileForm>
+        <UpdateProfileForm onKeyPress={onKeyPress}>
           <div className="update-nickname">
             <input 
               type="text" 
@@ -118,10 +149,7 @@ const UpdateProfile = ({ user, userInfoError, isEdited, setNewNickname, newNickn
             <ErrorMessage>{serverErrorMessage}</ErrorMessage>
           </div>
           <div className="update-password">
-            <input 
-              type="text"
-              value="PASSWORD"
-            />
+            <p>PASSWORD</p>
             <Link to="/updatePassword">EDIT</Link>
           </div>
         </UpdateProfileForm>

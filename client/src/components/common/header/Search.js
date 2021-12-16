@@ -4,7 +4,8 @@ import { FiSearch } from 'react-icons/fi';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import Categories from './Categories';
-import { fetchGetPostsBySearch } from '../../../feature/postsSlice';
+import { fetchGetAllPosts } from '../../../feature/postsSlice';
+import { useHistory } from 'react-router-dom';
 
 const SearchBlock = styled.div`
   .wrap {
@@ -45,6 +46,7 @@ const SearchBlock = styled.div`
         .category-title {
           font-weight: 600;
           margin-right: 3rem;
+          white-space: nowrap;
         }
       }
     }
@@ -71,11 +73,6 @@ const SearchBlock = styled.div`
             font-size: 1rem;
           }
         }
-        .category-box {
-          .category-list {
-            gap: 1rem;
-          }
-        }
       }
       .close-icon {
         padding: 0.5rem 1rem;
@@ -86,6 +83,13 @@ const SearchBlock = styled.div`
   @media only screen and (max-width: 768px){
     .wrap {
       width: 100%;
+      .search-container {
+        .category-box {
+          .category-title {
+            margin-right: 0.5rem;
+          }
+        }
+      }
     }
   }
 `;
@@ -93,19 +97,26 @@ const SearchBlock = styled.div`
 const Search = ({ onClick }) => {
 
   const dispatch = useDispatch();
+  const history = useHistory();
 
-  const [keyword, setKeyword] = useState("");
+  const [search, setSearch] = useState("");
 
-  const categories = ['장난감', '인형', '보드게임', '퍼즐', '프라모델', '기타'];
+  const categories = ['전체', '장난감', '인형', '보드게임', '퍼즐', '기타'];
 
   const handleSearch = (e) => {
-    setKeyword(e.target.value);
+    setSearch(e.target.value);
   }
 
   const handleSubmit = () => {
-    dispatch(fetchGetPostsBySearch(keyword))
+    history.push('/')
+    setTimeout(() => {dispatch(fetchGetAllPosts({ search: search }));}, 500)
   }
 
+  const onKeyPress = (e) => {
+    if(e.key === 'Enter'){
+      handleSubmit(e);
+    }
+  }
   return (
     <SearchBlock>
       <div className="wrap">
@@ -116,6 +127,7 @@ const Search = ({ onClick }) => {
             placeholder="나눔 아이템을 검색하세요." 
             defaultValue=""
             onChange={(e) => handleSearch(e)}
+            onKeyPress={onKeyPress}
             />
             <div className="search-icon" onClick={handleSubmit} >
               <FiSearch/>

@@ -17,10 +17,14 @@ const WriteBlock = styled.div`
     input {
       width: 100%;
       font-size: 1.2rem;
-      padding: 1rem;
+      padding: 1rem 0 0.5rem;
+      color: inherit;
       border-bottom: 2px solid  #575f95;
       &::placeholder {
         color: #bcbdc4;
+      }
+      &:focus {
+        border-bottom: 2px solid  #fcb0a9;
       }
     }
     .info-title {
@@ -39,6 +43,7 @@ const WriteBlock = styled.div`
       height: 450px;
       padding: 1rem;
       font-size: 1.2rem;
+      color: inherit;
       border: 2px solid #575F95;
       &::placeholder {
         font-size: inherit;
@@ -135,7 +140,6 @@ const Write = () => {
     dispatch(removeImage(index));
   },[dispatch])
 
-  //글 폼 전송하기
   const onSubmitForm = useCallback(e => {
     e.preventDefault();
 
@@ -143,8 +147,6 @@ const Write = () => {
       onConfirm();
     }
 
-    //formData 전송
-    //이미지 변경시 파일로 첨부된 변경 이미지만 보내는게 좋을 듯
     const formData = new FormData();
 
     formData.append('title', title);
@@ -160,7 +162,6 @@ const Write = () => {
       formData.append('image', file);
     });
     
-    //글 수정 후 업데이트
     if(originalPostId){
       dispatch(fetchUpdatePost({formData, id: originalPostId}));
       return;
@@ -176,7 +177,7 @@ const Write = () => {
     if(postError){
       console.log(postError);
     }
-    return () => { //언마운트될 때 초기화
+    return () => { 
        dispatch(initialize());
     }
   },[dispatch, history, post, postError])

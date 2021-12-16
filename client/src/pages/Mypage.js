@@ -30,7 +30,7 @@ const MyPageBlock = styled.div`
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       margin-left: 1rem;
       span {
         padding: 0.5rem 0.5rem 0;
@@ -40,7 +40,7 @@ const MyPageBlock = styled.div`
     }
   }
   .profile-wrap {
-    padding: 10px 70px;
+    padding: 30px 70px;
     display: flex;
   }
   @media only screen and (max-width: 1024px){
@@ -63,7 +63,6 @@ const MyPageBlock = styled.div`
         }
       }
       .btn-box {
-        align-items: flex-start;
         span {
           font-size: 0.8rem;
           margin-bottom: 0;

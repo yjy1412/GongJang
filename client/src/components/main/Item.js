@@ -5,6 +5,7 @@ import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
 import { useDispatch } from 'react-redux';
 import { fetchRemoveWish, fetchWish } from '../../feature/wishSlice';
 import { changeWish } from '../../feature/postsSlice';
+import DefaultImg from '../../style/images/defaultImg.png';
 
 const ItemBlock = styled.li`
   max-width: 250px;
@@ -99,13 +100,15 @@ const Item = ({ post, user, setModal, modal }) => {
     }
   },[dispatch, modal, post?.id, post?.wish, setModal, user])
 
-  //이미지 없을 경우 기본 이미지 보여주기
-
   return (
     <ItemBlock>
       <div className="item-img">
         <Link to={`/${post?.id}`}>
-          <img src={`data:image/png;base64,${post?.image[0]}`} alt="" />
+          { post?.image[0] === "" ? (
+            <img src={DefaultImg} alt="나눔 기본 이미지"/>
+          ) : (
+            <img src={`data:image/png;base64,${post?.image[0]}`} alt="나눔 이미지" />
+          ) }
         </Link>
         <div className={post?.soldOut ? "sold-out show" : "sold-out"}>
           <span>나눔완료</span>
