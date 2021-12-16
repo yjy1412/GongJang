@@ -1,7 +1,5 @@
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import React from 'react';
 import styled from 'styled-components';
-import { fetchGetMyPosts } from '../../feature/postsSlice';
 import MyPost from './MyPost';
 
 const MyPostsBlock = styled.div`
@@ -26,12 +24,6 @@ const MyPostsBlock = styled.div`
 `;
 
 const MyPosts = ({ myposts }) => {
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fetchGetMyPosts());
-  }, [dispatch])
 
   return (
     <MyPostsBlock>

@@ -1,4 +1,4 @@
-import React,{ useState } from 'react';
+import React,{ useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router';
 import { useSelector, useDispatch} from 'react-redux';
@@ -8,6 +8,7 @@ import { fetchDeleteAccount, fetchLogOut } from '../feature/userSlice';
 import MyPageProfileImg from '../components/mypage/MyPageProfileImg';
 import MyPosts from '../components/mypage/MyPosts'
 import NoMyPosts from '../components/mypage/NoMyPosts';
+import { fetchGetMyPosts } from '../feature/postsSlice';
 
 const MyPageBlock = styled.div`
   width: 1130px;
@@ -117,6 +118,10 @@ const MyPage = () => {
     history.replace('/')
   }
 
+  useEffect(() => {
+    dispatch(fetchGetMyPosts());
+  }, [dispatch])
+
   return (
     <>
       <MyPageBlock>
@@ -146,7 +151,10 @@ const MyPage = () => {
           </div>
         </div>
         {
-          
+          myposts.length ? 
+          <MyPosts 
+            myposts={myposts}
+          /> :
           <NoMyPosts />
         }
       </MyPageBlock>
