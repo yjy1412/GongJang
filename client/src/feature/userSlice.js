@@ -2,12 +2,9 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import dotenv from 'dotenv';
 dotenv.config();
-const REACT_NODE_ENV = process.env.REACT_NODE_ENV;
 const REACT_APP_API_URL = process.env.REACT_APP_API_URL;
 
-if ( REACT_NODE_ENV === 'production' ) {
-  axios.defaults.baseURL = REACT_APP_API_URL;
-}
+// axios.defaults.baseURL = REACT_APP_API_URL;
 axios.defaults.baseURL = 'http://localhost:4000';
 axios.defaults.withCredentials = true;
 
