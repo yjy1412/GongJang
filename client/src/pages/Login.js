@@ -150,6 +150,12 @@ const Login = () => {
     })
   };
 
+  const onKeyPress = (e) => {
+    if(e.key === 'Enter'){
+      handleSubmit(e);
+    }
+  }
+
   useEffect(() => {
     if(accessToken){
       history.push('/');
@@ -168,7 +174,7 @@ const Login = () => {
         <div className="auth-title">
           Login
         </div>
-        <AuthLoginForm>
+        <AuthLoginForm onKeyPress={onKeyPress}>
           <div className="auth-input-box">
             <div className="auth-input-title">
               email

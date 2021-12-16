@@ -3,16 +3,16 @@ import axios from 'axios';
 
 export const fetchGetPostDetail = createAsyncThunk(
   'post/fetchGetPost',
-  async (id) => {
-    const response = await axios.get(`/posts/${id}`);
+  async (post_id) => {
+    const response = await axios.get(`/posts/${post_id}`);
     return response.data;
   }
 )
 
 export const fetchRemovePost = createAsyncThunk(
   'post/fetchRemovePost',
-  async (id) => {
-    await axios.delete(`/posts/${id}`);
+  async (post_id) => {
+    await axios.delete(`/posts/${post_id}`);
   }
 )
 

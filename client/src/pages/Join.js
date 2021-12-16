@@ -15,7 +15,7 @@ const AuthBackground = styled.div`
 
 const AuthJoinBlock = styled.div`
   border-radius: 10px;
-  padding: 25px;
+  padding: 20px;
   max-width: 320px;
   width: 100%;
   background-color: white;
@@ -46,13 +46,14 @@ const AuthJoinForm = styled.div`
   };
 
   input {
-    width: 180px;
+    width: 155px;
     border-bottom: solid 1.25px #D8D9DE;
   };
 
   .auth-input-title {
     display: flex;
-    font-size: 15px;
+    min-width: fit-content;
+    font-size: 14px;
   };
 `;
 
@@ -83,7 +84,8 @@ const Buttons = styled.div`
 `;
 
 const CancelButton = styled(Button)`
-  width: 150px;
+  width: 135px;
+  margin-right: 10px;
   height: 30px;
   color: #575f95;
   background-color: white;
@@ -173,6 +175,12 @@ const Join = () => {
     })
   }
 
+  const onKeyPress = (e) => {
+    if(e.key === 'Enter'){
+      handleSubmit(e);
+    }
+  }
+
   useEffect(() => {
     if(isSignUp){
       history.push('/login');
@@ -191,7 +199,7 @@ const Join = () => {
         <div className="auth-title">
           Join
         </div>
-        <AuthJoinForm>
+        <AuthJoinForm onKeyPress={onKeyPress}>
           <div className="auth-input-box">
             <div className="auth-input-title">
               nickname

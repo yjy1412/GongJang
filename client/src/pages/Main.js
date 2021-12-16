@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import ItemList from '../components/main/ItemList';
-import GameImg from '../components/main/GameImg';
 import Loading from '../components/common/Loading';
 import { fetchGetAllPosts } from '../feature/postsSlice';
 import AskModal from '../components/modal/AskModal';
+import Carousel from '../components/main/Carousel';
+import NoResult from '../components/main/NoResult';
 
 const MainBlock = styled.div`
   width: 1130px;
@@ -31,6 +32,12 @@ const MainBlock = styled.div`
       right: 35%;
     }
   }
+
+  .carousel-container {
+    display: flex;
+    justify-content: center;
+  }
+
   @media only screen and (max-width: 1024px){
     width: 100%;
     margin: 0;
@@ -57,10 +64,11 @@ const Main = () => {
   const [modal, setModal] = useState(false);
   const history = useHistory();
   const dispatch = useDispatch();
-  const { posts, loading, user } = useSelector(({ posts, user }) => ({
+  const { posts, loading, user, noresult } = useSelector(({ posts, user }) => ({
     posts: posts.posts,
     loading: posts.loading,
     user: user.user,
+    noresult: posts.noresult
   }))
 
   const onCancel = () => {
@@ -80,13 +88,19 @@ const Main = () => {
     }
   },[dispatch, user]);
   
-  if(loading || posts.length === 0){
+  if(loading){
     return <Loading/>;
   }
+  if(noresult){
+    return <NoResult/>;
+  }
+
   return (
     <>
       <MainBlock>
-        <GameImg/>
+        <div className="carousel-container">
+          <Carousel />
+        </div>
         <div className="share-text">
           <h2>공.장 나눔 공간</h2>
         </div>
@@ -96,6 +110,7 @@ const Main = () => {
         modal={modal}
         setModal={setModal}
         />
+        
       </MainBlock>
       { modal && (
         <AskModal 

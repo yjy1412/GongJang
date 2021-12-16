@@ -56,6 +56,10 @@ const PostDetailBlock = styled.div`
       color: #575F95;
       padding: 0.5rem 0.5rem 0;
       cursor: pointer;
+      transition: .3s;
+      &:hover {
+        color: #f9796d;
+      }
     }
   }
   .desc {
@@ -132,12 +136,13 @@ const PostDetail = () => {
   const [modal, setModal] = useState(false);
   const [visible, setVisible] = useState(false);
   const [ownPost, setOwnPost] = useState(false);
-  const { post, loading, user, commentList } = useSelector(({ post , user, comment }) => ({
+  const { post, loading, user, commentList, recommentList } = useSelector(({ post , user, comment }) => ({
     post: post.post,
     error: post.error,
     loading: post.loading,
     user: user.user,
     commentList: comment.commentList,
+    recommentList: comment.recommentList
   }));
 
   useEffect(() => {
@@ -210,13 +215,6 @@ const PostDetail = () => {
 
   const date = checkTime(post?.createdAt);
   
-  // const ownPost = ((user && user.nickname) === (post && post?.writer.writer_nickname));
-  // if(error){
-  //   if(error.response && error.response.status === 404){
-  //     return <PostDetailBlock>나눔글이 존재하지 않습니다.</PostDetailBlock>;
-  //   }
-  //   return <PostDetailBlock>예상치 못한 오류가 발생했습니다.</PostDetailBlock>;
-  // }
   if(loading || !post){
     return <Loading/>;
   }
@@ -253,7 +251,7 @@ const PostDetail = () => {
         <div className="interest">
           <div>
             <span>댓글</span>
-            <span> {commentList.length}</span>
+            <span> {commentList ? commentList.length : 0}</span>
           </div>
           <div className="heart" onClick={onClickWish}>
             { post?.wish ? (
@@ -268,6 +266,7 @@ const PostDetail = () => {
         post={post}
         user={user}
         commentList={commentList}
+        recommentList={recommentList}
         onClickInput={onClickInput}
         />
       </PostDetailBlock>

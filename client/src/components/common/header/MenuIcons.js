@@ -14,6 +14,11 @@ const MenuIconsBlock = styled.ul`
     height: 100%;
     display: flex;
     align-items: center;
+    color: #575f95;
+    transition: .3s;
+    &:hover {
+      color: #f9796d;
+    }
     a {
       width: 100%;
       padding: 0 1.7rem 0.5rem;

@@ -41,7 +41,7 @@ export const fetchSocialLogin = createAsyncThunk(
   async (response, { rejectWithValue }) => {
     const { code } = response;
     try {
-      const response = await axios.post('/auth/google/login', { code })
+      const response = await axios.post('/auth/google/log-in', { code })
       return response.data
     } catch(err) {
       return rejectWithValue(err.response.data);
@@ -147,6 +147,7 @@ const userSlice = createSlice({
       state.signUpError = null;
       state.userInfoError = null;
       state.passwordError = null;
+      state.isSignUp = false;
     },
     changeProfileImage: (state, { payload: value}) => {
       state.user.profile_image = value.split(',').slice(1).join(''); // 수정된 프로필 이미지 user에 저장

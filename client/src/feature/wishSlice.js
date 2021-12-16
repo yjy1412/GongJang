@@ -67,8 +67,6 @@ export const wishSlice = createSlice({
     [fetchWish.rejected]: (state, { payload }) => {
       state.wishError = payload;
     },
-    [fetchRemoveWish.fulfilled]: (state) => {
-    },
   }
 })
 
