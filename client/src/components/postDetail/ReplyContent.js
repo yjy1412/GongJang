@@ -88,7 +88,7 @@ const ReplyContent = ({ post, user, recomment, parentCommentId}) => {
 
   useEffect(() => {
     if(user){
-      if(user?.nickname === recomment?.User.nickname){
+      if(user?.nickname === recomment?.User.nickname || user?.admin === true){
         setOwnReply(true);
       } else {
         setOwnReply(false);

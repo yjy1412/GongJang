@@ -17,7 +17,8 @@ const WriteBlock = styled.div`
     input {
       width: 100%;
       font-size: 1.2rem;
-      padding: 1rem 0;
+      padding: 1rem 0 0.5rem;
+      color: inherit;
       border-bottom: 2px solid  #575f95;
       &::placeholder {
         color: #bcbdc4;
@@ -42,6 +43,7 @@ const WriteBlock = styled.div`
       height: 450px;
       padding: 1rem;
       font-size: 1.2rem;
+      color: inherit;
       border: 2px solid #575F95;
       &::placeholder {
         font-size: inherit;
