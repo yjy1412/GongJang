@@ -5,6 +5,7 @@ import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import Categories from './Categories';
 import { fetchGetAllPosts } from '../../../feature/postsSlice';
+import { useHistory } from 'react-router-dom';
 
 const SearchBlock = styled.div`
   .wrap {
@@ -96,6 +97,7 @@ const SearchBlock = styled.div`
 const Search = ({ onClick }) => {
 
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const [search, setSearch] = useState("");
 
@@ -106,7 +108,8 @@ const Search = ({ onClick }) => {
   }
 
   const handleSubmit = () => {
-    dispatch(fetchGetAllPosts({ search: search }))
+    history.push('/')
+    setTimeout(() => {dispatch(fetchGetAllPosts({ search: search }));}, 500)
   }
 
   const onKeyPress = (e) => {

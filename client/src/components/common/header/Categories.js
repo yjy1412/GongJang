@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { fetchGetAllPosts } from '../../../feature/postsSlice';
 
@@ -29,8 +30,12 @@ const CategoryList = styled.ul`
 const Categories = ({ categories }) => {
 
   const dispatch = useDispatch();
+  const history = useHistory();
+
   const handleCategory = (category) => {
-    dispatch(fetchGetAllPosts({ category: category }));
+    history.push('/')
+    setTimeout(() => {dispatch(fetchGetAllPosts({ category: category }));}, 500)
+    
   }
 
   return (
