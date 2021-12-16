@@ -9,6 +9,9 @@ export const fetchGetAllPosts = createAsyncThunk(
   'posts/fetchGetAllPosts',
   async ( form ) => {
       try {
+        if(form.category === '전체') {
+          form = null;
+        }
         const params = form;
         const response = await axios.get('/posts', 
           { 
