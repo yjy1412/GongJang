@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { BsFillEmojiFrownFill } from 'react-icons/bs'
+import { BsFillEmojiNeutralFill } from 'react-icons/bs'
 const NoWish = () => {
 
   const NoResultBlock = styled.div`
@@ -39,7 +39,7 @@ const NoWish = () => {
   return (
     <NoResultBlock>
       <div className="no-result-box">
-        <BsFillEmojiFrownFill className="no-result-icon"/>
+        <BsFillEmojiNeutralFill className="no-result-icon"/>
         <div className="no-result-message ">
           <span>위시리스트가 존재하지 않습니다.</span>
         </div>
