@@ -8,20 +8,17 @@ axios.default.paramsSerializer = params => {
 export const fetchGetAllPosts = createAsyncThunk(
   'posts/fetchGetAllPosts',
   async ( form ) => {
-      try {
-        if(form.category === '전체') {
-          form = null;
+    try {
+      const params = form;
+      const response = await axios.get('/posts', 
+        { 
+          params        
         }
-        const params = form;
-        const response = await axios.get('/posts', 
-          { 
-            params        
-          }
-        );
-        return response.data;
-      } catch(err){
-        return err.response.data;
-      }
+      );
+      return response.data;
+    } catch(err){
+      return err.response.data;
+    }
   }
 )
 
