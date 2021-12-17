@@ -80,7 +80,7 @@ const ErrorMessage = styled.div`
   justify-content: center;
   width: 100%;
   font-size: 13px;
-  color:  #fa8072;
+  color: #fa8072;
   margin-left: 2px;
 `;
 
