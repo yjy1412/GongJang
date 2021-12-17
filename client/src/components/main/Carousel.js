@@ -50,6 +50,10 @@ const CarouselWrapper = styled.div`
   @media only screen and (max-width: 768px){ // ~ 모바일
     width: 100%;
   }
+  @media only screen and (max-width: 580px){ // ~ 모바일
+    width: 100%;
+  }
+  
 `;
 
 const CarouselBlock = styled.div`
@@ -59,6 +63,7 @@ const CarouselBlock = styled.div`
   transition: .5s;
   overflow: hidden;
   text-align: right;
+
   .carousel-text {
     width: min-content;
     font-size: 45px;
@@ -70,6 +75,16 @@ const CarouselBlock = styled.div`
     z-index: 99;
     min-width: 30%;
     max-width: 30%;
+
+    .carousel-text-third {
+      font-weight: 800;
+      color: #fa8072;
+
+      @media only screen and (max-width: 580px){ // ~ 모바일
+       font-weight: 700;   
+      }
+    }
+    
     @media only screen and (max-width: 1024px){ // ~ 타블렛
       font-size: 40px;
       min-width: 35%;
@@ -78,17 +93,30 @@ const CarouselBlock = styled.div`
     @media only screen and (max-width: 768px){ // ~ 모바일
       font-size: 35px
     }
-
-    .carousel-text-third {
-      font-weight: 800;
-      color: #fa8072;
+    @media only screen and (max-width: 580px){ // ~ 모바일
+      position: static;
+      font-size: 25px;
+      font-weight: 600;
+      top: 00px;
+      left: 130px;
     }
+ 
   }
   img {
-    margin-right: 65px;
+    margin-right: 65px; 
+
+    @media only screen and (max-width: 580px){ // ~ 모바일
+      margin-right: 0px; 
+    }
   }
 
-
+  @media only screen and (max-width: 580px){ // ~ 모바일
+    padding-top: 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 `;
 
 
@@ -112,8 +140,8 @@ const Carousel = () => {
   const secondText = '비밀 댓글로'
   const secondText2 = '소통하는';
   const secondText3 = '공.장';
-  const thirdText = '환경 문제에';
-  const thirdText2 = '앞장서는';
+  const thirdText = '지구 환경을';
+  const thirdText2 = '생각하는';
   const thirdText3 = '공.장';
   
   const carouselTexts = [
@@ -131,7 +159,6 @@ const Carousel = () => {
       thirdText, 
       thirdText2,
       thirdText3
-    
     ]
     
   ]
