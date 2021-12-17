@@ -18,7 +18,7 @@ const CategoryList = styled.ul`
     &:hover {
       color: white;
       font-weight: 600;
-      background: #ffdeb7;
+      background: #fa8072;
       border-radius: 5px;
     }
   }
