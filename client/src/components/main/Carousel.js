@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import game from '../../style/images/game.jpg';
-import pollution from '../../style/images/pollution.jpg';
 import CarouselImg from './CarouselImg';
-import playing from '../../style/images/playing.jpg';
+import donate from '../../style/images/donate.png';
+import chat from '../../style/images/chat.png';
 
 const CarouselWrapper = styled.div`
   position: relative;
-  width: 60%;
+  width: 70%;
   height: 60vh;
   margin: 0;
   padding: 0;
@@ -28,14 +28,13 @@ const CarouselWrapper = styled.div`
     outline: none;
     transition: .5s;
     &:hover {
-      background: rgba(0, 0, 0, 0.356);
       cursor: pointer;
 
       .icon {
         color: rgb(119, 119, 119);
       }
     }
-  }
+  };
 
   .prev {
     left: 0;
@@ -45,6 +44,12 @@ const CarouselWrapper = styled.div`
     right: 0;
   };
 
+  @media only screen and (max-width: 1024px){ // ~ 타블렛
+    width: 90%;
+  }
+  @media only screen and (max-width: 768px){ // ~ 모바일
+    width: 100%;
+  }
 `;
 
 const CarouselBlock = styled.div`
@@ -53,12 +58,43 @@ const CarouselBlock = styled.div`
   height: 80%;
   transition: .5s;
   overflow: hidden;
+  text-align: right;
+  .carousel-text {
+    width: min-content;
+    font-size: 45px;
+    font-weight: 700;
+    position: absolute;
+    text-align: left;
+    top: 140px;
+    left: 80px;
+    z-index: 99;
+    min-width: 30%;
+    max-width: 30%;
+    @media only screen and (max-width: 1024px){ // ~ 타블렛
+      font-size: 40px;
+      min-width: 35%;
+      max-width: 35%;
+    }
+    @media only screen and (max-width: 768px){ // ~ 모바일
+      font-size: 35px
+    }
+
+    .carousel-text-third {
+      font-weight: 800;
+      color: #fa8072;
+    }
+  }
+  img {
+    margin-right: 65px;
+  }
+
+
 `;
 
 
 
 const Carousel = () => {
-  const images = [ game, playing, pollution ];
+  const images = [ game, chat, donate ];
   const [index, setIndex] = useState(0); // 슬라이드 번호 부여 상태
 
   const onPrev = () => {
@@ -70,8 +106,35 @@ const Carousel = () => {
     setIndex(index - 100);
     index === -100 * (images.length - 1) ? setIndex(0) : setIndex(index - 100);
   };
-
-
+  const firstText = '중고 장난감';
+  const firstText2 = '공유 플랫폼';
+  const firstText3 = '공.장';
+  const secondText = '비밀 댓글로'
+  const secondText2 = '소통하는';
+  const secondText3 = '공.장';
+  const thirdText = '환경 문제에';
+  const thirdText2 = '앞장서는';
+  const thirdText3 = '공.장';
+  
+  const carouselTexts = [
+    [
+      firstText,
+      firstText2,
+      firstText3 
+    ],
+    [ 
+      secondText,
+      secondText2,
+      secondText3
+    ],
+    [
+      thirdText, 
+      thirdText2,
+      thirdText3
+    
+    ]
+    
+  ]
 
   return (
     <>
@@ -79,7 +142,7 @@ const Carousel = () => {
         {
           images.map((image, idx) => 
             <CarouselBlock key={idx} style={{transform: `translateX(${index}%)`}}>
-              <CarouselImg image={image} key={idx} />
+              <CarouselImg image={image} key={idx} text={carouselTexts[idx]} />
             </CarouselBlock>
           )
         }
