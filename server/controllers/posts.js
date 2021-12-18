@@ -370,6 +370,7 @@ module.exports = {
       // User 테이블 조회해서 작성자 정보 확인
       // Wish 테이블 조회해서 좋아요 등록 여부 확인
       // 2-1. Post 테이블 조회 ( User 조인 -> 작성자 정보 포함 )
+     
       Post.findAll({
         where: {
           [Op.or]: {

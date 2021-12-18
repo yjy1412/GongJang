@@ -10,15 +10,15 @@ dotenv.config();
 const GoogleLoginBlock = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 6px;
+  margin-top: 10px;
   cursor: pointer;
   img {
-    width: 20px;
-    height: 20px;
+    width: 23px;
+    height: 23px;
   }
   `;
 
-const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID
 
 export default function GoogleButton(){
 

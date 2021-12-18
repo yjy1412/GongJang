@@ -31,6 +31,12 @@ const AuthJoinBlock = styled.div`
     color: #575f95;
     font-weight: 700;
   };
+
+  .auth-message-box {
+    position: relative;
+    padding-top: 4px;
+    padding-bottom: 1px;
+  }
 `;
 
 const AuthJoinForm = styled.div`
@@ -63,17 +69,18 @@ const Message = styled.div`
   top: 20px;
   display: flex;
   justify-content: end;
-  font-size: 10px;
+  font-size: 9px;
   color: red;
   margin-left: 2px;
 `;
 
 const ErrorMessage = styled.div`
+  position: absolute;
   display: flex;
   justify-content: center;
   width: 100%;
   font-size: 13px;
-  color:  #fa8072;
+  color: #fa8072;
   margin-left: 2px;
 `;
 
@@ -124,7 +131,7 @@ const Join = () => {
     setJoinInfo({ ...joinInfo, [e.target.name] : e.target.value });
     const testNickname = /[a-zA-Z0-9_-]{4,12}$/;
     if (!testNickname.test(e.target.value)) { 
-      setNicknameMessage('영문(대/소), 숫자 4-12자리 내로 입력해주세요');
+      setNicknameMessage('영문 대소문자/숫자 4-12자 내로 입력해주세요');
     } else {
       setNicknameMessage('');
     }
@@ -145,7 +152,7 @@ const Join = () => {
     setJoinInfo({...joinInfo, [e.target.name] : e.target.value});
     const testPassword = /(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/
     if(!testPassword.test(e.target.value)){
-      setPasswordMessage('숫자+영문자+특수문자 조합으로 8자리 이상 16자리 이하로 입력해주세요');
+      setPasswordMessage('영문 대소문자/숫자/특수문자 포함 8-16자 이내여야 합니다');
     } else {
       setPasswordMessage('');
     }
@@ -261,7 +268,9 @@ const Join = () => {
           </Link>
           <JoinButton onClick={handleSubmit}>JOIN</JoinButton>
         </Buttons>
-        <ErrorMessage>{serverErrorMessage}</ErrorMessage>
+        <div className="auth-message-box">
+          <ErrorMessage>{serverErrorMessage}</ErrorMessage>
+        </div>
       </AuthJoinBlock>
     </AuthBackground>
   );

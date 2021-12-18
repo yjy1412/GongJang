@@ -12,16 +12,19 @@ const CategoryList = styled.ul`
   flex-wrap: wrap;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+
   .category-menu {
     cursor: pointer;
     padding: 2px 8px;
+
     &:hover {
       color: white;
       font-weight: 600;
-      background: #ffdeb7;
+      background: #fa8072;
       border-radius: 5px;
     }
   }
+
   @media only screen and (max-width: 768px){
     gap: 0;
   }
@@ -35,9 +38,9 @@ const Categories = ({ categories }) => {
   const handleCategory = (category) => {
     history.push('/')
     if(category === '전체'){
-      setTimeout(() => {dispatch(fetchGetAllPosts());}, 300)
+      setTimeout(() => {dispatch(fetchGetAllPosts())}, 300)
     } else {
-      setTimeout(() => {dispatch(fetchGetAllPosts({ category: category }));}, 300)
+      setTimeout(() => {dispatch(fetchGetAllPosts({ category : category }))}, 300)
     }
   }
 
