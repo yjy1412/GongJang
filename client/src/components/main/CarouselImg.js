@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CarouselImg = ({ image, text, key }) => {
+const CarouselImg = ({ image, text }) => {
 
   const carouselStyles={
     width: 50+"%",
