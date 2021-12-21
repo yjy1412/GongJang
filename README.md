@@ -32,6 +32,7 @@
 ### [노션](https://www.notion.so/14-coDelicious-GongJang-25f13ae583814874a465c577fe66403c)
 ### [깃헙](https://github.com/codestates/GongJang.git)
 ### [깃북](https://gongjang.gitbook.io/copy-of-gong.jang/)
+### [위키](https://github.com/codestates/GongJang/wiki)
 
 ## 🖋 STACK
 ### FRONT
