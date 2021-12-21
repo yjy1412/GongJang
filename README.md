@@ -51,7 +51,7 @@
 ![](https://img.shields.io/badge/FRONT-axios-blueviolet?style=for-the-badge&logo=appveyor)
 ![](https://img.shields.io/badge/back-OAuth-%23002A7A?style=for-the-badge)
 
-##🖋 team
+## 🖋 team
 | 팀원 | 포지션 | 깃허브 |
 |:---:|:---:|:---:|
 | 정지우 | Frontend | [djdu4496](https://github.com/djdu4496)<br> |
