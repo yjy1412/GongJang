@@ -33,11 +33,49 @@
 
 
 
-## 🖋 홈페이지(배포링크)
+## 🖋 홈페이지
+### [공장](https://gongjang.tk)
+### [노션](https://www.notion.so/14-coDelicious-GongJang-25f13ae583814874a465c577fe66403c)
+### [깃헙](https://github.com/codestates/GongJang.git)
+### [깃북](https://gongjang.gitbook.io/copy-of-gong.jang/)
 
-## 🖋 팀원
+## 🖋 STACK
+### FRONT
+![](https://img.shields.io/badge/FRONT-REACT-9cf?style=for-the-badge&logo=react)  
+![](https://img.shields.io/badge/FRONT-REACT_HOOKS-9cf?style=for-the-badge&logo=react)   
+![](https://img.shields.io/badge/FRONT-REACT_ROUTER-CA4245?style=for-the-badge&logo=react-router)   
+![](https://img.shields.io/badge/FRONT-REDUX-764ABC?style=for-the-badge&logo=redux)  
+![](https://img.shields.io/badge/FRONT-axios-blueviolet?style=for-the-badge&logo=appveyor)  
+![](https://img.shields.io/badge/FRONT-scss-CC6699?style=for-the-badge&logo=sass)   
+![](https://img.shields.io/badge/FRONT-styled_components-DB7093?style=for-the-badge&logo=styled-components)
+### BACK
+![](https://img.shields.io/badge/BACK-node.js-339933?style=for-the-badge&logo=node-dot-js)   
+![](https://img.shields.io/badge/BACK-Express_js-FFDA44?style=for-the-badge&logo=express)   
+![](https://img.shields.io/badge/BACK-Sequelize-258FFA?style=for-the-badge&logo=appveyor)   
+![](https://img.shields.io/badge/BACK-MySQL-4479A1?style=for-the-badge&logo=mysql) 
+![](https://img.shields.io/badge/BACK-JWT-000000?style=for-the-badge&logo=json-web-tokens)
+![](https://img.shields.io/badge/FRONT-axios-blueviolet?style=for-the-badge&logo=appveyor)
+![](https://img.shields.io/badge/back-OAuth-%23002A7A?style=for-the-badge)
+
+##🖋 team
+| 팀원 | 포지션 | 깃허브 |
+|:---:|:---:|:---:|
+| 정지우 | Frontend | [djdu4496](https://github.com/djdu4496)<br> |
+| 김주희 | Frontend | [treatme030](https://github.com/treatme030)<br> |
+| 양진영 | Backend | [yjy1412](https://github.com/yjy1412)<br> |
+| 한수현 | Backend | [Gwangandong](https://github.com/Gwangandong)<br> |
+
 
 ## 🖋 기능시연(gif)
+### 공장의 회원이 되어
+![소셜로그인](https://user-images.githubusercontent.com/85781627/146857114-297a5574-235e-4013-ae66-18c4b4224488.gif)
+
+### 나눠주고
+![글쓰기](https://user-images.githubusercontent.com/85781627/146857089-70c02db4-6bb0-431b-a80a-138172ca9944.gif)
+
+### 나눠 받으세요
+![대대](https://user-images.githubusercontent.com/85781627/146857099-231e44fb-3024-4099-b9ef-5458d4d29d13.gif)
+
 
 ## 🖋 More Info... 
 스택, 프로토타입, DB스키마, API문서, 위키(링크)
