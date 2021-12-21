@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { RiImageAddLine } from 'react-icons/ri';
 import { FaTimes } from 'react-icons/fa';
 
 const ImgUploadBlock = styled.div`
-  margin: 1.5rem 0;
+  margin: 1.5rem 0 0;
+  p {
+    color: #bcbdc4;
+  }
 `;
 
 const ImgPreviewBox = styled.div`
@@ -23,6 +26,7 @@ const ImgPreviewBox = styled.div`
     background: orchid;
     img {
       width: 100%;
+      height: 100%;
     }
     .remove-btn {
       position: absolute;
@@ -36,7 +40,7 @@ const ImgPreviewBox = styled.div`
     position: relative;
     max-width: 200px;
     width: 100%;
-    background: salmon;
+    background: #fcb0a9;
     .img-plus {
       position: absolute;
       top: 50%;
@@ -48,18 +52,23 @@ const ImgPreviewBox = styled.div`
   }
 `;
 
-const ImgUpload = () => {
-  const [imageFiles, setImageFiles] = useState([]);
-  const [imageURLs, setImageURLs] = useState([]);
-
+const ImgUpload = ({ 
+  images, 
+  uploadImages, 
+  setUploadImages, 
+  imageURLs , 
+  setImageURLs, 
+  onRemove,
+  onRemoveImage 
+}) => {
   //이미지 미리보기
-  const onFileChange = (e) => {
-    const files = e.target.files;
+  const onFileChange = useCallback(e => {
+    let files = e.target.files;
     if(files.length < 1 ){
       return;
     }
-    setImageFiles([
-      ...imageFiles,
+    setUploadImages([
+      ...uploadImages,
       ...files]);
 
     for(let file of files){
@@ -75,16 +84,32 @@ const ImgUpload = () => {
         reader.readAsDataURL(file);
       }
     }
-  }
-  
-  const onRemove = (index) => {
-    const newURLs = imageURLs.filter((image, idx) => idx !== index);
-    setImageURLs(newURLs);
-  }
+  },[imageURLs, setImageURLs, setUploadImages, uploadImages])
+
+  const dataFilter = images.filter(el => el !== "");
+  const data = dataFilter.map(el => {
+    return `data:image/*;base64,${el}`;
+  })
+
+  //글 수정시 서버에서 불러온 이미지도 보여주고, 해당 이미지 삭제리듀서 작성
 
   return (
     <ImgUploadBlock>
       <ImgPreviewBox>
+        { data && (
+          data.map((image, index) => (
+            <div className="img-box" key={index}>
+              <img 
+              src={image} 
+              alt=""
+              style={{ backgroundImage : image }} 
+              />
+              <div className="remove-btn" onClick={() => onRemoveImage(index)}>
+                <FaTimes/>
+              </div>
+            </div>
+          ))
+        )}
         { imageURLs && (
           imageURLs.map((imageURL, index) => (
             <div className="img-box" key={index}>
@@ -99,7 +124,7 @@ const ImgUpload = () => {
             </div>
           ))
         )}
-        { imageURLs.length < 3 && (
+        { data.length + imageURLs.length < 3 && (
           <div className="input-box">
             <label htmlFor="file">
               <div className="img-plus">
@@ -117,6 +142,7 @@ const ImgUpload = () => {
           </div>
         )}
       </ImgPreviewBox>
+      <p>(최대 3장 이미지 첨부 가능)</p>
     </ImgUploadBlock>
   );
 };

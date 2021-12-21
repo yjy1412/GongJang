@@ -1,9 +1,9 @@
+require('dotenv').config();
 const express = require('express');
-const dotenv = require('dotenv');
 const cookie = require('cookie-parser');
 const cors = require('cors');
-const app = express();
 const router = require('./routers')
+const app = express();
 
 app.use(express.json())
 app.use(
@@ -14,7 +14,7 @@ app.use(
   })
 )
 app.use(cookie());
-app.use('/', router);
+app.use('/',router);
 
 const port = 4000
 app.listen(port, () => {

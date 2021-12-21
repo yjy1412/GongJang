@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Button from '../components/common/Button';
-import axios from 'axios';
+import { fetchLogin, initialize } from '../feature/userSlice';
+import GoogleButton from '../components/login/GoogleButton';
 
 const AuthBackground = styled.div`
-  margin-top: 200px;
-  margin-bottom: 255px;
+  height: 80vh;
   display:flex;
   justify-content: center;
   align-items: center;
@@ -14,9 +15,9 @@ const AuthBackground = styled.div`
 
 const AuthLoginBlock = styled.div`
   border-radius: 10px;
-  padding: 25px;
-  width: 360px;
-  height: 300px;
+  padding: 20px 20px 12px 20px;
+  max-width: 320px;
+  width: 100%;
   background-color: white;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 
@@ -60,33 +61,38 @@ const Message = styled.div`
   top: 20px;
   display: flex;
   justify-content: end;
-  font-size: 10px;
+  font-size: 9px;
   color: red;
   margin-left: 2px;
 `;
 
 const ErrorMessage = styled.div`
+  position: absolute;
+  top: 32px;
   display: flex;
   justify-content: center;
+  align-items: end;
+  right: 50;
+  height: 100%;
   width: 100%;
-  font-size: 12px;
-  color: red;
+  font-size: 13px;
   margin-left: 2px;
+  color: #fa8072;
 `;
 
 const Buttons = styled.div`
-  margin-top: 50px;
+  margin-top: 35px;
 `;
 
 const LoginButton = styled(Button)`
-  width: 310px;
+  width: 100%;
   height: 30px;
   font-weight: 500;
 `;
 
 const JoinButton = styled(Button)`
   margin-top: 5px;
-  width: 310px;
+  width: 100%;
   height: 30px;
   color: #575f95;
   background-color: white;
@@ -107,6 +113,10 @@ const Login = () => {
   const [passwordMessage, setPasswordMessage] = useState('');
   const [serverErrorMessage, setServerErrorMessage] = useState('');
 
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const { accessToken, loginError } = useSelector((state) => state.user);
+
   const handleInputEmail = (e) => {
     setLoginInfo({ ...loginInfo, [e.target.name] : e.target.value});
     const { email } = loginInfo;
@@ -122,30 +132,41 @@ const Login = () => {
     setLoginInfo({ ...loginInfo, [e.target.name] : e.target.value});
     const testPassword = /(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/
     if(!testPassword.test(e.target.value)){
-      setPasswordMessage('숫자+영문자+특수문자 조합으로 8자리 이상 16자리 이하로 입력해주세요');
+      setPasswordMessage('영문 대소문자/숫자/특수문자 포함 8-16자 이내여야 합니다');
     } else {
       setPasswordMessage('');
     }
   }
 
   const handleSubmit = (e) => {
-    const { email, password } = loginInfo;
+    e.preventDefault();
+
     if(emailMessage === "" && passwordMessage === "") {
-      axios.post('http://localhost:4000/auth/log-in', { email, password }, { headers: { 'Content-Type': 'application/json' } })
-        .then((data) => {
-            // 로그인 창으로 이동합니다.
-            console.log('서버응답')
-            // history.push("/login")
-        })
-        .catch((err) => {
-            // Todo: 서버로부터 받은 응답을 에러메시지에 삽입하여 나타냄
-            setServerErrorMessage('유효하지 않은 요청입니다')
-            setTimeout(() => setServerErrorMessage(''), 3000)
-        })
-    } else {
-      e.preventDefault();
+      dispatch(fetchLogin(loginInfo));
     }
+    setLoginInfo({
+      email: '',
+      password: '',
+    })
   };
+
+  const onKeyPress = (e) => {
+    if(e.key === 'Enter'){
+      handleSubmit(e);
+    }
+  }
+
+  useEffect(() => {
+    if(accessToken){
+      history.push('/');
+    }
+    if(loginError){
+      setServerErrorMessage(loginError);
+    }
+    return () => { //언마운트될 때 초기화
+      dispatch(initialize());
+    }
+  },[dispatch, history, accessToken, loginError])
 
   return (
     <AuthBackground>
@@ -153,7 +174,7 @@ const Login = () => {
         <div className="auth-title">
           Login
         </div>
-        <AuthLoginForm>
+        <AuthLoginForm onKeyPress={onKeyPress}>
           <div className="auth-input-box">
             <div className="auth-input-title">
               email
@@ -180,6 +201,7 @@ const Login = () => {
               onChange={handleInputPassword}
             />
           <Message>{passwordMessage}</Message>
+          <ErrorMessage>{serverErrorMessage}</ErrorMessage>
           </div>
         </AuthLoginForm>
         <Buttons>
@@ -188,7 +210,7 @@ const Login = () => {
             <JoinButton className="cancel" >JOIN</JoinButton>
           </Link>
         </Buttons>
-        <ErrorMessage>{serverErrorMessage}</ErrorMessage>
+          <GoogleButton />
       </AuthLoginBlock>
     </AuthBackground>
   );

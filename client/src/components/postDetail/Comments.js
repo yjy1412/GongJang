@@ -1,63 +1,35 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
-import { AiOutlineMore } from 'react-icons/ai';
-import { RiDeleteBinLine } from 'react-icons/ri';
-import { FiEdit } from 'react-icons/fi';
 import Button from '../common/Button';
+import SingleComment from './SingleComment';
+import ReplyComment from './ReplyComment';
+import { useDispatch } from 'react-redux';
+import { fetchCreateComment, fetchGetAllComments } from '../../feature/commentSlice';
 
 const CommentsBlock = styled.div`
-  padding: 1rem 0 3rem;
-  .interest {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.5rem;
-    .heart {
-      display: flex;
-      padding: 0 0.5rem;
-    }
-  }
+  padding-bottom: 3rem;
   .comment-box {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0.5rem;
-    input {
+    textarea {
       width: 100%;
+      height: 45px;
+      resize: none;
       font-size: 1.2rem;
       margin-right: 1rem;
-      padding: 0.7rem 0.5rem;
+      padding: 0.5rem; 
+      color: inherit;
       border: 2px solid #575F95;
       border-radius: 4px;
       &::placeholder {
         color: #bcbdc4;
+        font-size: 1rem;
       }
-    }
-  }
-  .comment {
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    .text {
-      width: 100%;
-      font-size: 1.2rem;
-      margin-top: 0.5rem;
-      border-bottom: 2px solid #575F95;
-    }
-    .comment-edit {
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-    .comment-edit-icons {
-      position: absolute;
-      right: -2rem;
-      display: none;
-      flex-direction: column;
-      gap: 0.5rem;
-      border: 1px solid #575F95;
-      padding: 0.5rem;
-      cursor: pointer;
+      &:focus {
+        border: 2px solid #fcb0a9;
+      }
     }
   }
 `;
@@ -66,49 +38,58 @@ const CommentBtn = styled(Button)`
   padding: 0.8rem;
 `;
 
-const Comments = () => {
+const Comments = ({ post, commentList, recommentList, onClickInput, user }) => {
+  const [comment, setComment] = useState('');
+  const dispatch = useDispatch();
+
+  const onChangeComment = (e) => {
+    setComment(e.target.value)
+  }
+
+  const onSubmitComment = useCallback(async (e) => {
+    e.preventDefault();
+    if(comment === ''){
+      return;
+    }
+    const form = {
+      content: comment,
+      post_id: post.post_id,
+    };
+    await dispatch(fetchCreateComment(form));
+    await dispatch(fetchGetAllComments(post.post_id))
+    setComment('');
+  },[comment, dispatch, post.post_id])
 
   return (
-    <CommentsBlock>
-      <div className="interest">
-        <div>
-          <span>댓글</span>
-          <span>1</span>
-        </div>
-        <div className="heart">
-          <RiHeartFill fill="red"/>
-        </div>
-      </div>
-      <div className="comment-box">
-        <input 
-        type="text" 
-        placeholder="나눔 아이템에 대해 궁금한 점 남겨주세요."
-        name=""
-        value=""
-        />
-        <CommentBtn>COMMENT</CommentBtn>
-      </div>
-      <ul>
-        <li>
-          <div>
-            <div>
-              <span><b>nickname</b></span>
-              <span> 2021.11.24</span>
+      <CommentsBlock>
+        <form className="comment-box" onSubmit={onSubmitComment}>
+          <textarea 
+          type="text" 
+          placeholder="나눔 아이템에 대해 궁금한 점 남겨주세요."
+          value={comment}
+          onChange={onChangeComment}
+          onClick={onClickInput}
+          />
+          <CommentBtn>COMMENT</CommentBtn>
+        </form>
+        { commentList && (
+          commentList.map((comment) => !comment.ref_comment && (
+            <div key={comment.id}>
+              <SingleComment
+              comment={comment}
+              post={post}
+              user={user}
+              />
+              <ReplyComment
+              recommentList={recommentList}
+              post={post}
+              user={user}
+              parentCommentId={comment.id}
+              />              
             </div>
-            <div className="comment">
-              <div className="text">
-                <p>comment</p>
-              </div>
-              <AiOutlineMore className="comment-edit"/>
-              <div className="comment-edit-icons">
-                <FiEdit/>
-                <RiDeleteBinLine/>
-              </div>
-            </div>
-          </div>
-        </li>
-      </ul>
-    </CommentsBlock>
+          ))
+        )}
+      </CommentsBlock>
   );
 };
 

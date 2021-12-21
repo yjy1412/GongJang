@@ -27,13 +27,13 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    state: {
+    soldOut: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
-    image1: DataTypes.BLOB,
-    image2: DataTypes.BLOB,
-    image3: DataTypes.BLOB
+    image1: DataTypes.STRING,
+    image2: DataTypes.STRING,
+    image3: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Post',
@@ -41,6 +41,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Post.associate= (models) => {
     Post.belongsTo(models.User, {
+      foreignKey: "user_id",
       onDelete: "cascade"
     }),
     Post.hasMany(models.Wish, {

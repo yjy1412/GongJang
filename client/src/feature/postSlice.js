@@ -3,16 +3,16 @@ import axios from 'axios';
 
 export const fetchGetPostDetail = createAsyncThunk(
   'post/fetchGetPost',
-  async (id) => {
-    const response = await axios.get(`http://localhost:4000/posts/${id}`);
+  async (post_id) => {
+    const response = await axios.get(`/posts/${post_id}`);
     return response.data;
   }
 )
 
 export const fetchRemovePost = createAsyncThunk(
-  'write/fetchRemovePost',
-  async (id) => {
-    await axios.delete(`http://localhost:4000/posts/${id}`);
+  'post/fetchRemovePost',
+  async (post_id) => {
+    await axios.delete(`/posts/${post_id}`);
   }
 )
 
@@ -26,9 +26,11 @@ export const postSlice = createSlice({
   name: 'post',
   initialState,
   reducers: {
-    unloadPost: (state) => {
-      state.post = null;
-      state.postError = null;
+    unloadPost: () => {
+      return initialState;
+    },
+    changeWishPost: (state, { payload: wish }) => {
+      state.post.wish = !wish;
     }
   },
   extraReducers: {
@@ -49,5 +51,5 @@ export const postSlice = createSlice({
   }
 })
 
-export const { unloadPost } = postSlice.actions;
+export const { unloadPost, changeWishPost } = postSlice.actions;
 export default postSlice.reducer;

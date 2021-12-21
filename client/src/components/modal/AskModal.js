@@ -4,7 +4,7 @@ import Button from '../common/Button';
 import WhiteButton from '../common/WhiteButton';
 
 const ModalBackground = styled.div`
-  z-index: 10;
+  z-index: 100;
   position: fixed;
   top: 0;
   left: 0;
@@ -28,7 +28,7 @@ const ModalBox = styled.div`
     margin-bottom: 1rem;
     border-bottom: 2px solid #575F95;
   }
-  p {
+  .ask-login {
     margin-bottom: 3rem;
   }
   .btn-box {
@@ -42,21 +42,24 @@ const ModalTemplate = ({
   visible,
   title,
   description,
+  addDescription,
   confirmText = 'CONFIRM',
   cancelText = 'CANCEL',
   onConfirm,
-  onCancel
+  onCancel,
+  type
 }) => {
-  // if(!visible){
-  //   return null;
-  // }
+  if(!visible){
+    return null;
+  }
   return (
     <ModalBackground>
       <ModalBox>
         <h2>{title}</h2>
         <p>{description}</p>
+        <p className="ask-login">{addDescription}</p>
         <div className="btn-box">
-          <WhiteButton onClick={onCancel}>{cancelText}</WhiteButton>
+          { type !== 'required' && <WhiteButton onClick={onCancel}>{cancelText}</WhiteButton>}
           <Button onClick={onConfirm}>{confirmText}</Button>
         </div>
       </ModalBox>

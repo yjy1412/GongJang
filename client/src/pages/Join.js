@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import Button from '../components/common/Button';
-import axios from 'axios';
+import { fetchSignUp, initialize } from '../feature/userSlice';
 
 
 const AuthBackground = styled.div`
-  margin-top: 200px;
-  margin-bottom: 255px;
+  height: 80vh;
   display:flex;
   justify-content: center;
   align-items: center;
@@ -15,9 +15,9 @@ const AuthBackground = styled.div`
 
 const AuthJoinBlock = styled.div`
   border-radius: 10px;
-  padding: 25px;
-  width: 360px;
-  height: 300px;
+  padding: 20px;
+  max-width: 320px;
+  width: 100%;
   background-color: white;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
   display: flex;
@@ -31,6 +31,12 @@ const AuthJoinBlock = styled.div`
     color: #575f95;
     font-weight: 700;
   };
+
+  .auth-message-box {
+    position: relative;
+    padding-top: 4px;
+    padding-bottom: 1px;
+  }
 `;
 
 const AuthJoinForm = styled.div`
@@ -46,13 +52,14 @@ const AuthJoinForm = styled.div`
   };
 
   input {
-    width: 180px;
+    width: 155px;
     border-bottom: solid 1.25px #D8D9DE;
   };
 
   .auth-input-title {
     display: flex;
-    font-size: 15px;
+    min-width: fit-content;
+    font-size: 14px;
   };
 `;
 
@@ -62,17 +69,18 @@ const Message = styled.div`
   top: 20px;
   display: flex;
   justify-content: end;
-  font-size: 10px;
+  font-size: 9px;
   color: red;
   margin-left: 2px;
 `;
 
 const ErrorMessage = styled.div`
+  position: absolute;
   display: flex;
   justify-content: center;
   width: 100%;
-  font-size: 12px;
-  color: red;
+  font-size: 13px;
+  color: #fa8072;
   margin-left: 2px;
 `;
 
@@ -83,7 +91,8 @@ const Buttons = styled.div`
 `;
 
 const CancelButton = styled(Button)`
-  width: 150px;
+  width: 135px;
+  margin-right: 10px;
   height: 30px;
   color: #575f95;
   background-color: white;
@@ -98,9 +107,9 @@ const JoinButton = styled(Button)`
 `;
 
 const Join = () => {
-
-  // useHistory 사용 변수 
   const history = useHistory();
+  const dispatch = useDispatch();
+  const { isSignUp, signUpError } = useSelector((state) => state.user);
 
   // 이름, 이메일, 비밀번호, 비밀번호 확인 
   const [joinInfo, setJoinInfo] = useState({ 
@@ -122,7 +131,7 @@ const Join = () => {
     setJoinInfo({ ...joinInfo, [e.target.name] : e.target.value });
     const testNickname = /[a-zA-Z0-9_-]{4,12}$/;
     if (!testNickname.test(e.target.value)) { 
-      setNicknameMessage('영문(대/소), 숫자 4-12자리 내로 입력해주세요');
+      setNicknameMessage('영문 대소문자/숫자 4-12자 내로 입력해주세요');
     } else {
       setNicknameMessage('');
     }
@@ -143,7 +152,7 @@ const Join = () => {
     setJoinInfo({...joinInfo, [e.target.name] : e.target.value});
     const testPassword = /(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/
     if(!testPassword.test(e.target.value)){
-      setPasswordMessage('숫자+영문자+특수문자 조합으로 8자리 이상 16자리 이하로 입력해주세요');
+      setPasswordMessage('영문 대소문자/숫자/특수문자 포함 8-16자 이내여야 합니다');
     } else {
       setPasswordMessage('');
     }
@@ -160,23 +169,36 @@ const Join = () => {
   };
   
   const handleSubmit = (e) => {
-    const { nickname, email, password } = joinInfo;
+    e.preventDefault();
+
     if(nicknameMessage === "" && emailMessage === "" && passwordMessage === "" && confirmPasswordMessage === "") {
-      axios.post('http://localhost:4000/auth/sign-up', { nickname, email, password }, { headers: { 'Content-Type': 'application/json' } })
-        .then((data) => {
-            // 로그인 창으로 이동합니다.
-            console.log('서버응답')
-            // history.push("/login")
-        })
-        .catch((err) => {
-            // Todo: 서버로부터 받은 응답을 에러메시지에 삽입하여 나타냄
-            setServerErrorMessage('유효하지 않은 요청입니다')
-            setTimeout(() => setServerErrorMessage(''), 3000)
-        })
-    } else {
-      e.preventDefault();
+      dispatch(fetchSignUp(joinInfo));
+    }
+    setJoinInfo({
+      nickname: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    })
+  }
+
+  const onKeyPress = (e) => {
+    if(e.key === 'Enter'){
+      handleSubmit(e);
     }
   }
+
+  useEffect(() => {
+    if(isSignUp){
+      history.push('/login');
+    } 
+    if(signUpError) {
+      setServerErrorMessage(signUpError);
+    }
+    return () => { //언마운트될 때 초기화
+      dispatch(initialize());
+    }
+  },[dispatch, history, isSignUp, signUpError])
 
   return (
     <AuthBackground>
@@ -184,7 +206,7 @@ const Join = () => {
         <div className="auth-title">
           Join
         </div>
-        <AuthJoinForm>
+        <AuthJoinForm onKeyPress={onKeyPress}>
           <div className="auth-input-box">
             <div className="auth-input-title">
               nickname
@@ -246,7 +268,9 @@ const Join = () => {
           </Link>
           <JoinButton onClick={handleSubmit}>JOIN</JoinButton>
         </Buttons>
-        <ErrorMessage>{serverErrorMessage}</ErrorMessage>
+        <div className="auth-message-box">
+          <ErrorMessage>{serverErrorMessage}</ErrorMessage>
+        </div>
       </AuthJoinBlock>
     </AuthBackground>
   );

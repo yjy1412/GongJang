@@ -25,6 +25,13 @@ module.exports = (sequelize, DataTypes) => {
     content: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    isDelete: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    ref_comment: {
+      type : DataTypes.INTEGER
     }
   }, {
     sequelize,
@@ -33,9 +40,11 @@ module.exports = (sequelize, DataTypes) => {
 
   Comment.associate= (models) => {
     Comment.belongsTo(models.User, {
+      foreignKey: "user_id",
       onDelete: "cascade"
     }),
     Comment.belongsTo(models.Post, {
+      foreignKey: "post_id",
       onDelete: "cascade"
     })
   }

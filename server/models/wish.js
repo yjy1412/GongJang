@@ -25,13 +25,16 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Wish',
+    freezeTableName: true
   });
 
   Wish.associate= (models) => {
     Wish.belongsTo(models.User, {
+      foreignKey: "user_id",
       onDelete: "cascade"
     }),
     Wish.belongsTo(models.Post, {
+      foreignKey: "post_id",
       onDelete: "cascade"
     })
   }

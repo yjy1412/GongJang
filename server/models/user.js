@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
     }
-  };
+  }
   User.init({
     email: {
       type: DataTypes.STRING,
@@ -25,14 +25,16 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     password: {
-      type: DataTypes.STRING,
-      allowNull: false
+      type: DataTypes.STRING
     },
     admin: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
-    profile_image: DataTypes.BLOB
+    profile_image: {
+      type: DataTypes.STRING,
+      defaultValue: __dirname + '/../source/profileImg.jpg'
+    }
   }, {
     sequelize,
     modelName: 'User'
@@ -42,12 +44,12 @@ module.exports = (sequelize, DataTypes) => {
     User.hasMany(models.Post, {
       foreignKey: "user_id"
     }),
-    User.hasMany(models.Comment, {
-      foreignKey: "user_id"
-    }),
-    User.hasMany(models.Wish, {
-      foreignKey: "user_id"
-    })
+      User.hasMany(models.Comment, {
+        foreignKey: "user_id"
+      }),
+      User.hasMany(models.Wish, {
+        foreignKey: "user_id"
+      })
   }
   return User;
 };

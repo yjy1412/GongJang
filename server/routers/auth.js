@@ -1,7 +1,10 @@
 const express = require('express');
-const router = express.Router();
+const multer = require('multer');
 
+const upload = multer({ dest: 'uploads/', limits: { fieldSize: 50 * 1024 * 1024 } })
+const router = express.Router();
 const authControllers = require('../controllers/auth')
+
 
 router.post('/sign-up', authControllers.signup);
 
@@ -13,10 +16,16 @@ router.delete('/sign-out', authControllers.signout);
 
 router.get('/mypage', authControllers.getMypage);
 
-router.patch('/mypage', authControllers.patchMypage);
+router.patch('/nickname', authControllers.patchNickname);
+
+router.patch('/profile-image', upload.single('profile_image'),authControllers.patchProfileImg);
 
 router.patch('/password', authControllers.patchPassword);
 
-router.get('/mypage/posts', authControllers.getMyposts);
+router.get('/mypage/posts', authControllers.getMyPosts);
+
+router.get('/wish-list', authControllers.getWishLists);
+
+router.post('/google/log-in', authControllers.googleLogin);
 
 module.exports = router;

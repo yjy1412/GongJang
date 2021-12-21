@@ -14,6 +14,11 @@ const MenuIconsBlock = styled.ul`
     height: 100%;
     display: flex;
     align-items: center;
+    color: #575f95;
+    transition: .3s;
+    &:hover {
+      color: #f9796d;
+    }
     a {
       width: 100%;
       padding: 0 1.7rem 0.5rem;
@@ -26,22 +31,34 @@ const MenuIconsBlock = styled.ul`
   }
 `;
 
-const MenuIcons = ({ onClick }) => {
+const MenuIcons = ({ onClick, handleModal, isLogin }) => {
+  
   return (
     <MenuIconsBlock >
-      <li className="search" onClick={onClick}>
-          <FiSearch/>
-      </li>
-      <li>
-          <Link to="/write"><FiEdit/></Link>
-      </li>
-      <li>
-          <Link to="wishList"><FiHeart/></Link>
-      </li>
-      <li>
-          <Link to="mypage"><AiOutlineUser/></Link>
-      </li>
-  </MenuIconsBlock>
+        <li className="search" onClick={onClick}>
+            <FiSearch/>
+        </li>
+        <li>
+            <Link 
+            to={isLogin ? "/write" : "/"} 
+            onClick={handleModal}
+            ><FiEdit/>
+            </Link>
+        </li>
+        <li>
+            <Link 
+            to={isLogin ? "/wishList" : "/"} 
+            onClick={handleModal}
+            ><FiHeart/></Link>
+        </li>
+        <li>
+            <Link 
+            to={isLogin ? "/mypage" : "/"} 
+            onClick={handleModal}
+            ><AiOutlineUser/>
+            </Link>
+        </li>
+    </MenuIconsBlock>
   );
 };
 

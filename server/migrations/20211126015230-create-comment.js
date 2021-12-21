@@ -34,6 +34,13 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
+      isDelete: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
+      ref_comment: {
+        type : Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

@@ -1,18 +1,18 @@
 const express = require('express');
-const router = express.Router();
+const multer = require('multer');
 
+const upload = multer({ dest: 'uploads/', limits: { fieldSize: 50 * 1024 * 1024 } });
+const router = express.Router();
 const postsControllers = require('../controllers/posts');
 
-router.post('/', postsControllers.post);
+router.post('/', upload.array('image', 3) ,postsControllers.post);
 
-router.patch('/:posts_id', postsControllers.patch);
+router.patch('/:post_id', upload.array('image', 3), postsControllers.patch);
 
-router.delete('/:posts_id', postsControllers.delete);
+router.delete('/:post_id', postsControllers.delete)
 
 router.get('/', postsControllers.get);
 
-router.get('/:user_email', postsControllers.getWishLists);
-
-router.get('/:posts_id', postsControllers.getDetail);
+router.get('/:post_id', postsControllers.getDetail)
 
 module.exports = router;
