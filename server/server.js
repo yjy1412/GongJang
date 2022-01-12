@@ -8,14 +8,13 @@ let origin = 'http://localhost:3000'
 if ( process.env.NODE_ENV === 'production' ) {
   origin = process.env.PRODUCTION_CLIENT_ORIGIN;
 }
-app.use(express.json())
-app.use(
-  cors({
-    origin: origin,
+app.use(express.json());
+app.use(cors({
+    origin: [ origin, 'http://localhost:3000' ],
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
-  })
-)
+  }));
+
 app.use(cookie());
 app.use('/',router);
 
