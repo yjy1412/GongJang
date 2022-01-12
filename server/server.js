@@ -4,11 +4,14 @@ const cookie = require('cookie-parser');
 const cors = require('cors');
 const router = require('./routers')
 const app = express();
-
+let origin = 'http://localhost:3000'
+if ( process.env.NODE_ENV === 'production' ) {
+  origin = process.env.PRODUCTION_CLIENT_ORIGIN;
+}
 app.use(express.json())
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: origin,
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
   })
