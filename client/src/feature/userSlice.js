@@ -2,8 +2,11 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import dotenv from 'dotenv';
 dotenv.config();
-
-axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+let serverUrl = 'http://localhost:4000';
+if ( process.env.NODE_ENV === 'production' ) {
+  serverUrl = process.env.PRODUCTION_REACT_APP_API_URL;
+}
+axios.defaults.baseURL = serverUrl;
 axios.defaults.withCredentials = true;
 
 export const fetchSignUp = createAsyncThunk(
