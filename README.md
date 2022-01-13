@@ -1,6 +1,7 @@
 #### 프로젝트 진행 내용에 대해 리팩토링 해보고, 관련 내용을 기록으로 남기기 위한 저장소입니다.
 #### 현재는 프로젝트가 종료되어 서버가 운용중이지 않으며, 개인적으로 HTTPS 적용 및 파이프라인 구축을 통한 배포자동화를 테스트 중입니다.
 #### 👉 [체험용 레포 링크](http://yjy-gongjang.s3-website.ap-northeast-2.amazonaws.com)
+(AWS ACM, Route53, Cloudfront를 사용한 https 적용 리펙토링 중이며, https 적용 시 Google 소셜 로그인 기능에서 에러가 발견되어 수정 중입니다.)
 #### 👉 [프로젝트 레포 링크](https://github.com/codestates/GongJang.git)
 #### 👉 [프로젝트 소개 노션 링크](https://www.notion.so/14-coDelicious-GongJang-25f13ae583814874a465c577fe66403c)
 # GongJang
