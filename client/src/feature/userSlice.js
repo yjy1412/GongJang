@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import dotenv from 'dotenv';
 dotenv.config();
-axios.defaults.baseURL = "http://ec2-52-79-241-13.ap-northeast-2.compute.amazonaws.com:4000"
+axios.defaults.baseURL = 'https://server.gongjang.link'
 axios.defaults.withCredentials = true;
 
 export const fetchSignUp = createAsyncThunk(
