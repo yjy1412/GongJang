@@ -7,7 +7,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin: [ 'http://localhost:3000', 'http://yjy-gongjang.s3-website.ap-northeast-2.amazonaws.com' ],
+    origin: [ 'http://localhost:3000', 'https://gongjang.link' ],
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
   }));
