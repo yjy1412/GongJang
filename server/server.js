@@ -6,11 +6,16 @@ const router = require('./routers')
 const app = express();
 
 app.use(express.json());
-app.use(cors({
-    origin: [ 'http://localhost:3000', 'https://gongjang.link', 'https://www.gongjang.link' ],
-    credentials: true,
-    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS']
-  }));
+// cors 옵션 설정
+const allowlists = [ 'http://localhost:3000', 'https://gongjang.link', 'https://www.gongjang.link' ];
+const corsOptions = {
+  origin: function ( origin, callback ) {
+    const isAllowlists = allowlists.indexOf(origin) !== -1;
+    callback(null, isAllowlists);
+  },
+  credentials: true
+}
+app.use(cors(corsOptions));
 
 app.use(cookie());
 app.use('/',router);
