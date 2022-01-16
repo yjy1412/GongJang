@@ -4,6 +4,7 @@ const fs = require('fs');
 const { User, Post, Wish } = require('../models');
 const jwt = require('jsonwebtoken');
 const accessFunc = require('./token');
+const { info } = require('console');
 
 module.exports = {
   // POST auth/sign-up
@@ -507,14 +508,14 @@ module.exports = {
     //서버에서는 authorization code(=code로 통칭)를 받아서 oauth에 code를 post해줘야 한다.
     const {code} = req.body
 
-    const authUrl = "https://accounts.google.com/o/oauth2/auth";
-    const tokenUrl = 'https://oauth2.googleapis.com/token'
-    const infoUrl = 'https://www.googleapis.com/oauth2/v2/userinfo';
-    const reUri = process.env.GOOGLE_REDIRECT_URI    
+    const token_uri = 'https://oauth2.googleapis.com/token'
+    const info_uri = 'https://www.googleapis.com/oauth2/v2/userinfo';
+    const redirect_uri = process.env.GOOGLE_REDIRECT_URI
     const client_id =process.env.GOOGLE_CLIENT_ID
     const client_secret = process.env.GOOGLE_CLIENT_PASSOWRD     
-    const client_uri = process.env.GOOGLE_CLIENT_URI
     const grant_type = "authorization_code"
+    // const authUrl = "https://accounts.google.com/o/oauth2/auth";
+    // const reUri = process.env.GOOGLE_REDIRECT_URI    
     
 
     if(!code) {
@@ -522,19 +523,15 @@ module.exports = {
     }
   
    try{
-    await axios.post(tokenUrl, { //1.구글 오쓰 서버에 요청해서 토큰을 받아옴
-      code : code,
-      client_id : client_id,
-      client_secret : client_secret,
-      redirect_uri : client_uri, //얘는 또 왜 3000번으로 받아야 정상작동 될까. CODE는 4000번으로 받았고 리디렉은 3000번으로 가는게 맞나? 
-      grant_type : grant_type
+    await axios.post(token_uri, { code, client_id, client_secret, redirect_uri, grant_type
     })
+    //얘는 또 왜 3000번으로 받아야 정상작동 될까. CODE는 4000번으로 받았고 리디렉은 3000번으로 가는게 맞나?  >> 원래 클라이언트에서 구글 서버로 token을 요청하고, 이를 서버에 전달해주는 플로우인데, 이 요청을 서버에서 하도록 구현했기에 클라이언트 주소로 리다이렉트 하도록 설정
     .then(async data => { //2. 토큰을 받아왔음
       const {access_token} = data.data
       // console.log(data.data) //토큰 정확하게 받아와짐
       //이제 이 토큰으로 유저인포를 받아올 거임
       await axios
-        .get(infoUrl, { 
+        .get(info_uri, { 
           headers : {
             authorization : `Bearer ${access_token}`
           }
